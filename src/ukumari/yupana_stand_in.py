@@ -14,7 +14,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from ukumari.result import Err, Ok, Result
+from yupana.result import Err, Ok, Result
 
 HEADER = "sheet\trow\tcol\tcell\tformat"
 _INTEGER = re.compile(r"[1-9][0-9]*")

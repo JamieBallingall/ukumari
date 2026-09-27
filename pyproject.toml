@@ -8,7 +8,11 @@ license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
     "numpy>=2.5.3",
+    "yupana",
 ]
+
+[tool.uv.sources]
+yupana = { path = "../yupana/packages/yupana", editable = true }
 
 [build-system]
 requires = ["hatchling>=1.27"]

@@ -11,12 +11,13 @@ carry their cash sign, so capital expenditure, debt repayment and dividends are 
 
 from pathlib import Path
 
+from yupana.result import Result
+
 from ukumari import Layout, Model, lag, last, minimum, scalar
 from ukumari.circuit import Circuit
 from ukumari.errors import ModelError
 from ukumari.model import Declared
 from ukumari.pipeline import export
-from ukumari.result import Result
 from ukumari.uku import write_uku
 
 

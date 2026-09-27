@@ -7,11 +7,11 @@ import debt_schedule
 import numpy as np
 import pytest
 import three_statement
+from yupana.result import Err
 
 from ukumari import Layout, Model, lag, last, maximum, minimum, scalar
 from ukumari.emit import emit, load
 from ukumari.pipeline import export
-from ukumari.result import Err
 from ukumari.shape import Span
 from ukumari.yupana_stand_in import YupError, read_yup
 

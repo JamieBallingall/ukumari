@@ -3,6 +3,7 @@
 from fractions import Fraction
 
 import pytest
+from yupana.result import Err, Ok
 
 from ukumari import Model, lag, last, minimum, scalar
 from ukumari.check import check
@@ -28,7 +29,6 @@ from ukumari.errors import (
     UnplacedRegion,
 )
 from ukumari.expr import Lag, Literal, Ref
-from ukumari.result import Err, Ok
 from ukumari.shape import Axis, Span
 
 

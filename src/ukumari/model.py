@@ -17,6 +17,8 @@ True
 A model says where each vector lives, never how long it is: lengths arrive with the data.
 """
 
+from yupana.result import Result
+
 from ukumari.circuit import Authored, Circuit, Declaration, Equation, Kind
 from ukumari.errors import ModelError
 from ukumari.expr import (
@@ -33,7 +35,6 @@ from ukumari.expr import (
     to_fraction,
     walk,
 )
-from ukumari.result import Result
 from ukumari.shape import Axis, Scalar, Shape, Span
 
 

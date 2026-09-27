@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 import three_statement
 from models import random_model, three_statement_data
+from yupana.result import Err, Ok
 
 from ukumari import Model, lag, last, minimum, scalar
 from ukumari.agree import check_agreement, program_cells, same
@@ -28,7 +29,6 @@ from ukumari.check import check
 from ukumari.circuit import Authored, Circuit, Declaration, Kind
 from ukumari.emit import emit, load
 from ukumari.evaluate import cell_values
-from ukumari.result import Err, Ok
 from ukumari.shape import Span
 from ukumari.unroll import Cell, Const, Element, Operation, Prim, unroll
 

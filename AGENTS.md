@@ -40,7 +40,8 @@ read the other one, but never change it from here.
 - Expected failures are values: `Result` from the family's `result` module. A bug raises an
   ordinary built-in exception (`AssertionError` for a broken invariant), and nothing catches it.
   A `try` appears only as a narrow boundary that turns one expected exception into an `Err`.
-- `result.py` is shared, byte-identical, by `yupana` and `ukumari`. Do not edit it.
+- `Result` comes from `yupana.result`, the family's one copy. Change it only with both
+  projects in mind, and only there.
 - Text files are written with LF line endings on every platform: open them with `newline=""`
   (or write bytes), since Python's text mode on Windows turns `\n` into `\r\n`.
 - Comments and docstrings say why, in the present tense. Doctests are the examples.

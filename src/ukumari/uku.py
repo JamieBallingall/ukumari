@@ -27,11 +27,12 @@ import re
 from dataclasses import dataclass
 from fractions import Fraction
 
+from yupana.result import Err, Ok, Result
+
 from ukumari.check import check
 from ukumari.circuit import Authored, Circuit, Declaration, Equation, Kind
 from ukumari.errors import ModelError
 from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Op, Ref
-from ukumari.result import Err, Ok, Result
 from ukumari.shape import Axis, Scalar, Shape, Span, scalar
 
 FORMAT = "ukumari.model"

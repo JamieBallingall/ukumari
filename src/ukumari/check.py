@@ -5,6 +5,8 @@ together, so a circular reference never hides a misaligned leaf. Each check skip
 earlier one has already reported as missing.
 """
 
+from yupana.result import Err, Ok, Result
+
 from ukumari.align import align
 from ukumari.circuit import Authored, Circuit, Declaration, Equation, Kind
 from ukumari.errors import (
@@ -22,7 +24,6 @@ from ukumari.errors import (
 )
 from ukumari.expr import At, Last, Ref, walk
 from ukumari.guard import schedule
-from ukumari.result import Err, Ok, Result
 from ukumari.shape import Span
 
 

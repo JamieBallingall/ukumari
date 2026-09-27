@@ -6,13 +6,13 @@ import random
 import debt_schedule
 import three_statement
 from models import random_model
+from yupana.result import Err, Ok
 
 from ukumari import Model, lag, scalar
 from ukumari.check import check
 from ukumari.circuit import Authored, Declaration, Kind
 from ukumari.errors import Undefined, UnguardedCycle
 from ukumari.inputs import CsvError, read_inputs, write_inputs
-from ukumari.result import Err, Ok
 from ukumari.uku import UkuError, load_uku, read_uku, write_uku
 
 

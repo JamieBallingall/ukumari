@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 import three_statement
 from models import three_statement_data
+from yupana.result import Err, Ok
 
 from ukumari.agree import check_agreement, program_cells
 from ukumari.bind import bind
@@ -21,7 +22,6 @@ from ukumari.errors import Undefined, UnguardedCycle
 from ukumari.evaluate import cell_values
 from ukumari.expr import Binary, Literal, Op, Ref, walk
 from ukumari.pipeline import balanced, export
-from ukumari.result import Err, Ok
 from ukumari.uku import load_uku, write_uku
 from ukumari.unroll import unroll
 from ukumari.yupana_stand_in import read_yup

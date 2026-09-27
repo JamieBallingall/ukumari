@@ -170,6 +170,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
+    { name = "yupana" },
 ]
 
 [package.dev-dependencies]
@@ -180,7 +181,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "numpy", specifier = ">=2.5.3" }]
+requires-dist = [
+    { name = "numpy", specifier = ">=2.5.3" },
+    { name = "yupana", editable = "../yupana/packages/yupana" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -188,3 +192,8 @@ dev = [
     { name = "ruff", specifier = ">=0.16.9" },
     { name = "ty", specifier = "==0.0.84" },
 ]
+
+[[package]]
+name = "yupana"
+version = "0.1.0"
+source = { editable = "../yupana/packages/yupana" }

@@ -6,11 +6,12 @@ balance never goes negative however long the schedule runs.
 
 from pathlib import Path
 
+from yupana.result import Result
+
 from ukumari import Layout, Model, lag, minimum, scalar
 from ukumari.circuit import Circuit
 from ukumari.errors import ModelError
 from ukumari.pipeline import export
-from ukumari.result import Result
 from ukumari.uku import write_uku
 
 

@@ -17,7 +17,7 @@ import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
-from ukumari.result import Err, Ok, Result
+from yupana.result import Err, Ok, Result
 
 HEADER = ["input", "position", "value"]
 _POSITION = re.compile(r"0|[1-9][0-9]*")

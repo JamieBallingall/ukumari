@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from types import ModuleType
 
 import numpy as np
+from yupana.result import Err, Ok, Result
 
 from ukumari.agree import check_agreement, program_cells
 from ukumari.bind import Bound, DataError, bind
@@ -21,7 +22,6 @@ from ukumari.errors import ModelError
 from ukumari.evaluate import cell_values
 from ukumari.layout import Grid, Layout, grid
 from ukumari.model import Model
-from ukumari.result import Err, Ok, Result
 from ukumari.unroll import Cell, Straight, unroll
 from ukumari.yup import write_yup
 from ukumari.yupana_stand_in import YupError, read_yup

@@ -18,10 +18,11 @@ import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
+from yupana.result import Err, Ok, Result
+
 from ukumari._runtime import _extents, _placement
 from ukumari.circuit import Circuit, Kind
 from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Ref
-from ukumari.result import Err, Ok, Result
 from ukumari.shape import Axis, Interval, Scalar, Shape, Span
 
 
