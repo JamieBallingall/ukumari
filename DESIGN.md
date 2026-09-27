@@ -88,17 +88,16 @@ Where the plan was silent or ambiguous, the code decides:
   will matter if extents ever get a maximum.
 - **Conflicting extents name every source.** The inputs on a region, and any extent given
   explicitly, must agree; one `ConflictingExtent` lists them all.
-- **A subexpression holding a literal is never shared**, since literals are never shared:
-  `c = a * 2 + 2` does not reuse `b = a * 2`, and its formula is `=B2*2+2`.
+- **A subexpression holding a literal is never shared** in S, since literals are never
+  shared: `c = a * 2 + 2` does not reuse `b = a * 2`.
 - **A formula literal is the shorter of plain digits and `repr`**, so `1.5e300` is written
   `1.5E+300`, not 301 digits.
-- **Among several cells holding an operand**, a reference prefers one its equation names,
-  then takes the first group that has one: the formula's own column on its own sheet, then
-  its own sheet, then the same position on another sheet, then the rest. Within a group it
-  prefers the origin, then the first in unroll order. So a seed reads the cell the model
-  names, and a formula reads a copy on its own sheet rather than the row copied. Only a
-  cell the unroll built before the formula's own is read at all: a subexpression that a
-  later line happens to compute is written inline instead.
+- **A formula is its equation.** It references exactly the cells its equation names and
+  writes every operation inline, even one another cell happens to compute: S shares nodes
+  to compute each value once, which is not how a modeller writes. So a seed reads the cell
+  the model names, not the input its value came from. Where several named cells hold one
+  value, it takes the formula's own column on its own sheet, then its own sheet, then the
+  same position on another sheet, then the rest, and within each prefers the origin.
 - **Sheets line up by region.** On every sheet of a `Workbook`, column C shows the first
   position of the sheet's `start` region, so two sheets that start at the same region show
   the same quarter in the same column, and a copied row is a same-column link.

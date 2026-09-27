@@ -6,22 +6,19 @@
   **Every other cell writes out its own equation**, even where the same value is computed
   elsewhere, so a row that computes the same thing in every column reads the same in every
   column.
-- **Which cell a formula references for a node:** a cell its equation names, if one holds
-  the node, since that is what the modeller wrote; otherwise any cell holding it. Among
-  those, the first of these groups that has one: the formula's own column on its own sheet;
-  its own sheet; the same position on another sheet; the rest. Within a group, the origin
-  first, then unroll order. So ``closing[1] = opening[1] − payment[1]`` is written
-  ``=C3-C4``, with both operands from the period-1 column, as a modeller writes it; a seed
-  is read from the cell the model names, not from the input that first held its value; and
-  a formula reads a copy on its own sheet in preference to the row it was copied from.
+- **A formula is its equation.** It references exactly the cells its equation names, and
+  writes every operation inline, even one another cell happens to compute: sharing nodes
+  is how S computes each value once, not how a modeller writes. So a whole subtree becomes
+  ``=B2*C2+D2``, not one cell per operation, and ``closing[1] = opening[1] − payment[1]``
+  is written ``=C3-C4``, with both operands from the period-1 column; a seed is read from
+  the cell the model names, not from the input that first held its value.
+- **Among several named cells holding one value**, the first of these groups that has one:
+  the formula's own column on its own sheet; its own sheet; the same position on another
+  sheet; the rest. Within a group, the origin first, then unroll order.
 - **A reference to another sheet** names it in single quotes, ``'Assumptions'!C8``, with
   any apostrophe doubled.
 - **A reference to a single value is absolute**, ``$B$7``, as a modeller writes a link to
   an assumption, so a row that uses it reads the same in every column.
-- **A cell's formula renders its node's expression.** An operand node held by a cell that
-  the unroll built before the formula's own becomes a reference; any other is written
-  inline, so a whole subtree becomes ``=B2*C2+D2``, not one cell per operation, and a
-  formula never reads a subexpression from a line that the model computes after it.
 - A cell whose node is a lone literal (a seed) holds the number. Input cells hold their data
   as numbers; the error value is written ``=NA()``, since ``.yup`` has no error constants.
 - **Order**, so every formula refers only to earlier lines: text cells sheet by sheet and row
@@ -100,11 +97,7 @@ def write_yup(
 
     ``values`` holds P's value for every cell; the values CSV carries them.
     """
-    holders: dict[int, list[Cell]] = {}
-    for cell, node in s.cells.items():
-        holders.setdefault(node, []).append(cell)
     address = {cell: grid.address(*cell) for cell in s.cells}
-    built = {cell: i for i, cell in enumerate(s.cells)}
 
     def link(target: Cell, here: Address) -> str:
         at = address[target]
@@ -112,11 +105,9 @@ def write_yup(
         anchor = "$" if target[1] is None else ""
         return f"{prefix}{anchor}{column_letters(at.column)}{anchor}{at.row}"
 
-    def reference(node: int, cell: Cell, earlier: list[Cell]) -> str:
+    def reference(node: int, cell: Cell, found: list[Cell]) -> str:
         here = address[cell]
         origin = s.origins[node]
-        named = [c for c in s.reads[cell] if s.cells[c] == node]
-        found = named or earlier
         on_sheet = [c for c in found if address[c].sheet == here.sheet]
         tiers = (
             [c for c in on_sheet if address[c].column == here.column],
@@ -130,9 +121,9 @@ def write_yup(
     def render(node: int, cell: Cell, top: bool) -> tuple[str, int]:
         """Formula text for a node, and how tightly it binds."""
         if not top:
-            earlier = [c for c in holders.get(node, ()) if built[c] < built[cell]]
-            if earlier:
-                return reference(node, cell, earlier), _ATOM
+            named = [c for c in s.reads[cell] if s.cells[c] == node]
+            if named:
+                return reference(node, cell, named), _ATOM
         match s.nodes[node]:
             case Const(value):
                 if math.isnan(value):
@@ -140,7 +131,7 @@ def write_yup(
                 text = literal(value)
                 return (f"({text})", _ATOM) if value < 0 else (text, _ATOM)
             case Element():
-                raise AssertionError("every input element has a cell")
+                raise AssertionError("an input is read only through a cell it names")
             case Operation(Prim.NEG, (operand,)):
                 text, binding = render(operand, cell, False)
                 if binding <= _NEGATION:

@@ -162,16 +162,19 @@ def test_a_row_writes_its_own_equation_in_every_column() -> None:
     assert [cells[(5, col)][0] for col in (2, 3, 4)] == ["=$B$2+$B$3"] * 3
 
 
-def test_a_formula_reads_no_subexpression_from_a_later_line() -> None:
-    # `total` is computed first; `partial` later holds a - b, which `total` must not read.
+def test_a_formula_is_its_own_equation() -> None:
+    # `total` and `extra` both hold a subexpression that `partial` computes, before and
+    # after it; S shares the node, but each formula writes out what its equation says.
     m, t = small()
     a, b, c = m.input("a", t), m.input("b", t), m.input("c", t)
-    total, partial = m.vectors(t, "total", "partial")
+    total, partial, extra = m.vectors(t, "total", "partial", "extra")
     total.define(a - b - c)
     partial.define(a - b)
+    extra.define((a - b) * c)
     cells = cells_of(export(m, {"a": [3.0], "b": [2.0], "c": [1.0]}).unwrap().yup)
     assert cells[(5, 2)][0] == "=B2-B3-B4"
     assert cells[(6, 2)][0] == "=B2-B3"
+    assert cells[(7, 2)][0] == "=(B2-B3)*B4"
 
 
 def test_every_formula_refers_only_to_earlier_lines() -> None:
