@@ -10,9 +10,9 @@
 - Declarations keep their order, which the layout reads; equations keep the order they were
   defined in, separately, because the schedule breaks ties by it.
 - A shape is ``"scalar"`` or ``{"region": …, "front": n, "back": n}``.
-- An expression is an object tagged by ``"op"``: ``literal``, ``name``, ``last``, ``neg``,
-  ``add``, ``sub``, ``mul``, ``div``, ``min``, ``max`` or ``lag``. A ``lag`` has a ``body``
-  and, when seeded, a ``seed``.
+- An expression is an object tagged by ``"op"``: ``literal``, ``name``, ``last``, ``first``,
+  ``neg``, ``add``, ``sub``, ``mul``, ``div``, ``min``, ``max`` or ``lag``. A ``lag`` has a
+  ``body`` and, when seeded, a ``seed``.
 - A literal is a string holding a rational, such as ``"1/10"``, because a JSON number is a
   double. A reference is a bare name, so a file cannot contradict its own declarations
   about what is an input.
@@ -32,7 +32,7 @@ from yupana.result import Err, Ok, Result
 from ukumari.check import check
 from ukumari.circuit import Authored, Circuit, Declaration, Equation, Kind
 from ukumari.errors import ModelError
-from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Op, Ref
+from ukumari.expr import At, Binary, Expr, First, Lag, Last, Literal, Neg, Op, Ref
 from ukumari.shape import Axis, Scalar, Shape, Span, scalar
 
 FORMAT = "ukumari.model"
@@ -60,6 +60,8 @@ def _expression(e: Expr) -> dict[str, Json]:
             return {"op": "name", "name": name}
         case Last(name):
             return {"op": "last", "name": name}
+        case First(name):
+            return {"op": "first", "name": name}
         case Neg(operand):
             return {"op": "neg", "operand": _expression(operand)}
         case Binary(op, left, right):
@@ -206,13 +208,19 @@ class _Reader:
                     )
                     return None
                 return Literal(Fraction(text))
-            case "name" | "last":
+            case "name" | "last" | "first":
                 if not self.keys(path, item, {"op", "name"}):
                     return None
                 name = self.name(f"{path}.name", item["name"])
                 if name is None:
                     return None
-                return Ref(name) if op == "name" else Last(name)
+                match op:
+                    case "name":
+                        return Ref(name)
+                    case "last":
+                        return Last(name)
+                    case _:
+                        return First(name)
             case "neg":
                 if not self.keys(path, item, {"op", "operand"}):
                     return None

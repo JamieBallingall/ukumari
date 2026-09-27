@@ -30,7 +30,7 @@ from ukumari.errors import (
     ReductionOfAScalar,
     SeedNotScalar,
 )
-from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Ref
+from ukumari.expr import At, Binary, Expr, First, Lag, Last, Literal, Neg, Ref
 from ukumari.shape import Axis, Scalar, Shape, Span
 
 
@@ -129,7 +129,7 @@ def _scalar(axes: _Axes, vector: str, e: Expr, in_seed: bool, found: _Found) -> 
                     found[SeedNotScalar(vector, name)] = None
                 else:
                     found[Misaligned(vector, name, "scalar")] = None
-        case Last(name):
+        case Last(name) | First(name):
             if isinstance(axes.shapes.get(name), Scalar):
                 found[ReductionOfAScalar(vector, name)] = None
         case Neg(operand):
@@ -175,7 +175,7 @@ def _vector(
                 found[Misaligned(vector, name, "before")] = None
             if not (axes.stop(leaf) - stop + unseeded + seeded).nonnegative(within):
                 found[Misaligned(vector, name, "after")] = None
-        case Last(name):
+        case Last(name) | First(name):
             if isinstance(axes.shapes.get(name), Scalar):
                 found[ReductionOfAScalar(vector, name)] = None
         case Neg(operand):

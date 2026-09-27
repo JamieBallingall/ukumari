@@ -31,6 +31,7 @@ from ukumari.expr import (
     At,
     Binary,
     Expr,
+    First,
     Lag,
     Last,
     Literal,
@@ -128,6 +129,11 @@ def unroll(bound: Bound) -> Straight:
         assert interval is not None, "a checked model never reduces a single value"
         return (name, interval.stop - 1)
 
+    def first_cell(name: str) -> Cell:
+        interval = bound.intervals[name]
+        assert interval is not None, "a checked model never reduces a single value"
+        return (name, interval.start)
+
     def read(e: Expr) -> Cell | None:
         """The cell a bare reference reads; None for anything else."""
         match e:
@@ -137,6 +143,8 @@ def unroll(bound: Bound) -> Straight:
                 return (name, position)
             case Last(name):
                 return last_cell(name)
+            case First(name):
+                return first_cell(name)
             case _:
                 return None
 
@@ -156,6 +164,8 @@ def unroll(bound: Bound) -> Straight:
                 return cells[(name, position)]
             case Last(name):
                 return cells[last_cell(name)]
+            case First(name):
+                return cells[first_cell(name)]
             case Neg(operand):
                 return intern(Operation(Prim.NEG, (build(operand),)))
             case Binary(op, left, right):

@@ -22,7 +22,7 @@ from ukumari.errors import (
     UnknownRegion,
     UnplacedRegion,
 )
-from ukumari.expr import At, Last, Ref, walk
+from ukumari.expr import At, First, Last, Ref, walk
 from ukumari.guard import schedule
 from ukumari.shape import Span
 
@@ -81,7 +81,7 @@ def _construction(model: Authored) -> list[ModelError]:
                 defined.add(name)
         for node in walk(equation.expression):
             match node:
-                case Ref(used) | Last(used) if used not in kinds:
+                case Ref(used) | Last(used) | First(used) if used not in kinds:
                     report(UnknownName(used, name))
                 case At():
                     raise AssertionError("an authored model holds no At")

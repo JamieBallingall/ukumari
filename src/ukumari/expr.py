@@ -114,6 +114,16 @@ class Last(Arith):
 
 
 @dataclass(frozen=True, slots=True)
+class First(Arith):
+    """The first element of a declared vector or input: a reduction to a single value."""
+
+    name: str
+
+    def expression(self) -> Expr:
+        return self
+
+
+@dataclass(frozen=True, slots=True)
 class At(Arith):
     """One position of a vector, by absolute position on its axis.
 
@@ -159,7 +169,7 @@ class Lag(Arith):
         return self
 
 
-type Expr = Literal | Ref | Last | At | Neg | Binary | Lag
+type Expr = Literal | Ref | Last | First | At | Neg | Binary | Lag
 
 
 def to_fraction(value: Number) -> Fraction:
@@ -214,7 +224,7 @@ def walk(expr: Expr) -> Iterator[Expr]:
     """Every node of an expression, parents before children, left before right."""
     yield expr
     match expr:
-        case Literal() | Ref() | Last() | At():
+        case Literal() | Ref() | Last() | First() | At():
             pass
         case Neg(operand):
             yield from walk(operand)
@@ -243,6 +253,8 @@ def show(expr: Expr) -> str:
             return name
         case Last(name):
             return f"last({name})"
+        case First(name):
+            return f"first({name})"
         case At(name, position):
             return f"{name}[{position}]"
         case Neg(operand):

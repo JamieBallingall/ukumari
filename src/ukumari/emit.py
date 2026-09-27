@@ -27,6 +27,7 @@ from ukumari.expr import (
     At,
     Binary,
     Expr,
+    First,
     Lag,
     Last,
     Literal,
@@ -97,6 +98,8 @@ class _Writer:
                 )
             case Last(name):
                 return f"_v[{self.index[name]}][:, -1:]"
+            case First(name):
+                return f"_v[{self.index[name]}][:, :1]"
             case Neg(operand):
                 return f"_neg({self.whole(operand, a, b)})"
             case Binary(op, left, right):
@@ -124,6 +127,8 @@ class _Writer:
                 return f"_v[{i}][:, {_position(t)} - s{i}:{after} - s{i}]"
             case Last(name):
                 return f"_v[{self.index[name]}][:, -1:]"
+            case First(name):
+                return f"_v[{self.index[name]}][:, :1]"
             case Neg(operand):
                 return f"_neg({self.at(operand, t, first)})"
             case Binary(op, left, right):
@@ -154,7 +159,7 @@ def _reads(circuit: Circuit, component: Component) -> tuple[int, ...]:
     for name in component.members:
         for node in walk(definitions[name]):
             match node:
-                case Ref(used) | Last(used):
+                case Ref(used) | Last(used) | First(used):
                     if index[used] not in found and used not in component.members:
                         found.append(index[used])
                 case _:

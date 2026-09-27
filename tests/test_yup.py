@@ -10,7 +10,7 @@ import three_statement
 from yupana import PREAMBLE, YupError
 from yupana.result import Err
 
-from ukumari import Layout, Model, lag, last, maximum, minimum, scalar
+from ukumari import Layout, Model, first, lag, last, maximum, minimum, scalar
 from ukumari.emit import emit, load
 from ukumari.layout import Address
 from ukumari.pipeline import export
@@ -190,6 +190,16 @@ def test_a_scalar_sits_in_the_first_period_column() -> None:
     assert result.grid.address("k", None) == Address("Model", 2, 2)
     assert result.grid.address("total", None) == Address("Model", 5, 2)
     assert cells_of(result.yup)[(5, 2)][0] == "=D4*2"
+
+
+def test_first_links_to_the_first_cell() -> None:
+    m, t = small()
+    x = m.input("x", t[1:])
+    ratio = m.vector("ratio", scalar)
+    ratio.define(last(x) / first(x))
+    result = export(m, {"x": [2.0, 3.0, 5.0]}).unwrap()
+    assert cells_of(result.yup)[(3, 2)][0] == "=E2/C2"
+    assert result.values[("ratio", None)] == 2.5
 
 
 def test_the_export_refuses_when_p_is_one_ulp_out() -> None:

@@ -22,7 +22,7 @@ from yupana.result import Err, Ok, Result
 
 from ukumari._runtime import _extents, _placement
 from ukumari.circuit import Circuit, Kind
-from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Ref
+from ukumari.expr import At, Binary, Expr, First, Lag, Last, Literal, Neg, Ref
 from ukumari.shape import Axis, Interval, Scalar, Shape, Span
 
 
@@ -190,7 +190,7 @@ def at_position(expr: Expr, t: int, first: int, shapes: Mapping[str, Shape]) -> 
     (Ref(name='k'), At(name='x', position=2))
     """
     match expr:
-        case Literal() | Last():
+        case Literal() | Last() | First():
             return expr
         case Ref(name):
             return expr if isinstance(shapes[name], Scalar) else At(name, t)

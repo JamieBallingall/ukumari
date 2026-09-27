@@ -1,10 +1,11 @@
 """Random guarded models, shared by the tests that compare two computations of one thing."""
 
+import itertools
 import random
 from fractions import Fraction
 
 from ukumari.circuit import Equation
-from ukumari.expr import Binary, Expr, Lag, Last, Literal, Neg, Op, Ref, walk
+from ukumari.expr import Binary, Expr, First, Lag, Last, Literal, Neg, Op, Ref, walk
 from ukumari.shape import Axis, Scalar, Shape, Span, scalar
 
 
@@ -43,12 +44,19 @@ def random_model(
     def reducible(defining: int) -> list[str]:
         return list(inputs) + [f"v{j}" for j in range(defining) if f"v{j}" in closed]
 
+    reductions = itertools.count()
+
+    def reduction(name: str) -> Expr:
+        # Every third reduction is first() rather than last(). Choosing it by count, not by
+        # a random draw, leaves the random stream, and so every model's shape, as it was.
+        return First(name) if next(reductions) % 3 == 2 else Last(name)
+
     def seed(defining: int) -> Expr:
         pick = rng.random()
         if pick < 0.3:
             return Literal(Fraction(rng.randint(0, 3)))
         if pick < 0.6:
-            return Last(rng.choice(reducible(defining)))
+            return reduction(rng.choice(reducible(defining)))
         if scalar_inputs and pick < 0.85:
             return Ref(rng.choice(scalar_inputs))
         return Ref(rng.choice(list(inputs) + [f"v{j}" for j in range(defining)]))
@@ -61,7 +69,7 @@ def random_model(
             if pick < 0.1:
                 return Literal(Fraction(rng.randint(0, 3)))
             if pick < 0.25:
-                return Last(rng.choice(reducible(defining)))
+                return reduction(rng.choice(reducible(defining)))
             allowed = list(inputs) + [f"v{i}" for i in range(defining)]
             if lagged:
                 # Under a lag anything goes; a friendly model mostly reads vectors there,
@@ -84,9 +92,9 @@ def random_model(
     equations: list[Equation] = []
     for i in range(len(vectors)):
         body = expression(i, 3, False)
-        read = {node.name for node in walk(body) if isinstance(node, Ref | Last)} & set(
-            vectors
-        )
+        read = {
+            node.name for node in walk(body) if isinstance(node, Ref | Last | First)
+        } & set(vectors)
         if all(name in closed for name in read):
             closed.add(f"v{i}")
         equations.append(Equation(f"v{i}", body))

@@ -23,7 +23,7 @@ from ukumari.errors import (
     ReductionOfAScalar,
     SeedNotScalar,
 )
-from ukumari.expr import Binary, Expr, Lag, Last, Neg, Ref
+from ukumari.expr import Binary, Expr, First, Lag, Last, Neg, Ref
 from ukumari.guard import schedule
 from ukumari.shape import Axis, Scalar, Shape, Span
 
@@ -43,7 +43,7 @@ def _scalar_ctx(
             found.add(
                 SeedNotScalar(v, name) if in_seed else Misaligned(v, name, "scalar")
             )
-        case Last(name) if isinstance(shapes[name], Scalar):
+        case Last(name) | First(name) if isinstance(shapes[name], Scalar):
             found.add(ReductionOfAScalar(v, name))
         case Neg(x):
             _scalar_ctx(shapes, v, x, in_seed, found)
@@ -82,7 +82,7 @@ def _vector_ctx(
                 found.add(Misaligned(v, name, "before"))
             if b > stop:
                 found.add(Misaligned(v, name, "after"))
-        case Last(name) if isinstance(shapes[name], Scalar):
+        case Last(name) | First(name) if isinstance(shapes[name], Scalar):
             found.add(ReductionOfAScalar(v, name))
         case Neg(x):
             _vector_ctx(shapes, where, v, x, a, b, found)

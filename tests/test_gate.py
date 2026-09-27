@@ -5,7 +5,7 @@ from fractions import Fraction
 import pytest
 from yupana.result import Err, Ok
 
-from ukumari import Model, lag, last, minimum, scalar
+from ukumari import Model, first, lag, last, minimum, scalar
 from ukumari.check import check
 from ukumari.circuit import Authored, Component, Declaration, Equation, Kind, Layer
 from ukumari.errors import (
@@ -248,6 +248,25 @@ def test_a_reduction_on_a_cycle() -> None:
     x = m.vector("x", t)
     x.define(lag(x, seed=0) + last(x))
     assert errors_of(m) == (CircularReduction("x", "x"),)
+
+
+def test_first_is_a_reduction_like_last() -> None:
+    m = Model()
+    t = m.region("t")
+    m.axis("time", t)
+    x = m.input("x", t)
+    rate = m.input("rate", scalar)
+    y = m.vector("y", t)
+    y.define(lag(y, seed=first(x)) + first(y))
+    ratio, of_scalar = m.vectors(scalar, "ratio", "of_scalar")
+    ratio.define(last(x) / first(x))
+    of_scalar.define(first(rate))
+    assert set(errors_of(m)) == {
+        CircularReduction("y", "y"),
+        ReductionOfAScalar("of_scalar", "rate"),
+    }
+    with pytest.raises(TypeError, match="first"):
+        first(x * 2)  # ty: ignore[invalid-argument-type]
 
 
 def test_a_reduction_starts_a_new_layer() -> None:

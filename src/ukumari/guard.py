@@ -28,7 +28,7 @@ from enum import StrEnum
 
 from ukumari.circuit import Component, Equation, Layer
 from ukumari.errors import CircularReduction, GuardError, UnguardedCycle
-from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Ref
+from ukumari.expr import At, Binary, Expr, First, Lag, Last, Literal, Neg, Ref
 
 
 class Edge(StrEnum):
@@ -53,7 +53,7 @@ def dependencies(expr: Expr) -> list[tuple[str, Edge]]:
         match e:
             case Ref(name):
                 found.append((name, Edge.LAGGED if lagged else Edge.DIRECT))
-            case Last(name):
+            case Last(name) | First(name):
                 found.append((name, Edge.REDUCTION))
             case Literal() | At():
                 pass

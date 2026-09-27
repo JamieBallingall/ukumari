@@ -25,6 +25,7 @@ from ukumari.expr import (
     Arith,
     At,
     Binary,
+    First,
     Lag,
     Last,
     Literal,
@@ -148,6 +149,15 @@ def last(v: Declared | Ref) -> Last:
             return Last(name)
         case _:
             raise TypeError(f"last() takes a declared vector or input, not {v!r}")
+
+
+def first(v: Declared | Ref) -> First:
+    """The first element of a declared vector or input, as a single value."""
+    match v:
+        case Declared(name=name) | Ref(name=name):
+            return First(name)
+        case _:
+            raise TypeError(f"first() takes a declared vector or input, not {v!r}")
 
 
 def minimum(a: Arith | Number, b: Arith | Number) -> Binary:
