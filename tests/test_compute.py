@@ -183,6 +183,25 @@ def test_extents_given_explicitly_and_empty_spans() -> None:
     assert out["y"].tolist() == [[6.0, 7.0]]
 
 
+def test_a_seeded_lag_whose_body_is_asked_for_nothing() -> None:
+    """Under two seeded lags, a one-position target asks the inner body for fewer than no
+    positions: P must take no columns, not a slice counted from the right."""
+    m = Model()
+    t = m.region("t")
+    m.axis("time", t)
+    k = m.input("k", scalar)
+    x = m.input("x", t)
+    twice = m.vector("twice", t[:-2])
+    twice.define(lag(lag(x, seed=k), seed=k))
+    circuit = m.build().unwrap()
+    program = load(emit(circuit))
+    expected = {3: [7.0], 4: [7.0, 7.0], 6: [7.0, 7.0, 0.0, 1.0]}
+    for n, values in expected.items():
+        data = {"k": [7.0], "x": [float(i) for i in range(n)]}
+        assert program.run(data)["twice"].tolist() == [values]
+        agree(circuit, program, data)
+
+
 def test_the_unroll_shares_nodes_but_never_literals() -> None:
     circuit = debt_schedule.build().unwrap()
     bound = bind(circuit, {"principal": [100.0], "scheduled": [30.0] * 3}).unwrap()

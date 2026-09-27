@@ -162,11 +162,24 @@ def _fit(x, rows, columns):
 
 
 def _lag(seed, body, rows, columns):
-    """A seeded lag: the seed at the first position, then the body."""
-    out = _np.empty((rows, columns))
+    """A seeded lag: the seed at the first position, then the body.
+
+    Under ``k`` seeded lags, a target of ``k`` or fewer positions asks the innermost body
+    for fewer than none, so ``columns`` may be negative: that is no columns.
+    """
+    out = _np.empty((rows, max(columns, 0)))
     out[:, :1] = seed
     out[:, 1:] = body
     return out
+
+
+def _columns(x, start, stop):
+    """Columns ``[start, stop)`` of ``x``; none when the range is empty.
+
+    A range asked for under seeded lags can end before it starts, and a plain slice would
+    then count a negative end from the right.
+    """
+    return x[:, start:stop] if start < stop else x[:, :0]
 
 
 # --- The driver ----------------------------------------------------------------------------

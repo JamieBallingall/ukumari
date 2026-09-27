@@ -92,7 +92,9 @@ class _Writer:
                 return f"_v[{self.index[name]}]"
             case Ref(name):
                 i = self.index[name]
-                return f"_v[{i}][:, {_position(a)} - s{i}:{_position(b)} - s{i}]"
+                return (
+                    f"_columns(_v[{i}], {_position(a)} - s{i}, {_position(b)} - s{i})"
+                )
             case Last(name):
                 return f"_v[{self.index[name]}][:, -1:]"
             case Neg(operand):
