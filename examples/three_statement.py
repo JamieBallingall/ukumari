@@ -272,7 +272,9 @@ def main() -> None:
     for name, text in outputs().items():
         (target / name).write_text(text, encoding="utf-8", newline="")
         print(f"wrote {target / name}")
-    workbook = export(build().unwrap(), data(), layout=layout()).unwrap().xlsx()
+    workbook = (
+        export(build().unwrap(), data(), layout=layout()).unwrap().xlsx().unwrap()
+    )
     (target / "three_statement.xlsx").write_bytes(workbook)
     print(f"wrote {target / 'three_statement.xlsx'}")
 

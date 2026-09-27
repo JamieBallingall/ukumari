@@ -18,10 +18,11 @@ import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+from yupana import Type, Value, write_values
+
 from ukumari.bind import Bound
 from ukumari.layout import FIRST_PERIOD_COLUMN, Grid
 from ukumari.unroll import Cell, Const, Element, Operation, Prim, Straight
-from ukumari.yupana_stand_in import write_values
 
 _SYMBOL = {Prim.ADD: "+", Prim.SUB: "-", Prim.MUL: "*", Prim.DIV: "/"}
 _BINDING = {Prim.ADD: 1, Prim.SUB: 1, Prim.MUL: 2, Prim.DIV: 2}
@@ -147,7 +148,7 @@ def write_yup(
                 return f"={text}"
 
     lines = ["sheet\trow\tcol\tcell\tformat"]
-    value_rows: list[tuple[str, int, int, int, str]] = []
+    value_rows: list[Value] = []
     widths_written: set[int] = set()
     sheet = grid.sheet
 
@@ -161,7 +162,7 @@ def write_yup(
             pairs.append(f"columnwidth={_width(width)}")
         pairs += formats
         lines.append(f"{sheet}\t{row}\t{col}\t{cell_text}\t{'|'.join(pairs)}")
-        value_rows.append((sheet, row, col, *value))
+        value_rows.append(Value(sheet, row, col, Type(value[0]), value[1]))
 
     for period in range(grid.periods):
         text = f"P{period + 1}"

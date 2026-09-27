@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 import three_statement
 from models import three_statement_data
+from yupana import Formula, Text
 from yupana.result import Err, Ok
 
 from ukumari.agree import check_agreement, program_cells
@@ -24,7 +25,6 @@ from ukumari.expr import Binary, Literal, Op, Ref, walk
 from ukumari.pipeline import balanced, export
 from ukumari.uku import load_uku, write_uku
 from ukumari.unroll import unroll
-from ukumari.yupana_stand_in import read_yup
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 
@@ -70,49 +70,85 @@ def test_2_is_checked() -> None:
 
 
 def test_3_becomes_a_workbook() -> None:
-    """The .yup reads back cleanly, with labels, indents, formats and widths.
-
-    Writing the xlsx and opening it in the app wait for yupana.
-    """
+    """The .yup reads back cleanly, with labels, indents, formats and widths, and yupana
+    writes it as a workbook. That the app opens it is the test after this one."""
     result = export(
         three_statement.build().unwrap(),
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    cells = read_yup(result.yup).unwrap()
+    cells = result.checked.cells
     formats = [c.format for c in cells]
-    assert any("indent" in f for f in formats)
-    assert any("numberformat" in f for f in formats)
-    assert any(f.get("columnwidth") == "34" for f in formats)
-    assert any(c.cell == "$Revenue growth" for c in cells)
-    assert sum(c.cell.startswith("=") for c in cells) > 100
+    assert any(f.indent for f in formats)
+    assert any(f.number_format is not None for f in formats)
+    assert any(f.column_width == 34.0 for f in formats)
+    assert any(c.content == Text("Revenue growth") for c in cells)
+    assert sum(isinstance(c.content, Formula) for c in cells) > 100
+    assert result.xlsx().unwrap()[:2] == b"PK"
 
 
-@pytest.mark.app
-@pytest.mark.skipif(
+YUPANA = Path(__file__).resolve().parents[2] / "yupana"
+needs_the_app = pytest.mark.skipif(
     sys.platform != "win32"
     or os.environ.get("UKUMARI_APP_TESTS") != "1"
-    or not (Path(__file__).resolve().parents[2] / "yupana").exists(),
+    or not YUPANA.exists(),
     reason="needs Windows, the spreadsheet app, ../yupana, and UKUMARI_APP_TESTS=1",
 )
-def test_4_agrees_with_the_app() -> None:
-    """The oracle has the app compute the committed .yup, and every cell must agree."""
-    yupana = Path(__file__).resolve().parents[2] / "yupana"
+
+
+def oracle(*arguments: str) -> subprocess.CompletedProcess[str]:
+    """Run yupana's oracle as an external command; ukumari never imports it."""
     command = [
         "uv",
         "run",
         "--directory",
-        str(yupana),
+        str(YUPANA),
         "--package",
         "yupana-xlsx-oracle",
         "yupana-xlsx-oracle",
+        *arguments,
+    ]
+    return subprocess.run(
+        command, capture_output=True, text=True, encoding="utf-8", check=False
+    )
+
+
+@pytest.mark.app
+@needs_the_app
+def test_3_the_app_opens_the_workbook_and_computes_the_same() -> None:
+    """The app opens yupana's workbook without complaint, and computes P's values."""
+    result = export(
+        three_statement.build().unwrap(),
+        three_statement.data(),
+        layout=three_statement.layout(),
+    ).unwrap()
+    target = Path(__file__).resolve().parents[1] / "target"
+    target.mkdir(exist_ok=True)
+    workbook = target / "three_statement.xlsx"
+    workbook.write_bytes(result.xlsx().unwrap())
+    finished = oracle(
+        "compare",
+        str(EXAMPLES / "three_statement.yup"),
+        str(EXAMPLES / "three_statement.values.csv"),
+        "--xlsx",
+        str(workbook),
+        "--tolerance",
+        "1e-9",
+    )
+    assert finished.returncode == 0, finished.stdout + finished.stderr
+
+
+@pytest.mark.app
+@needs_the_app
+def test_4_agrees_with_the_app() -> None:
+    """The oracle has the app compute the committed .yup, and every cell must agree."""
+    finished = oracle(
         "compare",
         str(EXAMPLES / "three_statement.yup"),
         str(EXAMPLES / "three_statement.values.csv"),
         "--tolerance",
         "1e-9",
-    ]
-    finished = subprocess.run(command, capture_output=True, text=True, check=False)
+    )
     assert finished.returncode == 0, finished.stdout + finished.stderr
 
 

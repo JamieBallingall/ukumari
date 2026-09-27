@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from types import ModuleType
 
 import numpy as np
+from yupana import WriteError, Yup, YupError, read_yup, write_xlsx
 from yupana.result import Err, Ok, Result
 
 from ukumari.agree import check_agreement, program_cells
@@ -24,8 +25,6 @@ from ukumari.layout import Grid, Layout, grid
 from ukumari.model import Model
 from ukumari.unroll import Cell, Straight, unroll
 from ukumari.yup import write_yup
-from ukumari.yupana_stand_in import YupError, read_yup
-from ukumari.yupana_stand_in_xlsx import write_xlsx
 
 type PipelineError = ModelError | DataError | YupError
 
@@ -43,13 +42,12 @@ class Export:
     values: Mapping[Cell, float]
     yup: str
     values_csv: str
+    checked: Yup
 
-    def xlsx(self) -> bytes:
-        """The workbook of live formulas.
-
-        Written through the stand-in for ``yupana``'s xlsx writer, until ``yupana`` exists.
-        """
-        return write_xlsx(read_yup(self.yup).unwrap())
+    def xlsx(self) -> Result[bytes, tuple[WriteError, ...]]:
+        """The workbook of live formulas, written by ``yupana`` from the ``.yup`` file as
+        its reader checked it, or every cell the writer refuses."""
+        return write_xlsx(self.checked)
 
 
 def export(
@@ -100,7 +98,7 @@ def export(
     match read_yup(written.yup):
         case Err(yup_errors):
             return Err(yup_errors)
-        case Ok():
+        case Ok(checked):
             pass
     return Ok(
         Export(
@@ -113,6 +111,7 @@ def export(
             values=values,
             yup=written.yup,
             values_csv=written.values,
+            checked=checked,
         )
     )
 

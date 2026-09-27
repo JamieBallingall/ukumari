@@ -40,7 +40,7 @@ interpretation of that one graph.
 | β₁ | L + data → `.yup` and a values CSV | `bind`, `unroll`, `layout`, `yup` |
 | β₂ | L + data → values | `emit` (running P) |
 | β₃ | L → P, a standalone NumPy program | `emit`, with `_runtime` copied in |
-| γ₁ | `.yup` → xlsx | `yupana` (a stand-in until it exists) |
+| γ₁ | `.yup` → xlsx | `yupana` |
 
 `pipeline.export` runs the lot in one call: build, bind, unroll, lay out, run P, check P
 against the S evaluator, write the `.yup` and values CSV, and read the `.yup` back.

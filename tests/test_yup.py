@@ -7,13 +7,13 @@ import debt_schedule
 import numpy as np
 import pytest
 import three_statement
+from yupana import YupError
 from yupana.result import Err
 
 from ukumari import Layout, Model, lag, last, maximum, minimum, scalar
 from ukumari.emit import emit, load
 from ukumari.pipeline import export
 from ukumari.shape import Span
-from ukumari.yupana_stand_in import YupError, read_yup
 
 
 def cells_of(yup: str) -> dict[tuple[int, int], tuple[str, str]]:
@@ -208,22 +208,7 @@ def test_a_file_the_reader_refuses_comes_back_as_errors() -> None:
             raise AssertionError("expected the read-back to refuse a control character")
 
 
-def test_the_stand_in_reader_reports_every_problem() -> None:
-    text = (
-        "sheet\trow\tcol\tcell\tformat\n"
-        "Model\t1\t1\t$a\t\n"  # no column width on a column's first line
-        "Model\t1\t1\t#1\tcolumnwidth=5\n"  # a duplicate, and a late width
-        "Model\t0\t2\t#01\tcolumnwidth=default\n"  # row 0, a malformed number
-        "model\t3\t2\t%x\t\n"  # another spelling of the sheet; unknown kind
-    )
-    match read_yup(text):
-        case Err(errors):
-            assert {e.line for e in errors} == {2, 3, 4, 5}
-        case _:
-            raise AssertionError("expected errors")
-
-
-def test_the_stand_in_workbook_is_deterministic_and_well_formed() -> None:
+def test_the_workbook_is_deterministic_and_well_formed() -> None:
     import io
     import zipfile
     from xml.dom.minidom import parseString
@@ -233,8 +218,8 @@ def test_the_stand_in_workbook_is_deterministic_and_well_formed() -> None:
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    workbook = result.xlsx()
-    assert workbook == result.xlsx()
+    workbook = result.xlsx().unwrap()
+    assert workbook == result.xlsx().unwrap()
     archive = zipfile.ZipFile(io.BytesIO(workbook))
     names = [info.filename for info in archive.infolist()]
     assert names[0] == "[Content_Types].xml"
