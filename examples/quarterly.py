@@ -14,11 +14,19 @@ The workbook has four sheets:
   forward a quarter at a time, picks the three statements out of the roll-forward, and ends
   with ratios.
 
-The forecast looks back only one quarter. Anything further back is carried as state: revenue
-grows on the same quarter a year earlier, so the state holds the last four quarters'
-revenue, each row the row above one quarter later. The growth rate is the compound annual
-growth of the history's twelve-month revenue, which is why the model needs ``first`` and a
-fractional power.
+Revenue grows on the same quarter a year earlier, so the seasons survive. Its growth is the
+compound annual growth of the history's twelve-month revenue (which is why the model needs
+``first`` and a fractional power), plus the effects of GDP growth and of the company's own
+price changes, each measured from its average over the same quarters, since the compound
+growth already includes the economy the history had, plus a surprise. The surprise follows a
+seasonal autoregression, SARIMAX(1,0,0)(1,0,0) with a season of four quarters and those
+two exogenous regressors: each quarter's surprise carries part of the last quarter's and
+part of the same quarter's a year earlier. The coefficients are loaded, not fitted, and
+the history's surprises seed the forecast.
+
+The forecast looks back only one quarter. Anything further back is carried as state: the
+last four quarters' revenue and the last five surprises, each row the row above one
+quarter later.
 
 Cash runs through a waterfall every quarter. Whatever is above a minimum balance, once
 operations and investment are paid for, pays a dividend up to a target; what is left repays
@@ -128,6 +136,15 @@ FINANCING = {
 }
 STRETCHED = OPERATIONS | FINANCING
 
+# The revenue model's single values, stretched like the rest.
+REVENUE_MODEL = {
+    "gdp_beta": ("Growth per point of GDP growth above average", "0.00"),
+    "price_beta": ("Growth per point of price change above average", "0.00"),
+    "ar": ("Surprise carried from the quarter before", "0.00"),
+    "seasonal_ar": ("Surprise carried from a year before", "0.00"),
+}
+STRETCHED = REVENUE_MODEL | STRETCHED
+
 # Single values used once, as the seed of a countdown, so never stretched.
 MATURITIES = {
     "bond_a_quarters": "Bond A, quarters to maturity",
@@ -185,6 +202,8 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
 
     # --- Historicals: the reported quarters, and the subtotals a report shows. ------------
     quarter_end_actual = m.input("quarter_end_actual", history)
+    gdp_growth_actual = m.input("gdp_growth_actual", history)
+    price_change_actual = m.input("price_change_actual", history)
     actual = {
         name: m.input(f"{name}_actual", history)
         for name in (*INCOME, *BALANCES, *CASH_FLOWS)
@@ -232,12 +251,16 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     # --- Assumptions: inputs for the forecast, single values stretched across it. -------
     quarter_end = m.input("quarter_end", forecast)
     growth_adjustment = m.input("growth_adjustment", forecast)
+    gdp_growth = m.input("gdp_growth", forecast)
+    price_change = m.input("price_change", forecast)
     base_rate = m.input("base_rate", forecast)
     maturity = {name: m.input(name, scalar) for name in MATURITIES}
+    value: dict[str, Declared] = {}
     stretched: dict[str, Declared] = {}
     for name in STRETCHED:
+        value[name] = m.input(name, scalar)
         stretched[name] = m.vector(f"{name}_stretched", forecast)
-        stretched[name].define(m.input(name, scalar))
+        stretched[name].define(value[name])
 
     # --- Analysis: the history spread out, and the state at its last quarter. -----------
     quarter_end_a = copy("quarter_end_a", quarter_end_actual)
@@ -249,12 +272,44 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     )
     revenue_12m = m.vector("revenue_12m", history[3:])
     revenue_12m.define(revenue_a + revenue_1q + revenue_2q + revenue_3q)
-    revenue_growth_a = m.vector("revenue_growth_a", history[4:])
-    revenue_growth_a.define(revenue_a / revenue_4q - 1)
     # Twelve-month revenue first covers a whole year at the fourth quarter.
     years, cagr = m.vectors(scalar, "years", "cagr")
     years.define((last(quarter_number) - 4) / 4)
     cagr.define((last(revenue_12m) / first(revenue_12m)) ** (1 / years) - 1)
+    # The compound growth already includes the economy the history had, so the economy's
+    # effects are measured from its average over the quarters that have a growth rate:
+    # a running total, carried a quarter at a time, over their count.
+    (
+        revenue_growth_a,
+        gdp_total,
+        price_total,
+        gdp_effect_a,
+        price_effect_a,
+        surprise_a,
+    ) = m.vectors(
+        history[4:],
+        "revenue_growth_a",
+        "gdp_total",
+        "price_total",
+        "gdp_effect_a",
+        "price_effect_a",
+        "surprise_a",
+    )
+    revenue_growth_a.define(revenue_a / revenue_4q - 1)
+    gdp_total.define(lag(gdp_total, seed=0) + gdp_growth_actual)
+    price_total.define(lag(price_total, seed=0) + price_change_actual)
+    growth_quarters, gdp_average, price_average = m.vectors(
+        scalar, "growth_quarters", "gdp_average", "price_average"
+    )
+    growth_quarters.define(last(quarter_number) - 4)
+    gdp_average.define(last(gdp_total) / growth_quarters)
+    price_average.define(last(price_total) / growth_quarters)
+    # Each quarter's growth, less what the compound growth and the economy explain, is
+    # that quarter's surprise.
+    gdp_effect_a.define(value["gdp_beta"] * (gdp_growth_actual - gdp_average))
+    price_effect_a.define(value["price_beta"] * (price_change_actual - price_average))
+    surprise_a.define(revenue_growth_a - cagr - gdp_effect_a - price_effect_a)
+    surprise_earlier = earlier("surprise", surprise_a, history[4:], 4)
 
     gross_margin_a, ebitda_margin_a, capex_pct_a, tax_rate_a = m.vectors(
         history, "gross_margin_a", "ebitda_margin_a", "capex_pct_a", "tax_rate_a"
@@ -291,6 +346,10 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         at_the_end(f"start_ebitda_{k}q", source)
         for k, source in enumerate((ebitda_a, ebitda_1q, ebitda_2q))
     ]
+    start_surprise = [
+        at_the_end(f"start_surprise_{k}q", source)
+        for k, source in enumerate((surprise_a, *surprise_earlier))
+    ]
     start_balance = {
         name: at_the_end(f"start_{name}", actual[name]) for name in BALANCES
     }
@@ -298,30 +357,58 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     # --- Forecast: copies of the assumptions and of the initial state. ------------------
     quarter_end_f = copy("quarter_end_f", quarter_end)
     growth_adjustment_f = copy("growth_adjustment_f", growth_adjustment)
+    gdp_growth_f = copy("gdp_growth_f", gdp_growth)
+    price_change_f = copy("price_change_f", price_change)
     base_rate_f = copy("base_rate_f", base_rate)
     maturity_f = {name: copy(f"{name}_f", value) for name, value in maturity.items()}
     use = {name: copy(f"{name}_f", row) for name, row in stretched.items()}
     start_quarter_end_f = copy("start_quarter_end_f", start_quarter_end)
     cagr_f = copy("cagr_f", cagr)
+    gdp_average_f = copy("gdp_average_f", gdp_average)
+    price_average_f = copy("price_average_f", price_average)
     start_revenue_f = [copy(f"{s.name}_f", s) for s in start_revenue]
     start_ebitda_f = [copy(f"{s.name}_f", s) for s in start_ebitda]
+    start_surprise_f = [copy(f"{s.name}_f", s) for s in start_surprise]
     start = {name: copy(f"{s.name}_f", s) for name, s in start_balance.items()}
 
     # --- Forecast: the roll-forward, one quarter at a time. -----------------------------
     days = m.vector("days", forecast)
     days.define(quarter_end_f - lag(quarter_end_f, seed=start_quarter_end_f))
 
+    def rolled_on(name: str, source: Declared, seeds: list[Declared]) -> list[Declared]:
+        """``source`` one, two, … quarters earlier, each row the row above one quarter
+        later, the first quarters seeded with the initial state."""
+        rows = []
+        before = source
+        for k, seed in enumerate(seeds, start=1):
+            row = m.vector(f"{name}_{k}q_f", forecast)
+            row.define(lag(before, seed=seed))
+            rows.append(row)
+            before = row
+        return rows
+
+    # The surprise: SARIMAX(1,0,0)(1,0,0) with a season of four quarters, so it needs the
+    # surprises one, four and five quarters earlier.
+    surprise, gdp_effect, price_effect = m.vectors(
+        forecast, "surprise", "gdp_effect", "price_effect"
+    )
+    surprise_state = rolled_on("surprise", surprise, start_surprise_f)
+    ar, seasonal_ar = use["ar"], use["seasonal_ar"]
+    surprise.define(
+        ar * surprise_state[0]
+        + seasonal_ar * surprise_state[3]
+        - ar * seasonal_ar * surprise_state[4]
+    )
+    gdp_effect.define(use["gdp_beta"] * (gdp_growth_f - gdp_average_f))
+    price_effect.define(use["price_beta"] * (price_change_f - price_average_f))
+
     # Revenue grows on the same quarter a year earlier. The state is the last four
     # quarters' revenue: each row is the row above, one quarter later.
     revenue, revenue_growth = m.vectors(forecast, "revenue", "revenue_growth")
-    revenue_state = []
-    before = revenue
-    for k, seed in enumerate(start_revenue_f, start=1):
-        row = m.vector(f"revenue_{k}q_f", forecast)
-        row.define(lag(before, seed=seed))
-        revenue_state.append(row)
-        before = row
-    revenue_growth.define(cagr_f + growth_adjustment_f)
+    revenue_state = rolled_on("revenue", revenue, start_revenue_f)
+    revenue_growth.define(
+        cagr_f + growth_adjustment_f + gdp_effect + price_effect + surprise
+    )
     revenue.define(revenue_state[-1] * (1 + revenue_growth))
 
     cost_of_sales, operating_expenses, ebitda = m.vectors(
@@ -707,13 +794,15 @@ def reported() -> dict[str, list[float]]:
         for name, value in quarter.items():
             # Sums of tenths, rounded back to what they are, as a report shows them.
             reported[f"{name}_actual"].append(round(value, 6))
+    reported["gdp_growth_actual"] = [round(g / 100, 6) for g in gdp_growth]
+    reported["price_change_actual"] = [round(p / 100, 6) for p in price_change]
     return reported
 
 
 def data(history: int = HISTORY, forecast: int = FORECAST) -> dict[str, list[float]]:
     """The last ``history`` of the twenty reported quarters, and ``forecast`` ahead."""
-    assert 5 <= history <= HISTORY, (
-        "the model needs five quarters, and there are twenty"
+    assert 9 <= history <= HISTORY, (
+        "the model needs nine quarters, and there are twenty"
     )
     reported_quarters = {name: values[-history:] for name, values in reported().items()}
     return {
@@ -723,6 +812,18 @@ def data(history: int = HISTORY, forecast: int = FORECAST) -> dict[str, list[flo
         **reported_quarters,
         "quarter_end": [serial(d) for d in quarter_ends(2026, forecast)],
         "growth_adjustment": [0.0] * forecast,
+        # The economy slows a little in 2026, and grows at 2% from 2028.
+        "gdp_growth": (
+            [0.018, 0.016, 0.015, 0.016, 0.018, 0.02, 0.021, 0.022] + [0.02] * forecast
+        )[:forecast],
+        "price_change": (
+            [0.025, 0.024, 0.023, 0.022, 0.022, 0.023, 0.024, 0.025]
+            + [0.025] * forecast
+        )[:forecast],
+        "gdp_beta": [1.5],
+        "price_beta": [-0.5],
+        "ar": [0.6],
+        "seasonal_ar": [-0.3],
         # Rates fall a quarter point a quarter to 3%, and stay there.
         "base_rate": [max(0.03, 0.04 - 0.0025 * t) for t in range(forecast)],
         "cost_of_sales_pct": [0.60],
@@ -790,6 +891,10 @@ def workbook() -> Workbook:
             Blank(),
             Heading("Cash flow"),
             *(line(label, f"{name}_actual") for name, label in CASH_FLOWS.items()),
+            Blank(),
+            Heading("Economy"),
+            line("GDP growth, year on year", "gdp_growth_actual", fmt=PERCENT),
+            line("Own price change, year on year", "price_change_actual", fmt=PERCENT),
         ),
         start="history",
         label_width=30,
@@ -802,6 +907,12 @@ def workbook() -> Workbook:
             Blank(),
             Heading("Revenue"),
             line("Growth adjustment, year on year", "growth_adjustment", fmt=PERCENT),
+            line("GDP growth, year on year", "gdp_growth", fmt=PERCENT),
+            line("Own price change, year on year", "price_change", fmt=PERCENT),
+            *(
+                line(label, name, f"{name}_stretched", fmt=fmt)
+                for name, (label, fmt) in REVENUE_MODEL.items()
+            ),
             Blank(),
             Heading("Operations"),
             *(
@@ -834,9 +945,21 @@ def workbook() -> Workbook:
             line("3 quarters earlier", "revenue_3q"),
             line("4 quarters earlier", "revenue_4q"),
             line("Last 12 months", "revenue_12m"),
-            line("Growth, year on year", "revenue_growth_a", fmt=PERCENT),
             line("Years of 12-month revenue", "years", fmt="0.00"),
             line("Compound annual growth", "cagr", fmt=PERCENT),
+            line("Growth, year on year", "revenue_growth_a", fmt=PERCENT),
+            line("GDP growth, running total", "gdp_total", fmt=PERCENT),
+            line("Price change, running total", "price_total", fmt=PERCENT),
+            line("Quarters with a growth rate", "growth_quarters", fmt=COUNT),
+            line("GDP growth, average", "gdp_average", fmt=PERCENT),
+            line("Own price change, average", "price_average", fmt=PERCENT),
+            line("GDP effect", "gdp_effect_a", fmt=PERCENT),
+            line("Price effect", "price_effect_a", fmt=PERCENT),
+            line("Surprise", "surprise_a", fmt=PERCENT),
+            line("1 quarter earlier", "surprise_1q", fmt=PERCENT),
+            line("2 quarters earlier", "surprise_2q", fmt=PERCENT),
+            line("3 quarters earlier", "surprise_3q", fmt=PERCENT),
+            line("4 quarters earlier", "surprise_4q", fmt=PERCENT),
             Blank(),
             Heading("Margins and working capital"),
             line("Gross margin", "gross_margin_a", fmt=PERCENT),
@@ -864,6 +987,23 @@ def workbook() -> Workbook:
             line("EBITDA", "start_ebitda_0q"),
             line("EBITDA, 1 quarter earlier", "start_ebitda_1q"),
             line("EBITDA, 2 quarters earlier", "start_ebitda_2q"),
+            line("Surprise", "start_surprise_0q", fmt=PERCENT),
+            *(
+                line(
+                    f"Surprise, {k} quarter{'s' if k > 1 else ''} earlier",
+                    name,
+                    fmt=PERCENT,
+                )
+                for k, name in enumerate(
+                    (
+                        "start_surprise_1q",
+                        "start_surprise_2q",
+                        "start_surprise_3q",
+                        "start_surprise_4q",
+                    ),
+                    start=1,
+                )
+            ),
             *(line(label, f"start_{name}") for name, label in BALANCES.items()),
         ),
         start="history",
@@ -877,6 +1017,12 @@ def workbook() -> Workbook:
             Blank(),
             Heading("Assumptions"),
             line("Revenue growth adjustment", "growth_adjustment_f", fmt=PERCENT),
+            line("GDP growth", "gdp_growth_f", fmt=PERCENT),
+            line("Own price change", "price_change_f", fmt=PERCENT),
+            *(
+                line(label, f"{name}_f", fmt=fmt)
+                for name, (label, fmt) in REVENUE_MODEL.items()
+            ),
             *(
                 line(label, f"{name}_f", fmt=fmt)
                 for name, (label, fmt) in OPERATIONS.items()
@@ -894,6 +1040,8 @@ def workbook() -> Workbook:
             Heading("Initial state"),
             line("Quarter ending", "start_quarter_end_f", fmt=DATE),
             line("Compound annual growth", "cagr_f", fmt=PERCENT),
+            line("GDP growth, average", "gdp_average_f", fmt=PERCENT),
+            line("Own price change, average", "price_average_f", fmt=PERCENT),
             line("Revenue", "start_revenue_0q_f"),
             line("Revenue, 1 quarter earlier", "start_revenue_1q_f"),
             line("Revenue, 2 quarters earlier", "start_revenue_2q_f"),
@@ -901,15 +1049,44 @@ def workbook() -> Workbook:
             line("EBITDA", "start_ebitda_0q_f"),
             line("EBITDA, 1 quarter earlier", "start_ebitda_1q_f"),
             line("EBITDA, 2 quarters earlier", "start_ebitda_2q_f"),
+            line("Surprise", "start_surprise_0q_f", fmt=PERCENT),
+            *(
+                line(
+                    f"Surprise, {k} quarter{'s' if k > 1 else ''} earlier",
+                    name,
+                    fmt=PERCENT,
+                )
+                for k, name in enumerate(
+                    (
+                        "start_surprise_1q_f",
+                        "start_surprise_2q_f",
+                        "start_surprise_3q_f",
+                        "start_surprise_4q_f",
+                    ),
+                    start=1,
+                )
+            ),
             *(line(label, f"start_{name}_f") for name, label in BALANCES.items()),
             Blank(),
             Heading("Roll-forward"),
             line("Days in the quarter", "days", fmt=COUNT),
+            part("Surprise"),
+            *(
+                step(
+                    f"{k} quarter{'s' if k > 1 else ''} earlier",
+                    f"surprise_{k}q_f",
+                    fmt=PERCENT,
+                )
+                for k in range(1, 6)
+            ),
+            step("Surprise", "surprise", fmt=PERCENT),
             part("Revenue"),
             step("1 quarter earlier", "revenue_1q_f"),
             step("2 quarters earlier", "revenue_2q_f"),
             step("3 quarters earlier", "revenue_3q_f"),
             step("4 quarters earlier", "revenue_4q_f"),
+            step("GDP effect", "gdp_effect", fmt=PERCENT),
+            step("Price effect", "price_effect", fmt=PERCENT),
             step("Growth, year on year", "revenue_growth", fmt=PERCENT),
             step("Revenue", "revenue"),
             part("Operations"),

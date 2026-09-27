@@ -30,13 +30,52 @@ def test_revenue_grows_on_the_same_quarter_a_year_earlier() -> None:
     cagr = (twelve_months[-1] / twelve_months[0]) ** (1 / years) - 1
     assert out["cagr"][0, 0] == pytest.approx(cagr, rel=1e-12)
     revenue = out["revenue"][0].tolist()
+    growth = out["revenue_growth"][0].tolist()
     year_earlier = reported[-4:] + revenue[:-4]
-    for now, then in zip(revenue, year_earlier, strict=True):
-        assert now == pytest.approx(then * (1 + cagr), rel=1e-12)
+    for now, then, rate in zip(revenue, year_earlier, growth, strict=True):
+        assert now == pytest.approx(then * (1 + rate), rel=1e-12)
     # Gardens still peak in the second quarter of every forecast year.
     for year in range(len(revenue) // 4):
         quarters = revenue[4 * year : 4 * year + 4]
         assert max(quarters) == quarters[1]
+
+
+def test_the_surprise_follows_the_seasonal_autoregression() -> None:
+    data = quarterly.data()
+    out = load(emit(quarterly.build().unwrap())).run(data)
+    reported = data["revenue_actual"]
+    cagr = out["cagr"][0, 0]
+    # Growth, less the compound growth and the economy measured from its average over
+    # the quarters with a growth rate, is the surprise: worked out here independently.
+    gdp, price = data["gdp_growth_actual"][4:], data["price_change_actual"][4:]
+    gdp_average, price_average = sum(gdp) / len(gdp), sum(price) / len(price)
+    gdp_beta, price_beta = data["gdp_beta"][0], data["price_beta"][0]
+    surprise = [
+        reported[t] / reported[t - 4]
+        - 1
+        - cagr
+        - gdp_beta * (g - gdp_average)
+        - price_beta * (p - price_average)
+        for t, g, p in zip(range(4, len(reported)), gdp, price, strict=True)
+    ]
+    assert out["surprise_a"][0].tolist() == pytest.approx(surprise, abs=1e-15)
+    # In the forecast, each surprise carries part of the last quarter's and part of the
+    # same quarter's a year earlier: SARIMAX(1,0,0)(1,0,0) with a season of four.
+    ar, seasonal_ar = data["ar"][0], data["seasonal_ar"][0]
+    for _ in range(len(out["surprise"][0])):
+        surprise.append(
+            ar * surprise[-1]
+            + seasonal_ar * surprise[-4]
+            - ar * seasonal_ar * surprise[-5]
+        )
+    assert out["surprise"][0].tolist() == pytest.approx(surprise[16:], abs=1e-15)
+    growth = [
+        cagr + gdp_beta * (g - gdp_average) + price_beta * (p - price_average) + u
+        for g, p, u in zip(
+            data["gdp_growth"], data["price_change"], surprise[16:], strict=True
+        )
+    ]
+    assert out["revenue_growth"][0].tolist() == pytest.approx(growth, abs=1e-15)
 
 
 def test_the_waterfall_keeps_its_limits() -> None:
@@ -82,7 +121,7 @@ def test_the_floating_debt_follows_the_base_rate() -> None:
 
 def test_it_has_no_fixed_horizon() -> None:
     circuit = quarterly.build().unwrap()
-    for history, forecast in [(5, 1), (8, 12), (20, 60)]:
+    for history, forecast in [(9, 1), (12, 12), (20, 60)]:
         result = export(
             circuit, quarterly.data(history, forecast), layout=quarterly.workbook()
         ).unwrap()
