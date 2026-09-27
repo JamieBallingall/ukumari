@@ -7,7 +7,7 @@ import debt_schedule
 import numpy as np
 import pytest
 import three_statement
-from yupana import YupError
+from yupana import PREAMBLE, YupError
 from yupana.result import Err
 
 from ukumari import Layout, Model, lag, last, maximum, minimum, scalar
@@ -19,7 +19,7 @@ from ukumari.shape import Span
 def cells_of(yup: str) -> dict[tuple[int, int], tuple[str, str]]:
     """(row, col) → (cell, format), from ``.yup`` text."""
     found = {}
-    for line in yup.splitlines()[1:]:
+    for line in yup.splitlines()[2:]:
         _, row, col, cell, fmt = line.split("\t")
         found[(int(row), int(col))] = (cell, fmt)
     return found
@@ -99,7 +99,7 @@ def test_every_formula_refers_only_to_earlier_lines() -> None:
 
     from ukumari.yup import column_letters
 
-    for line in result.yup.splitlines()[1:]:
+    for line in result.yup.splitlines()[2:]:
         _, row, col, cell, _ = line.split("\t")
         if cell.startswith("="):
             for ref in re.findall(r"[A-Z]+[0-9]+", cell):
@@ -114,9 +114,9 @@ def test_formats_indents_and_widths() -> None:
         layout=three_statement.layout(),
     ).unwrap()
     lines = result.yup.splitlines()
-    assert lines[0] == "sheet\trow\tcol\tcell\tformat"
+    assert "\n".join(lines[:2]) + "\n" == PREAMBLE
     first_of_column: dict[str, str] = {}
-    for line in lines[1:]:
+    for line in lines[2:]:
         _, _, col, _, fmt = line.split("\t")
         first_of_column.setdefault(col, fmt)
     assert first_of_column["1"] == "columnwidth=34"
@@ -152,7 +152,7 @@ def test_the_values_csv_lists_every_cell_in_the_same_order() -> None:
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    yup_cells = [line.split("\t")[:3] for line in result.yup.splitlines()[1:]]
+    yup_cells = [line.split("\t")[:3] for line in result.yup.splitlines()[2:]]
     values = [line.split(",")[:3] for line in result.values_csv.splitlines()[1:]]
     assert yup_cells == values
 

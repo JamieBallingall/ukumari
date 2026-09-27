@@ -18,7 +18,7 @@ import math
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-from yupana import Type, Value, write_values
+from yupana import PREAMBLE, Type, Value, write_values
 
 from ukumari.bind import Bound
 from ukumari.layout import FIRST_PERIOD_COLUMN, Grid
@@ -147,7 +147,7 @@ def write_yup(
                 text, _ = render(node, address[cell][1], True)
                 return f"={text}"
 
-    lines = ["sheet\trow\tcol\tcell\tformat"]
+    lines: list[str] = []
     value_rows: list[Value] = []
     widths_written: set[int] = set()
     sheet = grid.sheet
@@ -183,4 +183,4 @@ def write_yup(
         value = values[cell]
         typed = (16, "#N/A") if math.isnan(value) else (1, number(value))
         emit(row, col, content(cell), formats, typed)
-    return Written("\n".join(lines) + "\n", write_values(value_rows))
+    return Written(PREAMBLE + "\n".join(lines) + "\n", write_values(value_rows))
