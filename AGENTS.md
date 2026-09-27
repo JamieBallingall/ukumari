@@ -49,7 +49,7 @@ read the other one, but never change it from here.
 ## Rules
 
 - No third-party material: no downloaded workbooks, no data from anyone else. Examples use
-  made-up figures.
+  made-up numbers.
 - No workbook is ever committed. Generated files go to `target/`.
 - Nothing personal: no names, paths or e-mail addresses.
 - Describe techniques generically, never as if from inside an organisation.
