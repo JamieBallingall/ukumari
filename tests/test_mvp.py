@@ -1,8 +1,5 @@
 """Milestone 1: the three-statement example meets each criterion, one test apiece."""
 
-import os
-import subprocess
-import sys
 from fractions import Fraction
 from pathlib import Path
 
@@ -11,6 +8,7 @@ import numpy as np
 import pytest
 import three_statement
 from models import three_statement_data
+from oracle import needs_the_app, oracle
 from yupana import Formula, Text
 from yupana.result import Err, Ok
 
@@ -85,32 +83,6 @@ def test_3_becomes_a_workbook() -> None:
     assert any(c.content == Text("Revenue growth") for c in cells)
     assert sum(isinstance(c.content, Formula) for c in cells) > 100
     assert result.xlsx().unwrap()[:2] == b"PK"
-
-
-YUPANA = Path(__file__).resolve().parents[2] / "yupana"
-needs_the_app = pytest.mark.skipif(
-    sys.platform != "win32"
-    or os.environ.get("UKUMARI_APP_TESTS") != "1"
-    or not YUPANA.exists(),
-    reason="needs Windows, the spreadsheet app, ../yupana, and UKUMARI_APP_TESTS=1",
-)
-
-
-def oracle(*arguments: str) -> subprocess.CompletedProcess[str]:
-    """Run yupana's oracle as an external command; ukumari never imports it."""
-    command = [
-        "uv",
-        "run",
-        "--directory",
-        str(YUPANA),
-        "--package",
-        "yupana-xlsx-oracle",
-        "yupana-xlsx-oracle",
-        *arguments,
-    ]
-    return subprocess.run(
-        command, capture_output=True, text=True, encoding="utf-8", check=False
-    )
 
 
 @pytest.mark.app
