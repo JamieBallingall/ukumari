@@ -1,9 +1,11 @@
 """β₁: writing S and a layout as ``.yup``, and the values CSV beside it.
 
-- **Which cell holds the formula for a node:** its origin. Another cell holding the same node
-  links to the cell its equation reads, when that is a bare reference: the lag edge
-  ``opening[1]`` is ``closing[0]``, so it is ``=B7``, and a copy of a copy links to the copy
-  it was made from. Any other cell holding the node links to the origin.
+- **A cell whose equation is a bare reference** (a copy, the previous position of a lag, a
+  seed, a reduction) is a link to the cell it reads: the lag edge ``opening[1]`` is
+  ``closing[0]``, so it is ``=B7``, and a copy of a copy links to the copy it was made from.
+  **Every other cell writes out its own equation**, even where the same value is computed
+  elsewhere, so a row that computes the same thing in every column reads the same in every
+  column.
 - **Which cell a formula references for a node:** a cell its equation names, if one holds
   the node, since that is what the modeller wrote; otherwise any cell holding it. Among
   those, the first of these groups that has one: the formula's own column on its own sheet;
@@ -16,9 +18,10 @@
   any apostrophe doubled.
 - **A reference to a single value is absolute**, ``$B$7``, as a modeller writes a link to
   an assumption, so a row that uses it reads the same in every column.
-- **A cell's formula renders its node's expression.** Every operand node that has a cell
-  becomes a reference; operand nodes without one are written inline, so a whole subtree
-  becomes ``=B2*C2+D2``, not one cell per operation.
+- **A cell's formula renders its node's expression.** An operand node held by a cell that
+  the unroll built before the formula's own becomes a reference; any other is written
+  inline, so a whole subtree becomes ``=B2*C2+D2``, not one cell per operation, and a
+  formula never reads a subexpression from a line that the model computes after it.
 - A cell whose node is a lone literal (a seed) holds the number. Input cells hold their data
   as numbers; the error value is written ``=NA()``, since ``.yup`` has no error constants.
 - **Order**, so every formula refers only to earlier lines: text cells sheet by sheet and row
@@ -101,6 +104,7 @@ def write_yup(
     for cell, node in s.cells.items():
         holders.setdefault(node, []).append(cell)
     address = {cell: grid.address(*cell) for cell in s.cells}
+    built = {cell: i for i, cell in enumerate(s.cells)}
 
     def link(target: Cell, here: Address) -> str:
         at = address[target]
@@ -108,11 +112,11 @@ def write_yup(
         anchor = "$" if target[1] is None else ""
         return f"{prefix}{anchor}{column_letters(at.column)}{anchor}{at.row}"
 
-    def reference(node: int, cell: Cell) -> str:
+    def reference(node: int, cell: Cell, earlier: list[Cell]) -> str:
         here = address[cell]
         origin = s.origins[node]
         named = [c for c in s.reads[cell] if s.cells[c] == node]
-        found = named or holders[node]
+        found = named or earlier
         on_sheet = [c for c in found if address[c].sheet == here.sheet]
         tiers = (
             [c for c in on_sheet if address[c].column == here.column],
@@ -125,8 +129,10 @@ def write_yup(
 
     def render(node: int, cell: Cell, top: bool) -> tuple[str, int]:
         """Formula text for a node, and how tightly it binds."""
-        if not top and node in holders:
-            return reference(node, cell), _ATOM
+        if not top:
+            earlier = [c for c in holders.get(node, ()) if built[c] < built[cell]]
+            if earlier:
+                return reference(node, cell, earlier), _ATOM
         match s.nodes[node]:
             case Const(value):
                 if math.isnan(value):
@@ -168,10 +174,9 @@ def write_yup(
                 raise AssertionError(f"a malformed node: {s.nodes[node]}")
 
     def content(cell: Cell) -> str:
+        if cell in s.sources:
+            return f"={link(s.sources[cell], address[cell])}"
         node = s.cells[cell]
-        origin = s.origins[node]
-        if cell != origin:
-            return f"={link(s.sources.get(cell, origin), address[cell])}"
         match s.nodes[node]:
             case Const(value):
                 return "=NA()" if math.isnan(value) else f"#{number(value)}"

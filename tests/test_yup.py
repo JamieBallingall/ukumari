@@ -149,6 +149,31 @@ def test_a_copy_links_to_the_cell_it_copies() -> None:
     assert cells[(7, 2)][0] == "=C5"  # the last of c, not the input c copies
 
 
+def test_a_row_writes_its_own_equation_in_every_column() -> None:
+    # Every position of `flat` computes the same value from the same single values, so the
+    # unroll shares one node; each column still writes its own formula, not a link.
+    m, t = small()
+    k1, k2 = m.input("k1", scalar), m.input("k2", scalar)
+    m.input("a", t)  # gives the region its length
+    flat = m.vector("flat", t)
+    flat.define(k1 + k2)
+    result = export(m, {"k1": [1.0], "k2": [2.0], "a": [0.0, 0.0, 0.0]}).unwrap()
+    cells = cells_of(result.yup)
+    assert [cells[(5, col)][0] for col in (2, 3, 4)] == ["=$B$2+$B$3"] * 3
+
+
+def test_a_formula_reads_no_subexpression_from_a_later_line() -> None:
+    # `total` is computed first; `partial` later holds a - b, which `total` must not read.
+    m, t = small()
+    a, b, c = m.input("a", t), m.input("b", t), m.input("c", t)
+    total, partial = m.vectors(t, "total", "partial")
+    total.define(a - b - c)
+    partial.define(a - b)
+    cells = cells_of(export(m, {"a": [3.0], "b": [2.0], "c": [1.0]}).unwrap().yup)
+    assert cells[(5, 2)][0] == "=B2-B3-B4"
+    assert cells[(6, 2)][0] == "=B2-B3"
+
+
 def test_every_formula_refers_only_to_earlier_lines() -> None:
     result = export(
         three_statement.build().unwrap(),

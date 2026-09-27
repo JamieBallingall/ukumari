@@ -92,13 +92,18 @@ Where the plan was silent or ambiguous, the code decides:
   `c = a * 2 + 2` does not reuse `b = a * 2`, and its formula is `=B2*2+2`.
 - **A formula literal is the shorter of plain digits and `repr`**, so `1.5e300` is written
   `1.5E+300`, not 301 digits.
-- **Among several cells holding an operand**, a reference takes the first group that has
-  one: the formula's own column on its own sheet, then its own sheet, then the same position
-  on another sheet, then the origin. Within a group it prefers the origin, then the first
-  in unroll order. So a formula reads a copy on its own sheet rather than the row copied.
+- **Among several cells holding an operand**, a reference prefers one its equation names,
+  then takes the first group that has one: the formula's own column on its own sheet, then
+  its own sheet, then the same position on another sheet, then the rest. Within a group it
+  prefers the origin, then the first in unroll order. So a seed reads the cell the model
+  names, and a formula reads a copy on its own sheet rather than the row copied. Only a
+  cell the unroll built before the formula's own is read at all: a subexpression that a
+  later line happens to compute is written inline instead.
 - **Sheets line up by region.** On every sheet of a `Workbook`, column C shows the first
   position of the sheet's `start` region, so two sheets that start at the same region show
   the same quarter in the same column, and a copied row is a same-column link.
 - **A copy links to the cell it copies.** A cell whose equation is a bare reference (a copy,
   a lag's previous position, a seed, a reduction) holds the same node as the cell it reads,
-  and is written as a link to that cell, so a copy of a copy links to the copy.
+  and is written as a link to that cell, so a copy of a copy links to the copy. Any other
+  cell writes out its own equation, even when another cell computes the same value: a row
+  that adds the same two assumptions in every quarter reads the same in every column.
