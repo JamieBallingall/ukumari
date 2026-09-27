@@ -39,6 +39,20 @@ def test_revenue_grows_on_the_same_quarter_a_year_earlier() -> None:
         assert max(quarters) == quarters[1]
 
 
+def test_the_waterfall_keeps_its_limits() -> None:
+    data = quarterly.data()
+    out = load(emit(quarterly.build().unwrap())).run(data)
+    limit, floor = data["revolver_limit"][0], data["minimum_cash"][0]
+    revolver = out["revolver"][0]
+    assert all(0.0 <= r <= limit for r in revolver)
+    assert all(0.0 <= d <= data["dividend"][0] for d in out["dividends"][0])
+    assert all(b >= 0.0 for b in out["buybacks"][0])
+    # Cash is at least the minimum, since the revolver never runs out here.
+    assert all(c >= floor - 1e-9 for c in out["cash"][0])
+    # The revolver is drawn in the first half of every year and repaid in the second.
+    assert revolver.max() > 20 and revolver[2::4].max() == 0.0
+
+
 def test_it_has_no_fixed_horizon() -> None:
     circuit = quarterly.build().unwrap()
     for history, forecast in [(5, 1), (8, 12), (20, 60)]:

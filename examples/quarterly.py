@@ -20,8 +20,12 @@ revenue, each row the row above one quarter later. The growth rate is the compou
 growth of the history's twelve-month revenue, which is why the model needs ``first`` and a
 fractional power.
 
-For now the financing stays where it was at the last reported quarter, with cash as the
-plug, so the balance sheet balances by construction in every quarter.
+Cash runs through a waterfall every quarter. Whatever is above a minimum balance, once
+operations and investment are paid for, pays a dividend up to a target; what is left repays
+the revolver, or the revolver covers a shortfall up to its limit; and a share of anything
+left over buys back shares. There is no IF in the language, so every step is a minimum or a
+maximum. The bonds and the term loan stay where they were at the last reported quarter, for
+now. The balance sheet balances by construction in every quarter.
 """
 
 from datetime import date
@@ -40,11 +44,11 @@ from ukumari import (
     lag,
     last,
     maximum,
+    minimum,
     scalar,
 )
 from ukumari.circuit import Circuit
 from ukumari.errors import ModelError
-from ukumari.layout import Item
 from ukumari.model import Declared
 from ukumari.pipeline import export
 from ukumari.shape import Span
@@ -104,7 +108,10 @@ STRETCHED = {
     "inventory_days": ("Inventory, days of cost of sales", DAYS),
     "payable_days": ("Payables, days of cost of sales", DAYS),
     "interest_rate": ("Interest, % a year of opening debt", PERCENT),
-    "dividend": ("Dividend a quarter", MONEY),
+    "minimum_cash": ("Minimum cash", MONEY),
+    "dividend": ("Target dividend a quarter", MONEY),
+    "revolver_limit": ("Revolver limit", MONEY),
+    "buyback_share": ("Share buybacks, % of cash left over", PERCENT),
 }
 
 # Lines of the three statements that are copies of the roll-forward: model name and label.
@@ -125,6 +132,7 @@ STATEMENT_COPIES = {
     "_cf": {
         "net_income": "Net income",
         "depreciation": "Depreciation",
+        "revolver_drawn": "Revolver drawn (repaid)",
         "opening_cash": "Opening cash",
         "cash": "Closing cash",
     },
@@ -328,16 +336,24 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         working_capital - lag(working_capital, seed=start_working_capital)
     )
 
-    # The debt stays where it was at the last reported quarter, for now.
-    held = {name: m.vector(name, forecast) for name in DEBT}
+    # The bonds and the term loan stay where they were at the last reported quarter, for
+    # now; the revolver moves with the waterfall below.
+    held = {name: m.vector(name, forecast) for name in DEBT if name != "revolver"}
     for name, row in held.items():
         row.define(start[name])
-    debt, interest = m.vectors(forecast, "debt", "interest")
-    debt.define(held["revolver"] + held["bond_a"] + held["bond_b"] + held["term_loan"])
+    opening_revolver, revolver = m.vectors(forecast, "opening_revolver", "revolver")
+    opening_revolver.define(lag(revolver, seed=start["revolver"]))
+    opening_debt, debt, interest = m.vectors(
+        forecast, "opening_debt", "debt", "interest"
+    )
+    debt.define(revolver + held["bond_a"] + held["bond_b"] + held["term_loan"])
     start_debt = (
         start["revolver"] + start["bond_a"] + start["bond_b"] + start["term_loan"]
     )
-    interest.define(lag(debt, seed=start_debt) * use["interest_rate"] / 4)
+    # Interest on the opening balance, so the revolver drawn this quarter costs nothing
+    # until the next: no circular reference.
+    opening_debt.define(lag(debt, seed=start_debt))
+    interest.define(opening_debt * use["interest_rate"] / 4)
 
     operating_profit, profit_before_tax, tax, net_income = m.vectors(
         forecast, "operating_profit", "profit_before_tax", "tax", "net_income"
@@ -347,23 +363,48 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     tax.define(maximum(profit_before_tax, 0) * use["tax_rate"])  # no credit for a loss
     net_income.define(profit_before_tax - tax)
 
-    cash_from_operations, dividends, opening_cash, cash, opening_equity, equity = (
-        m.vectors(
-            forecast,
-            "cash_from_operations",
-            "dividends",
-            "opening_cash",
-            "cash",
-            "opening_equity",
-            "equity",
-        )
-    )
+    cash_from_operations = m.vector("cash_from_operations", forecast)
     cash_from_operations.define(net_income + depreciation - working_capital_increase)
-    dividends.define(use["dividend"])
+
+    # The waterfall. Each step is a minimum or a maximum: the language has no IF.
+    (
+        opening_cash,
+        available,
+        dividends,
+        after_dividends,
+        revolver_drawn,
+        after_revolver,
+        buybacks,
+        cash,
+    ) = m.vectors(
+        forecast,
+        "opening_cash",
+        "available",
+        "dividends",
+        "after_dividends",
+        "revolver_drawn",
+        "after_revolver",
+        "buybacks",
+        "cash",
+    )
     opening_cash.define(lag(cash, seed=start["cash"]))
-    cash.define(opening_cash + cash_from_operations - capex - dividends)
+    # Cash above the minimum once operations and investment are paid for.
+    available.define(opening_cash - use["minimum_cash"] + cash_from_operations - capex)
+    # A dividend up to the target, and only out of cash that is there.
+    dividends.define(minimum(use["dividend"], maximum(available, 0)))
+    after_dividends.define(available - dividends)
+    # Repay the revolver out of a surplus, or draw on it for a shortfall, within its limit.
+    room = use["revolver_limit"] - opening_revolver
+    revolver_drawn.define(maximum(-opening_revolver, minimum(room, -after_dividends)))
+    after_revolver.define(after_dividends + revolver_drawn)
+    # A share of whatever is left over buys back shares; the rest stays as cash.
+    buybacks.define(maximum(after_revolver, 0) * use["buyback_share"])
+    cash.define(use["minimum_cash"] + after_revolver - buybacks)
+    revolver.define(opening_revolver + revolver_drawn)
+
+    opening_equity, equity = m.vectors(forecast, "opening_equity", "equity")
     opening_equity.define(lag(equity, seed=start["equity"]))
-    equity.define(opening_equity + net_income - dividends)
+    equity.define(opening_equity + net_income - dividends - buybacks)
 
     ebitda_state = []
     before = ebitda
@@ -392,8 +433,10 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         "inventory": inventory,
         "ppe": ppe,
         "payables": payables,
+        "revolver": revolver,
         **held,
         "equity": equity,
+        "revolver_drawn": revolver_drawn,
         "opening_cash": opening_cash,
     }
     picked = {
@@ -440,6 +483,8 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         cash_from_operations_cf,
         capex_cf,
         dividends_cf,
+        buybacks_cf,
+        cash_from_financing,
         net_change_in_cash,
     ) = m.vectors(
         forecast,
@@ -447,6 +492,8 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         "cash_from_operations_cf",
         "capex_cf",
         "dividends_cf",
+        "buybacks_cf",
+        "cash_from_financing",
         "net_change_in_cash",
     )
     working_capital_cf.define(-working_capital_increase)
@@ -455,7 +502,9 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     )
     capex_cf.define(-capex)
     dividends_cf.define(-dividends)
-    net_change_in_cash.define(cash_from_operations_cf + capex_cf + dividends_cf)
+    buybacks_cf.define(-buybacks)
+    cash_from_financing.define(flow("revolver_drawn") + dividends_cf + buybacks_cf)
+    net_change_in_cash.define(cash_from_operations_cf + capex_cf + cash_from_financing)
 
     # --- Forecast: ratios that are not part of the statements. -------------------------
     net_debt, debt_to_ebitda, net_debt_to_ebitda, interest_cover = m.vectors(
@@ -465,6 +514,9 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     debt_to_ebitda.define(debt / ebitda_12m)
     net_debt_to_ebitda.define(net_debt / ebitda_12m)
     interest_cover.define(ebitda / interest)
+    revolver_room, liquidity = m.vectors(forecast, "revolver_room", "liquidity")
+    revolver_room.define(use["revolver_limit"] - revolver)
+    liquidity.define(cash + revolver_room)
     return m.build()
 
 
@@ -605,7 +657,10 @@ def data(history: int = HISTORY, forecast: int = FORECAST) -> dict[str, list[flo
         "inventory_days": [110.0],
         "payable_days": [50.0],
         "interest_rate": [0.06],
+        "minimum_cash": [20.0],
         "dividend": [4.0],
+        "revolver_limit": [150.0],
+        "buyback_share": [0.5],
     }
 
 
@@ -613,11 +668,14 @@ def line(label: str, *names: str, fmt: str | None = MONEY, indent: int = 1) -> L
     return Line(label, names, fmt, indent)
 
 
-def statement_lines(suffix: str) -> tuple[Item, ...]:
-    return tuple(
-        line(label, f"{name}{suffix}")
-        for name, label in STATEMENT_COPIES[suffix].items()
-    )
+def part(label: str) -> Line:
+    """The title of a part of a section: a row of no values, indented under the heading."""
+    return Line(label, (), None, 1)
+
+
+def step(label: str, *names: str, fmt: str | None = MONEY) -> Line:
+    """A line within a part of a section."""
+    return Line(label, names, fmt, 2)
 
 
 def workbook() -> Workbook:
@@ -746,41 +804,57 @@ def workbook() -> Workbook:
             Blank(),
             Heading("Roll-forward"),
             line("Days in the quarter", "days", fmt=COUNT),
-            line("Revenue, 1 quarter earlier", "revenue_1q_f"),
-            line("Revenue, 2 quarters earlier", "revenue_2q_f"),
-            line("Revenue, 3 quarters earlier", "revenue_3q_f"),
-            line("Revenue, 4 quarters earlier", "revenue_4q_f"),
-            line("Revenue growth, year on year", "revenue_growth", fmt=PERCENT),
-            line("Revenue", "revenue"),
-            line("Cost of sales", "cost_of_sales"),
-            line("Operating expenses", "operating_expenses"),
-            line("EBITDA", "ebitda"),
-            line("EBITDA, 1 quarter earlier", "ebitda_1q_f"),
-            line("EBITDA, 2 quarters earlier", "ebitda_2q_f"),
-            line("EBITDA, 3 quarters earlier", "ebitda_3q_f"),
-            line("EBITDA, last 12 months", "ebitda_12m"),
-            line("Opening PP&E", "opening_ppe"),
-            line("Capital expenditure", "capex"),
-            line("Depreciation", "depreciation"),
-            line("Closing PP&E", "ppe"),
-            line("Receivables", "receivables"),
-            line("Inventory", "inventory"),
-            line("Payables", "payables"),
-            line("Working capital", "working_capital"),
-            line("Increase in working capital", "working_capital_increase"),
-            *(line(LIABILITIES[name], name) for name in DEBT),
-            line("Debt", "debt"),
-            line("Interest", "interest"),
-            line("Operating profit", "operating_profit"),
-            line("Profit before tax", "profit_before_tax"),
-            line("Tax", "tax"),
-            line("Net income", "net_income"),
-            line("Cash from operations", "cash_from_operations"),
-            line("Dividends", "dividends"),
-            line("Opening cash", "opening_cash"),
-            line("Closing cash", "cash"),
-            line("Opening equity", "opening_equity"),
-            line("Closing equity", "equity"),
+            part("Revenue"),
+            step("1 quarter earlier", "revenue_1q_f"),
+            step("2 quarters earlier", "revenue_2q_f"),
+            step("3 quarters earlier", "revenue_3q_f"),
+            step("4 quarters earlier", "revenue_4q_f"),
+            step("Growth, year on year", "revenue_growth", fmt=PERCENT),
+            step("Revenue", "revenue"),
+            part("Operations"),
+            step("Cost of sales", "cost_of_sales"),
+            step("Operating expenses", "operating_expenses"),
+            step("EBITDA", "ebitda"),
+            step("EBITDA, 1 quarter earlier", "ebitda_1q_f"),
+            step("EBITDA, 2 quarters earlier", "ebitda_2q_f"),
+            step("EBITDA, 3 quarters earlier", "ebitda_3q_f"),
+            step("EBITDA, last 12 months", "ebitda_12m"),
+            part("PP&E"),
+            step("Opening", "opening_ppe"),
+            step("Capital expenditure", "capex"),
+            step("Depreciation", "depreciation"),
+            step("Closing", "ppe"),
+            part("Working capital"),
+            step("Receivables", "receivables"),
+            step("Inventory", "inventory"),
+            step("Payables", "payables"),
+            step("Working capital", "working_capital"),
+            step("Increase", "working_capital_increase"),
+            part("Debt and interest"),
+            step("Opening debt", "opening_debt"),
+            step("Interest", "interest"),
+            *(step(LIABILITIES[name], name) for name in DEBT if name != "revolver"),
+            part("Profit"),
+            step("Operating profit", "operating_profit"),
+            step("Profit before tax", "profit_before_tax"),
+            step("Tax", "tax"),
+            step("Net income", "net_income"),
+            step("Cash from operations", "cash_from_operations"),
+            part("Waterfall"),
+            step("Opening cash", "opening_cash"),
+            step("Available above the minimum", "available"),
+            step("Dividends", "dividends"),
+            step("After dividends", "after_dividends"),
+            step("Opening revolver", "opening_revolver"),
+            step("Revolver drawn (repaid)", "revolver_drawn"),
+            step("Closing revolver", "revolver"),
+            step("After the revolver", "after_revolver"),
+            step("Share buybacks", "buybacks"),
+            step("Closing cash", "cash"),
+            step("Debt", "debt"),
+            part("Equity"),
+            step("Opening", "opening_equity"),
+            step("Closing", "equity"),
             Blank(),
             Heading("Income statement"),
             line("Revenue", "revenue_is"),
@@ -811,16 +885,24 @@ def workbook() -> Workbook:
             line("Change in working capital", "working_capital_cf"),
             line("Cash from operations", "cash_from_operations_cf"),
             line("Capital expenditure", "capex_cf"),
+            line("Revolver drawn (repaid)", "revolver_drawn_cf"),
             line("Dividends", "dividends_cf"),
+            line("Share buybacks", "buybacks_cf"),
+            line("Cash from financing", "cash_from_financing"),
             line("Net change in cash", "net_change_in_cash"),
             line("Opening cash", "opening_cash_cf"),
             line("Closing cash", "cash_cf"),
             Blank(),
             Heading("Ratios"),
-            line("Net debt", "net_debt"),
-            line("Debt / EBITDA, last 12 months", "debt_to_ebitda", fmt=MULTIPLE),
-            line("Net debt / EBITDA", "net_debt_to_ebitda", fmt=MULTIPLE),
-            line("EBITDA / interest, quarter", "interest_cover", fmt=MULTIPLE),
+            part("Leverage"),
+            step("Net debt", "net_debt"),
+            step("Debt / EBITDA, last 12 months", "debt_to_ebitda", fmt=MULTIPLE),
+            step("Net debt / EBITDA", "net_debt_to_ebitda", fmt=MULTIPLE),
+            part("Coverage"),
+            step("EBITDA / interest, quarter", "interest_cover", fmt=MULTIPLE),
+            part("Liquidity"),
+            step("Revolver undrawn", "revolver_room"),
+            step("Cash and undrawn revolver", "liquidity"),
         ),
         start="forecast",
         label_width=34,
