@@ -21,7 +21,7 @@ from ukumari.circuit import Circuit, Kind
 from ukumari.emit import emit, load
 from ukumari.errors import ModelError
 from ukumari.evaluate import cell_values
-from ukumari.layout import Grid, Layout, grid
+from ukumari.layout import Grid, Layout, Workbook, grid
 from ukumari.model import Model
 from ukumari.unroll import Cell, Straight, unroll
 from ukumari.yup import write_yup
@@ -54,7 +54,7 @@ def export(
     model: Model | Circuit,
     inputs: Mapping[str, Sequence[float]],
     extents: Mapping[str, int] | None = None,
-    layout: Layout | None = None,
+    layout: Layout | Workbook | None = None,
     program: ModuleType | None = None,
 ) -> Result[Export, tuple[PipelineError, ...]]:
     """Run a model over one scenario of data, and write it as ``.yup`` and a values CSV.
@@ -75,7 +75,7 @@ def export(
         case Ok(bound):
             pass
     straight = unroll(bound)
-    placed = grid(layout or Layout(), circuit, bound.intervals)
+    placed = grid(layout or Layout(), bound)
     source = emit(circuit)
     runnable = program or load(source)
     outputs = runnable.run({k: list(v) for k, v in inputs.items()}, extents)

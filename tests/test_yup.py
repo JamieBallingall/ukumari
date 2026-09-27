@@ -12,6 +12,7 @@ from yupana.result import Err
 
 from ukumari import Layout, Model, lag, last, maximum, minimum, scalar
 from ukumari.emit import emit, load
+from ukumari.layout import Address
 from ukumari.pipeline import export
 from ukumari.shape import Span
 
@@ -27,8 +28,8 @@ def cells_of(yup: str) -> dict[tuple[int, int], tuple[str, str]]:
 
 def formula(m: Model, data: dict[str, list[float]], name: str) -> str:
     result = export(m, data).unwrap()
-    row, col = result.grid.address(name, 0)
-    return cells_of(result.yup)[(row, col)][0]
+    at = result.grid.address(name, 0)
+    return cells_of(result.yup)[(at.row, at.column)][0]
 
 
 def small() -> tuple[Model, Span]:
@@ -184,8 +185,8 @@ def test_a_scalar_sits_in_the_first_period_column() -> None:
     total = m.vector("total", scalar)
     total.define(last(y) * 2)
     result = export(m, {"k": [1.0], "x": [1.0, 2.0, 3.0]}).unwrap()
-    assert result.grid.address("k", None) == (2, 2)
-    assert result.grid.address("total", None) == (5, 2)
+    assert result.grid.address("k", None) == Address("Model", 2, 2)
+    assert result.grid.address("total", None) == Address("Model", 5, 2)
     assert cells_of(result.yup)[(5, 2)][0] == "=D4*2"
 
 

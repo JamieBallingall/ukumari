@@ -46,13 +46,18 @@ A broken model is refused with every error named at once:
 a cycle of references that no lag crosses: 'a' -> 'b' -> 'a'
 """
 
-from ukumari.layout import Layout
+from ukumari.layout import Blank, Heading, Layout, Line, Sheet, Workbook
 from ukumari.model import Model, lag, last, maximum, minimum
 from ukumari.shape import scalar
 
 __all__ = [
+    "Blank",
+    "Heading",
     "Layout",
+    "Line",
     "Model",
+    "Sheet",
+    "Workbook",
     "lag",
     "last",
     "maximum",
