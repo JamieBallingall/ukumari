@@ -12,7 +12,7 @@ import three_statement
 from models import random_model, three_statement_data
 from yupana.result import Err, Ok
 
-from ukumari import Model, lag, last, minimum, scalar
+from ukumari import Model, lag, last, minimum, power, scalar
 from ukumari.agree import check_agreement, program_cells, same
 from ukumari.bind import (
     Bound,
@@ -263,6 +263,47 @@ def test_errors_and_signed_zeros_agree() -> None:
     assert math.isnan(cells[("q", 1)])  # 0 / -0
     assert same(cells[("lo", 1)], -0.0)  # min(0, -0) is the second argument
     assert math.isnan(cells[("n", values.index(1e308) * len(values) + 7)])
+
+
+def test_powers_and_their_errors_agree() -> None:
+    m = Model()
+    t = m.region("t")
+    m.axis("time", t)
+    a, b = m.input("a", t), m.input("b", t)
+    m.vector("p", t).define(power(a, b))
+    circuit = m.build().unwrap()
+    values = [
+        0.0,
+        -0.0,
+        1.0,
+        -1.0,
+        2.0,
+        -8.0,
+        0.5,
+        1 / 3,
+        -2.5,
+        1e308,
+        5e-324,
+        math.nan,
+    ]
+    pairs = [(x, y) for x in values for y in values]
+    data = {"a": [x for x, _ in pairs], "b": [y for _, y in pairs]}
+    agree(circuit, load(emit(circuit)), data)
+    _, cells = s_cells(circuit, data)
+
+    def at(x: float, y: float) -> float:
+        return cells[("p", values.index(x) * len(values) + values.index(y))]
+
+    assert at(2.0, 0.5) == math.sqrt(2.0)
+    assert at(-8.0, 2.0) == 64.0
+    for x, y in [(0.0, 0.0), (0.0, -1.0), (-8.0, 1 / 3), (1.0, math.nan), (1e308, 2.0)]:
+        assert math.isnan(at(x, y)), (x, y)
+    # The app refuses a negative base to a power of 2**32 - 1 or more, though C does not.
+    near = {"a": [-1.0, -1.0, -1.0], "b": [2.0**32 - 2, 2.0**32 - 1, -(2.0**32 - 1)]}
+    agree(circuit, load(emit(circuit)), near)
+    _, cells = s_cells(circuit, near)
+    assert cells[("p", 0)] == 1.0
+    assert math.isnan(cells[("p", 1)]) and math.isnan(cells[("p", 2)])
 
 
 def random_data(rng: random.Random, n: int) -> list[float]:

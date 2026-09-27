@@ -168,3 +168,13 @@ def minimum(a: Arith | Number, b: Arith | Number) -> Binary:
 def maximum(a: Arith | Number, b: Arith | Number) -> Binary:
     """The larger of two values; either being an error makes the result an error."""
     return Binary(Op.MAX, to_expr(a), to_expr(b))
+
+
+def power(a: Arith | Number, b: Arith | Number) -> Binary:
+    """``a`` raised to the power ``b``, as ``a ** b`` also writes it.
+
+    ``0 ** 0``, ``0`` to a negative power and a negative number to a fractional power
+    are errors, as they are in the spreadsheet app; so is a negative number to a power of
+    4,294,967,295 or more in size, as the app has it.
+    """
+    return Binary(Op.POW, to_expr(a), to_expr(b))

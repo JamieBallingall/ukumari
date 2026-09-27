@@ -10,6 +10,8 @@ single value; an axis is ``(name, regions)``. A problem is a tuple whose first i
 its kind.
 """
 
+import math as _math
+
 import numpy as _np
 
 # --- The data gate -----------------------------------------------------------------------
@@ -154,6 +156,30 @@ def _min(a, b):
 
 def _max(a, b):
     return _np.where(_np.isnan(a) | _np.isnan(b), _np.nan, _np.where(a > b, a, b))
+
+
+def _power(a, b):
+    # C's pow gives 1 for 1 ** NaN and NaN ** 0, so errors are checked first. The app
+    # refuses 0 ** 0, zero to a negative power, and a negative number to a fractional
+    # power or to one of 4,294,967,295 or more in size.
+    if _math.isnan(a) or _math.isnan(b) or (a == 0.0 and b <= 0.0):
+        return _math.nan
+    if a < 0.0 and abs(b) >= 4294967295.0:
+        return _math.nan
+    try:
+        r = _math.pow(a, b)
+    except ValueError, OverflowError:
+        return _math.nan
+    return _math.nan if _math.isinf(r) else r
+
+
+_power_each = _np.frompyfunc(_power, 2, 1)
+
+
+def _pow(a, b):
+    # math.pow on each pair, exactly as the scalar evaluator computes it: NumPy's own power
+    # may round differently on some machines, and the two must agree bit for bit.
+    return _np.asarray(_power_each(a, b), dtype=_np.float64)
 
 
 def _fit(x, rows, columns):

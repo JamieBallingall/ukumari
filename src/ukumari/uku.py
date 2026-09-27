@@ -11,8 +11,8 @@
   defined in, separately, because the schedule breaks ties by it.
 - A shape is ``"scalar"`` or ``{"region": …, "front": n, "back": n}``.
 - An expression is an object tagged by ``"op"``: ``literal``, ``name``, ``last``, ``first``,
-  ``neg``, ``add``, ``sub``, ``mul``, ``div``, ``min``, ``max`` or ``lag``. A ``lag`` has a
-  ``body`` and, when seeded, a ``seed``.
+  ``neg``, ``add``, ``sub``, ``mul``, ``div``, ``min``, ``max``, ``power`` or ``lag``. A
+  ``lag`` has a ``body`` and, when seeded, a ``seed``.
 - A literal is a string holding a rational, such as ``"1/10"``, because a JSON number is a
   double. A reference is a bare name, so a file cannot contradict its own declarations
   about what is an input.

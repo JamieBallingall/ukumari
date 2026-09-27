@@ -47,7 +47,7 @@ a cycle of references that no lag crosses: 'a' -> 'b' -> 'a'
 """
 
 from ukumari.layout import Blank, Heading, Layout, Line, Sheet, Workbook
-from ukumari.model import Model, first, lag, last, maximum, minimum
+from ukumari.model import Model, first, lag, last, maximum, minimum, power
 from ukumari.shape import scalar
 
 __all__ = [
@@ -63,5 +63,6 @@ __all__ = [
     "last",
     "maximum",
     "minimum",
+    "power",
     "scalar",
 ]

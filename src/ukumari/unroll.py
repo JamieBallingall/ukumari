@@ -50,6 +50,7 @@ class Prim(StrEnum):
     DIV = "div"
     MIN = "min"
     MAX = "max"
+    POW = "power"
 
 
 @dataclass(frozen=True, slots=True)

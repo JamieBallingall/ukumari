@@ -37,10 +37,11 @@ from ukumari.bind import Bound
 from ukumari.layout import Address, Grid, column_letters
 from ukumari.unroll import Cell, Const, Element, Operation, Prim, Straight
 
-_SYMBOL = {Prim.ADD: "+", Prim.SUB: "-", Prim.MUL: "*", Prim.DIV: "/"}
+_SYMBOL = {Prim.ADD: "+", Prim.SUB: "-", Prim.MUL: "*", Prim.DIV: "/", Prim.POW: "^"}
 _BINDING = {Prim.ADD: 1, Prim.SUB: 1, Prim.MUL: 2, Prim.DIV: 2}
-_NEGATION = 3
-_ATOM = 4
+_POWER = 3
+_NEGATION = 4
+_ATOM = 5
 
 
 def literal(value: float) -> str:
@@ -143,6 +144,17 @@ def write_yup(
                 left, _ = render(a, cell, False)
                 right, _ = render(b, cell, False)
                 return f"{prim.upper()}({left},{right})", _ATOM
+            case Operation(Prim.POW, (a, b)):
+                # The app binds negation more tightly than ^ (=-2^2 is 4) and reads a^b^c
+                # from the left, so every operand but a reference, a call or a number is
+                # bracketed, and so is the power itself wherever it is negated.
+                left, left_binding = render(a, cell, False)
+                right, right_binding = render(b, cell, False)
+                if left_binding < _ATOM:
+                    left = f"({left})"
+                if right_binding < _ATOM:
+                    right = f"({right})"
+                return f"{left}^{right}", _POWER
             case Operation(prim, (a, b)):
                 binding = _BINDING[prim]
                 left, left_binding = render(a, cell, False)

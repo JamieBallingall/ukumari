@@ -8,6 +8,9 @@ from ukumari.circuit import Equation
 from ukumari.expr import Binary, Expr, First, Lag, Last, Literal, Neg, Op, Ref, walk
 from ukumari.shape import Axis, Scalar, Shape, Span, scalar
 
+OPS = [op for op in Op if op is not Op.POW]
+"""The operations drawn at random, in the order they were before power existed."""
+
 
 def random_model(
     rng: random.Random, friendly: bool = False
@@ -45,6 +48,7 @@ def random_model(
         return list(inputs) + [f"v{j}" for j in range(defining) if f"v{j}" in closed]
 
     reductions = itertools.count()
+    operations = itertools.count()
 
     def reduction(name: str) -> Expr:
         # Every third reduction is first() rather than last(). Choosing it by count, not by
@@ -80,8 +84,13 @@ def random_model(
         if pick < 0.15:
             return Neg(expression(defining, depth - 1, lagged))
         if pick < 0.5:
+            op = rng.choice(OPS)
+            # Every fifth operation is power. Choosing it by count, not by a random draw,
+            # leaves the random stream, and so every model's shape, as it was.
+            if next(operations) % 5 == 4:
+                op = Op.POW
             return Binary(
-                rng.choice(list(Op)),
+                op,
                 expression(defining, depth - 1, lagged),
                 expression(defining, depth - 1, lagged),
             )

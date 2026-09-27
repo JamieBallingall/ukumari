@@ -46,6 +46,7 @@ _HELPERS = {
     Op.DIV: "_div",
     Op.MIN: "_min",
     Op.MAX: "_max",
+    Op.POW: "_pow",
 }
 
 

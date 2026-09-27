@@ -31,6 +31,7 @@ class Op(StrEnum):
     DIV = "div"
     MIN = "min"
     MAX = "max"
+    POW = "power"
 
 
 type Number = int | float | Fraction | Decimal
@@ -78,6 +79,12 @@ class Arith:
 
     def __rtruediv__(self, other: Number) -> Binary:
         return Binary(Op.DIV, to_expr(other), self.expression())
+
+    def __pow__(self, other: Arith | Number) -> Binary:
+        return Binary(Op.POW, self.expression(), to_expr(other))
+
+    def __rpow__(self, other: Number) -> Binary:
+        return Binary(Op.POW, to_expr(other), self.expression())
 
     def __neg__(self) -> Neg:
         return Neg(self.expression())

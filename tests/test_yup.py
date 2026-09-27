@@ -10,7 +10,17 @@ import three_statement
 from yupana import PREAMBLE, YupError
 from yupana.result import Err
 
-from ukumari import Layout, Model, first, lag, last, maximum, minimum, scalar
+from ukumari import (
+    Layout,
+    Model,
+    first,
+    lag,
+    last,
+    maximum,
+    minimum,
+    power,
+    scalar,
+)
 from ukumari.emit import emit, load
 from ukumari.layout import Address
 from ukumari.pipeline import export
@@ -72,6 +82,36 @@ def test_parentheses_only_where_needed() -> None:
         "negative_literal": "=B2*(-5)",
         "min_max": "=MAX(MIN(B2,B3),B4)+1",
         "decimal": "=B2*0.1+1E-05",
+    }
+
+
+def test_a_power_brackets_everything_but_its_atoms() -> None:
+    # The app binds negation more tightly than ^, so =-B2^2 would square -B2.
+    m, t = small()
+    a, b, c = m.input("a", t), m.input("b", t), m.input("c", t)
+    cases = {
+        "rate": (a / b) ** (1 / c) - 1,
+        "neg_power": -(a**2),
+        "power_of_neg": (-a) ** 2,
+        "product": a * b**c,
+        "negative_exponent": a**-1,
+        "left": power(power(a, b), c),
+        "right": a ** (b**c),
+        "plain": 2**a,
+    }
+    for name, body in cases.items():
+        m.vector(name, t).define(body)
+    data = {"a": [4.0], "b": [2.0], "c": [2.0]}
+    got = {name: formula(m, data, name) for name in cases}
+    assert got == {
+        "rate": "=(B2/B3)^(1/B4)-1",
+        "neg_power": "=-(B2^2)",
+        "power_of_neg": "=(-B2)^2",
+        "product": "=B2*B3^B4",
+        "negative_exponent": "=B2^(-1)",
+        "left": "=(B2^B3)^B4",
+        "right": "=B2^(B3^B4)",
+        "plain": "=2^B2",
     }
 
 
