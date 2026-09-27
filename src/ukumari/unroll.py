@@ -73,11 +73,17 @@ class Straight:
 
     ``cells`` is in unroll order. A node's origin is the first cell, in that order, whose
     root is that node; a node built only inside a larger expression has none.
+
+    ``sources`` maps a cell whose equation, written out at its position, is a bare
+    reference (a copy, the previous position of a lag, a seed, a reduction) to the cell that
+    reference reads. So a copy of a copy knows what it copies, not merely which cell held
+    the value first.
     """
 
     nodes: tuple[Node, ...]
     cells: Mapping[Cell, int]
     origins: Mapping[int, Cell]
+    sources: Mapping[Cell, Cell]
 
 
 def unroll(bound: Bound) -> Straight:
@@ -88,6 +94,7 @@ def unroll(bound: Bound) -> Straight:
     shared: dict[Operation, int] = {}
     cells: dict[Cell, int] = {}
     origins: dict[int, Cell] = {}
+    sources: dict[Cell, Cell] = {}
 
     def new(node: Node) -> int:
         nodes.append(node)
@@ -106,6 +113,23 @@ def unroll(bound: Bound) -> Straight:
         interval = bound.intervals[name]
         assert interval is not None, "a checked model never reduces a single value"
         return (name, interval.stop - 1)
+
+    def read(e: Expr) -> Cell | None:
+        """The cell a bare reference reads; None for anything else."""
+        match e:
+            case Ref(name):
+                return (name, None)
+            case At(name, position):
+                return (name, position)
+            case Last(name):
+                return last_cell(name)
+            case _:
+                return None
+
+    def define(cell: Cell, e: Expr) -> None:
+        hold(cell, build(e))
+        if (source := read(e)) is not None:
+            sources[cell] = source
 
     def build(e: Expr) -> int:
         match e:
@@ -151,7 +175,7 @@ def unroll(bound: Bound) -> Straight:
             if bound.intervals[name] is None:
                 match bound.equations[name]:
                     case Whole(expression):
-                        hold((name, None), build(expression))
+                        define((name, None), expression)
                     case Written():
                         raise AssertionError("a single value is never written out")
         for axis in circuit.axes:
@@ -165,5 +189,5 @@ def unroll(bound: Bound) -> Straight:
             for t in range(extent):
                 for name, interval in on_axis:
                     if interval.start <= t < interval.stop:
-                        hold((name, t), build(written(name, t)))
-    return Straight(tuple(nodes), cells, origins)
+                        define((name, t), written(name, t))
+    return Straight(tuple(nodes), cells, origins, sources)

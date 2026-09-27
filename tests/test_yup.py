@@ -88,6 +88,24 @@ def test_formulas_reference_the_same_period_and_share_the_lag_edge() -> None:
     assert cells[(5, 3)][0] == "=MIN(C3,C4)"
 
 
+def test_a_copy_links_to_the_cell_it_copies() -> None:
+    m, t = small()
+    k = m.input("k", scalar)
+    a = m.input("a", t)
+    b, c, stretched = m.vectors(t, "b", "c", "stretched")
+    b.define(a)
+    c.define(b)
+    stretched.define(k)
+    result = export(m, {"k": [2.0], "a": [1.0, 3.0]}).unwrap()
+    cells = cells_of(result.yup)
+    # Rows: 2 k, 3 a, 4 b, 5 c, 6 stretched.
+    assert [cells[(row, 3)][0] for row in (4, 5, 6)] == ["=C3", "=C4", "=B2"]
+    total = m.vector("total", scalar)
+    total.define(last(c))
+    cells = cells_of(export(m, {"k": [2.0], "a": [1.0, 3.0]}).unwrap().yup)
+    assert cells[(7, 2)][0] == "=C5"  # the last of c, not the input c copies
+
+
 def test_every_formula_refers_only_to_earlier_lines() -> None:
     result = export(
         three_statement.build().unwrap(),

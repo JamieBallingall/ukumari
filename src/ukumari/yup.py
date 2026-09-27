@@ -1,7 +1,9 @@
 """β₁: writing S and a layout as ``.yup``, and the values CSV beside it.
 
 - **Which cell holds the formula for a node:** its origin. Another cell holding the same node
-  (the lag edge: ``opening[1]`` is ``closing[0]``) points at the origin: ``=B7``.
+  links to the cell its equation reads, when that is a bare reference: the lag edge
+  ``opening[1]`` is ``closing[0]``, so it is ``=B7``, and a copy of a copy links to the copy
+  it was made from. Any other cell holding the node links to the origin.
 - **Which cell a formula references for a node:** the one in the same period column where
   there is one, otherwise the origin. So ``closing[1] = opening[1] − payment[1]`` is written
   ``=C3-C4``, with both operands from the period-1 column, as a modeller writes it.
@@ -135,7 +137,7 @@ def write_yup(
         node = s.cells[cell]
         origin = s.origins[node]
         if cell != origin:
-            row, col = address[origin]
+            row, col = address[s.sources.get(cell, origin)]
             return f"={column_letters(col)}{row}"
         match s.nodes[node]:
             case Const(value):
