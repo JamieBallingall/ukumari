@@ -131,14 +131,14 @@ def test_copies_link_across_sheets_and_formulas_read_local_copies() -> None:
     cells = cells_of(result)
     # A stretched single value links to it; a copy on another sheet links to the same
     # quarter of the row it copies.
-    assert cells[("Inputs", 7, 5)][0] == "=B7"
+    assert cells[("Inputs", 7, 5)][0] == "=$B$7"
     assert cells[("Forecast", 2, 3)][0] == "='Inputs'!E7"
     assert cells[("Forecast", 1, 4)][0] == "='Inputs'!F6"
     assert cells[("Actuals", 2, 3)][0] == "='Inputs'!C4"
     # The last of the copy, not the input it copies.
     assert cells[("Actuals", 3, 2)][0] == "=D2"
     # The seed is the single value the model names; the rest reads this sheet's own copies.
-    assert cells[("Forecast", 4, 3)][0] == "='Actuals'!B3*(1+C1)"
+    assert cells[("Forecast", 4, 3)][0] == "='Actuals'!$B$3*(1+C1)"
     assert cells[("Forecast", 4, 4)][0] == "=C4*(1+D1)"
     assert cells[("Forecast", 5, 5)][0] == "=E4*E2"
     assert result.xlsx().is_ok()

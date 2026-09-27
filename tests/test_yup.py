@@ -83,7 +83,7 @@ def test_formulas_reference_the_same_period_and_share_the_lag_edge() -> None:
     ).unwrap()
     cells = cells_of(result.yup)
     # Rows: 2 principal, 3 scheduled, 4 opening, 5 payment, 6 closing.
-    assert cells[(4, 2)][0] == "=B2"  # opening[0] is the principal: points at it
+    assert cells[(4, 2)][0] == "=$B$2"  # opening[0] is the principal: points at it
     assert cells[(4, 3)][0] == "=B6"  # opening[1] is closing[0]: points at it
     assert cells[(6, 3)][0] == "=C4-C5"  # both operands from the period-1 column
     assert cells[(5, 3)][0] == "=MIN(C3,C4)"
@@ -102,7 +102,7 @@ def test_a_copy_links_to_the_cell_it_copies() -> None:
     result = export(m, {"k": [2.0], "a": [1.0, 3.0]}).unwrap()
     cells = cells_of(result.yup)
     # Rows: 2 k, 3 a, 4 b, 5 c, 6 stretched.
-    assert [cells[(row, 3)][0] for row in (4, 5, 6)] == ["=C3", "=C4", "=B2"]
+    assert [cells[(row, 3)][0] for row in (4, 5, 6)] == ["=C3", "=C4", "=$B$2"]
     total = m.vector("total", scalar)
     total.define(last(c))
     cells = cells_of(export(m, {"k": [2.0], "a": [1.0, 3.0]}).unwrap().yup)

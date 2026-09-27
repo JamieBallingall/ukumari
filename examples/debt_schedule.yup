@@ -11,7 +11,7 @@ Model	4	1	$Opening balance
 Model	5	1	$Payment	indent=1
 Model	6	1	$Closing balance	
 Model	2	2	#100.0	numberformat=#,##0.00
-Model	4	2	=B2	numberformat=#,##0.00
+Model	4	2	=$B$2	numberformat=#,##0.00
 Model	3	2	#30.0	numberformat=#,##0.00
 Model	3	3	#30.0	numberformat=#,##0.00
 Model	3	4	#30.0	numberformat=#,##0.00

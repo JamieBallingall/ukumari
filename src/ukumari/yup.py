@@ -14,6 +14,8 @@
   a formula reads a copy on its own sheet in preference to the row it was copied from.
 - **A reference to another sheet** names it in single quotes, ``'Assumptions'!C8``, with
   any apostrophe doubled.
+- **A reference to a single value is absolute**, ``$B$7``, as a modeller writes a link to
+  an assumption, so a row that uses it reads the same in every column.
 - **A cell's formula renders its node's expression.** Every operand node that has a cell
   becomes a reference; operand nodes without one are written inline, so a whole subtree
   becomes ``=B2*C2+D2``, not one cell per operation.
@@ -102,7 +104,8 @@ def write_yup(
     def link(target: Cell, here: Address) -> str:
         at = address[target]
         prefix = "" if at.sheet == here.sheet else sheet_prefix(at.sheet)
-        return f"{prefix}{column_letters(at.column)}{at.row}"
+        anchor = "$" if target[1] is None else ""
+        return f"{prefix}{anchor}{column_letters(at.column)}{anchor}{at.row}"
 
     def reference(node: int, cell: Cell) -> str:
         here = address[cell]
