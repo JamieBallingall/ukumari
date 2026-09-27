@@ -45,11 +45,18 @@ the data.
 
 ## Install from source
 
+ukumari depends on yupana, which is not yet on PyPI, so clone the two side by side:
+
 ```bash
-git clone <this repository> && cd ukumari
+git clone <yupana's repository> yupana
+git clone <this repository> ukumari
+cd ukumari
 uv sync
 uv run pytest
 ```
+
+The tests that have the spreadsheet app check a workbook need Windows with the app installed,
+and run only when `UKUMARI_APP_TESTS=1` is set.
 
 ## The examples
 

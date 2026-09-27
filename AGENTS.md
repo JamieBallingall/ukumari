@@ -63,7 +63,8 @@ read the other one, but never change it from here.
 
 - Dependencies are `yupana` and NumPy; pandas never. Nothing Windows-specific, not even for
   development. `ukumari` never imports `yupana`'s oracle: a test marked `app` runs it as an
-  external command, and is skipped unless on Windows with `../yupana` present.
+  external command, and is skipped unless on Windows with `../yupana` present and
+  `UKUMARI_APP_TESTS=1` set, since running it syncs `../yupana`'s environment.
 - No text from a model ever becomes code. Emitted programs use generated identifiers, and names
   appear in them only as `repr` string literals. Generated code is executed in one place only.
 - The emitted NumPy program and the scalar-circuit evaluator agree bit for bit. A disagreement is
