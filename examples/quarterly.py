@@ -24,8 +24,15 @@ Cash runs through a waterfall every quarter. Whatever is above a minimum balance
 operations and investment are paid for, pays a dividend up to a target; what is left repays
 the revolver, or the revolver covers a shortfall up to its limit; and a share of anything
 left over buys back shares. There is no IF in the language, so every step is a minimum or a
-maximum. The bonds and the term loan stay where they were at the last reported quarter, for
-now. The balance sheet balances by construction in every quarter.
+maximum.
+
+The debt is two bonds and two floating loans. Each bond pays a fixed coupon and is repaid
+whole at maturity: its quarters to maturity count down one a quarter, and, with no
+comparisons in the language, it is outstanding for ``min(1, max(0, quarters left))`` of its
+face. The term loan and the revolver pay a margin over a base rate that the assumptions set
+quarter by quarter, so the model's interest follows rates. Interest is on opening balances,
+so there is no circular reference. The balance sheet balances by construction in every
+quarter.
 """
 
 from datetime import date
@@ -98,7 +105,7 @@ DEBT = ("revolver", "bond_a", "bond_b", "term_loan")
 
 # Single values on the Assumptions sheet, each stretched across the forecast: model name,
 # label and number format.
-STRETCHED = {
+OPERATIONS = {
     "cost_of_sales_pct": ("Cost of sales, % of revenue", PERCENT),
     "operating_expenses_pct": ("Operating expenses, % of revenue", PERCENT),
     "depreciation_rate": ("Depreciation, % of opening PP&E", PERCENT),
@@ -107,11 +114,24 @@ STRETCHED = {
     "receivable_days": ("Receivables, days of revenue", DAYS),
     "inventory_days": ("Inventory, days of cost of sales", DAYS),
     "payable_days": ("Payables, days of cost of sales", DAYS),
-    "interest_rate": ("Interest, % a year of opening debt", PERCENT),
+}
+FINANCING = {
+    "bond_a_coupon": ("Bond A coupon", PERCENT),
+    "bond_b_coupon": ("Bond B coupon", PERCENT),
+    "term_loan_margin": ("Term loan, margin over base rate", PERCENT),
+    "term_loan_repayment": ("Term loan, repayment a quarter", MONEY),
+    "revolver_margin": ("Revolver, margin over base rate", PERCENT),
+    "revolver_limit": ("Revolver limit", MONEY),
     "minimum_cash": ("Minimum cash", MONEY),
     "dividend": ("Target dividend a quarter", MONEY),
-    "revolver_limit": ("Revolver limit", MONEY),
     "buyback_share": ("Share buybacks, % of cash left over", PERCENT),
+}
+STRETCHED = OPERATIONS | FINANCING
+
+# Single values used once, as the seed of a countdown, so never stretched.
+MATURITIES = {
+    "bond_a_quarters": "Bond A, quarters to maturity",
+    "bond_b_quarters": "Bond B, quarters to maturity",
 }
 
 # Lines of the three statements that are copies of the roll-forward: model name and label.
@@ -212,6 +232,8 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     # --- Assumptions: inputs for the forecast, single values stretched across it. -------
     quarter_end = m.input("quarter_end", forecast)
     growth_adjustment = m.input("growth_adjustment", forecast)
+    base_rate = m.input("base_rate", forecast)
+    maturity = {name: m.input(name, scalar) for name in MATURITIES}
     stretched: dict[str, Declared] = {}
     for name in STRETCHED:
         stretched[name] = m.vector(f"{name}_stretched", forecast)
@@ -276,6 +298,8 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     # --- Forecast: copies of the assumptions and of the initial state. ------------------
     quarter_end_f = copy("quarter_end_f", quarter_end)
     growth_adjustment_f = copy("growth_adjustment_f", growth_adjustment)
+    base_rate_f = copy("base_rate_f", base_rate)
+    maturity_f = {name: copy(f"{name}_f", value) for name, value in maturity.items()}
     use = {name: copy(f"{name}_f", row) for name, row in stretched.items()}
     start_quarter_end_f = copy("start_quarter_end_f", start_quarter_end)
     cagr_f = copy("cagr_f", cagr)
@@ -336,24 +360,61 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         working_capital - lag(working_capital, seed=start_working_capital)
     )
 
-    # The bonds and the term loan stay where they were at the last reported quarter, for
-    # now; the revolver moves with the waterfall below.
-    held = {name: m.vector(name, forecast) for name in DEBT if name != "revolver"}
-    for name, row in held.items():
-        row.define(start[name])
-    opening_revolver, revolver = m.vectors(forecast, "opening_revolver", "revolver")
+    # A bond is repaid whole at maturity. Its quarters to maturity count down one a
+    # quarter, and, with no comparisons in the language, it is outstanding for
+    # min(1, max(0, quarters left)) of its face: all of it until maturity, then none.
+    def bond(name: str) -> tuple[Declared, Declared, Declared]:
+        left, opening, closing, repaid, interest = m.vectors(
+            forecast,
+            f"{name}_quarters_left",
+            f"opening_{name}",
+            name,
+            f"{name}_repaid",
+            f"{name}_interest",
+        )
+        left.define(lag(left, seed=maturity_f[f"{name}_quarters"]) - 1)
+        opening.define(lag(closing, seed=start[name]))
+        closing.define(start[name] * minimum(1, maximum(left, 0)))
+        repaid.define(opening - closing)
+        interest.define(opening * use[f"{name}_coupon"] / 4)
+        return closing, repaid, interest
+
+    bond_a, bond_a_repaid, bond_a_interest = bond("bond_a")
+    bond_b, bond_b_repaid, bond_b_interest = bond("bond_b")
+
+    # The term loan repays a fixed amount a quarter, until nothing is left, and floats.
+    opening_term_loan, term_loan_repaid, term_loan, term_loan_interest = m.vectors(
+        forecast,
+        "opening_term_loan",
+        "term_loan_repaid",
+        "term_loan",
+        "term_loan_interest",
+    )
+    opening_term_loan.define(lag(term_loan, seed=start["term_loan"]))
+    term_loan_repaid.define(minimum(use["term_loan_repayment"], opening_term_loan))
+    term_loan.define(opening_term_loan - term_loan_repaid)
+    term_loan_interest.define(
+        opening_term_loan * (base_rate_f + use["term_loan_margin"]) / 4
+    )
+
+    # The revolver moves with the waterfall below, and floats too. Interest is on opening
+    # balances, so the revolver drawn this quarter costs nothing until the next: no
+    # circular reference.
+    opening_revolver, revolver, revolver_interest = m.vectors(
+        forecast, "opening_revolver", "revolver", "revolver_interest"
+    )
     opening_revolver.define(lag(revolver, seed=start["revolver"]))
-    opening_debt, debt, interest = m.vectors(
-        forecast, "opening_debt", "debt", "interest"
+    revolver_interest.define(
+        opening_revolver * (base_rate_f + use["revolver_margin"]) / 4
     )
-    debt.define(revolver + held["bond_a"] + held["bond_b"] + held["term_loan"])
-    start_debt = (
-        start["revolver"] + start["bond_a"] + start["bond_b"] + start["term_loan"]
+    scheduled_repayment, interest, debt = m.vectors(
+        forecast, "scheduled_repayment", "interest", "debt"
     )
-    # Interest on the opening balance, so the revolver drawn this quarter costs nothing
-    # until the next: no circular reference.
-    opening_debt.define(lag(debt, seed=start_debt))
-    interest.define(opening_debt * use["interest_rate"] / 4)
+    scheduled_repayment.define(bond_a_repaid + bond_b_repaid + term_loan_repaid)
+    interest.define(
+        bond_a_interest + bond_b_interest + term_loan_interest + revolver_interest
+    )
+    debt.define(revolver + bond_a + bond_b + term_loan)
 
     operating_profit, profit_before_tax, tax, net_income = m.vectors(
         forecast, "operating_profit", "profit_before_tax", "tax", "net_income"
@@ -388,8 +449,15 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         "cash",
     )
     opening_cash.define(lag(cash, seed=start["cash"]))
-    # Cash above the minimum once operations and investment are paid for.
-    available.define(opening_cash - use["minimum_cash"] + cash_from_operations - capex)
+    # Cash above the minimum once operations, investment and the debt falling due are paid
+    # for.
+    available.define(
+        opening_cash
+        - use["minimum_cash"]
+        + cash_from_operations
+        - capex
+        - scheduled_repayment
+    )
     # A dividend up to the target, and only out of cash that is there.
     dividends.define(minimum(use["dividend"], maximum(available, 0)))
     after_dividends.define(available - dividends)
@@ -434,7 +502,9 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         "ppe": ppe,
         "payables": payables,
         "revolver": revolver,
-        **held,
+        "bond_a": bond_a,
+        "bond_b": bond_b,
+        "term_loan": term_loan,
         "equity": equity,
         "revolver_drawn": revolver_drawn,
         "opening_cash": opening_cash,
@@ -482,6 +552,7 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         working_capital_cf,
         cash_from_operations_cf,
         capex_cf,
+        debt_repaid_cf,
         dividends_cf,
         buybacks_cf,
         cash_from_financing,
@@ -491,6 +562,7 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         "working_capital_cf",
         "cash_from_operations_cf",
         "capex_cf",
+        "debt_repaid_cf",
         "dividends_cf",
         "buybacks_cf",
         "cash_from_financing",
@@ -501,9 +573,12 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
         flow("net_income") + flow("depreciation") + working_capital_cf
     )
     capex_cf.define(-capex)
+    debt_repaid_cf.define(-scheduled_repayment)
     dividends_cf.define(-dividends)
     buybacks_cf.define(-buybacks)
-    cash_from_financing.define(flow("revolver_drawn") + dividends_cf + buybacks_cf)
+    cash_from_financing.define(
+        debt_repaid_cf + flow("revolver_drawn") + dividends_cf + buybacks_cf
+    )
     net_change_in_cash.define(cash_from_operations_cf + capex_cf + cash_from_financing)
 
     # --- Forecast: ratios that are not part of the statements. -------------------------
@@ -648,6 +723,8 @@ def data(history: int = HISTORY, forecast: int = FORECAST) -> dict[str, list[flo
         **reported_quarters,
         "quarter_end": [serial(d) for d in quarter_ends(2026, forecast)],
         "growth_adjustment": [0.0] * forecast,
+        # Rates fall a quarter point a quarter to 3%, and stay there.
+        "base_rate": [max(0.03, 0.04 - 0.0025 * t) for t in range(forecast)],
         "cost_of_sales_pct": [0.60],
         "operating_expenses_pct": [0.22],
         "depreciation_rate": [0.025],
@@ -656,11 +733,18 @@ def data(history: int = HISTORY, forecast: int = FORECAST) -> dict[str, list[flo
         "receivable_days": [55.0],
         "inventory_days": [110.0],
         "payable_days": [50.0],
-        "interest_rate": [0.06],
+        "bond_a_coupon": [0.0475],
+        "bond_b_coupon": [0.06],
+        "term_loan_margin": [0.025],
+        "term_loan_repayment": [2.5],
+        "revolver_margin": [0.0175],
+        "revolver_limit": [150.0],
         "minimum_cash": [20.0],
         "dividend": [4.0],
-        "revolver_limit": [150.0],
         "buyback_share": [0.5],
+        # Bond A is repaid at the end of 2027, and bond B in the middle of 2030.
+        "bond_a_quarters": [8.0],
+        "bond_b_quarters": [18.0],
     }
 
 
@@ -719,11 +803,19 @@ def workbook() -> Workbook:
             Heading("Revenue"),
             line("Growth adjustment, year on year", "growth_adjustment", fmt=PERCENT),
             Blank(),
-            Heading("Operations and financing"),
+            Heading("Operations"),
             *(
                 line(label, name, f"{name}_stretched", fmt=fmt)
-                for name, (label, fmt) in STRETCHED.items()
+                for name, (label, fmt) in OPERATIONS.items()
             ),
+            Blank(),
+            Heading("Financing"),
+            line("Base rate", "base_rate", fmt=PERCENT),
+            *(
+                line(label, name, f"{name}_stretched", fmt=fmt)
+                for name, (label, fmt) in FINANCING.items()
+            ),
+            *(line(label, name, fmt=COUNT) for name, label in MATURITIES.items()),
         ),
         start="forecast",
         label_width=36,
@@ -787,7 +879,16 @@ def workbook() -> Workbook:
             line("Revenue growth adjustment", "growth_adjustment_f", fmt=PERCENT),
             *(
                 line(label, f"{name}_f", fmt=fmt)
-                for name, (label, fmt) in STRETCHED.items()
+                for name, (label, fmt) in OPERATIONS.items()
+            ),
+            line("Base rate", "base_rate_f", fmt=PERCENT),
+            *(
+                line(label, f"{name}_f", fmt=fmt)
+                for name, (label, fmt) in FINANCING.items()
+            ),
+            *(
+                line(label, f"{name}_f", fmt=COUNT)
+                for name, label in MATURITIES.items()
             ),
             Blank(),
             Heading("Initial state"),
@@ -830,10 +931,27 @@ def workbook() -> Workbook:
             step("Payables", "payables"),
             step("Working capital", "working_capital"),
             step("Increase", "working_capital_increase"),
-            part("Debt and interest"),
-            step("Opening debt", "opening_debt"),
-            step("Interest", "interest"),
-            *(step(LIABILITIES[name], name) for name in DEBT if name != "revolver"),
+            *(
+                row
+                for name in ("bond_a", "bond_b")
+                for row in (
+                    part(LIABILITIES[name]),
+                    step("Quarters to maturity", f"{name}_quarters_left", fmt=COUNT),
+                    step("Opening", f"opening_{name}"),
+                    step("Repaid", f"{name}_repaid"),
+                    step("Closing", name),
+                )
+            ),
+            part("Term loan"),
+            step("Opening", "opening_term_loan"),
+            step("Repaid", "term_loan_repaid"),
+            step("Closing", "term_loan"),
+            part("Interest"),
+            step("Bond A", "bond_a_interest"),
+            step("Bond B", "bond_b_interest"),
+            step("Term loan", "term_loan_interest"),
+            step("Revolver", "revolver_interest"),
+            step("Total", "interest"),
             part("Profit"),
             step("Operating profit", "operating_profit"),
             step("Profit before tax", "profit_before_tax"),
@@ -842,6 +960,7 @@ def workbook() -> Workbook:
             step("Cash from operations", "cash_from_operations"),
             part("Waterfall"),
             step("Opening cash", "opening_cash"),
+            step("Debt falling due", "scheduled_repayment"),
             step("Available above the minimum", "available"),
             step("Dividends", "dividends"),
             step("After dividends", "after_dividends"),
@@ -885,6 +1004,7 @@ def workbook() -> Workbook:
             line("Change in working capital", "working_capital_cf"),
             line("Cash from operations", "cash_from_operations_cf"),
             line("Capital expenditure", "capex_cf"),
+            line("Debt repaid", "debt_repaid_cf"),
             line("Revolver drawn (repaid)", "revolver_drawn_cf"),
             line("Dividends", "dividends_cf"),
             line("Share buybacks", "buybacks_cf"),

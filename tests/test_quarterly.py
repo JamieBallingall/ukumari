@@ -49,8 +49,35 @@ def test_the_waterfall_keeps_its_limits() -> None:
     assert all(b >= 0.0 for b in out["buybacks"][0])
     # Cash is at least the minimum, since the revolver never runs out here.
     assert all(c >= floor - 1e-9 for c in out["cash"][0])
-    # The revolver is drawn in the first half of every year and repaid in the second.
-    assert revolver.max() > 20 and revolver[2::4].max() == 0.0
+    # The revolver peaks in the second quarter of every year, as inventory builds.
+    for year in range(len(revolver) // 4):
+        quarters = revolver[4 * year : 4 * year + 4].tolist()
+        assert max(quarters) == quarters[1]
+
+
+def test_each_bond_is_repaid_whole_at_maturity() -> None:
+    data = quarterly.data()
+    out = load(emit(quarterly.build().unwrap())).run(data)
+    for name in ("bond_a", "bond_b"):
+        face = data[f"{name}_actual"][-1]
+        due = int(data[f"{name}_quarters"][0])
+        assert out[name][0].tolist() == [face] * (due - 1) + [0.0] * (20 - due + 1)
+        repaid = out[f"{name}_repaid"][0].tolist()
+        assert repaid == [0.0] * (due - 1) + [face] + [0.0] * (20 - due)
+
+
+def test_the_floating_debt_follows_the_base_rate() -> None:
+    data = quarterly.data()
+    program = load(emit(quarterly.build().unwrap()))
+    base = program.run(data)
+    higher = program.run(data | {"base_rate": [r + 0.01 for r in data["base_rate"]]})
+    # A point more on the base rate is a quarter of a point more a quarter on the term
+    # loan's opening balance, from the first quarter, before any other change feeds back.
+    opening = base["opening_term_loan"][0, 0]
+    extra = higher["term_loan_interest"][0, 0] - base["term_loan_interest"][0, 0]
+    assert extra == pytest.approx(opening * 0.01 / 4, rel=1e-12)
+    assert higher["interest"][0].sum() > base["interest"][0].sum()
+    assert higher["net_income"][0].sum() < base["net_income"][0].sum()
 
 
 def test_it_has_no_fixed_horizon() -> None:
