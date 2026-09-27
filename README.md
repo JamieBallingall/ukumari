@@ -64,6 +64,10 @@ and run only when `UKUMARI_APP_TESTS=1` is set.
 - `examples/three_statement.py`: a three-statement model of a fictional company (every figure is
   made up). It balances by construction, in every year, at any horizon.
 - `examples/three_statement_sweep.py`: the same model over 1,000 growth scenarios in one call.
+- `examples/quarterly.py`: a quarterly three-statement model of a fictional maker of garden
+  equipment, over four sheets: the reported history, the assumptions, an analysis of the
+  history, and the forecast. Revenue keeps its seasons, growing on the same quarter a year
+  earlier at the history's compound annual growth.
 
 Each example writes its model (`.uku`), its workbook cells (`.yup`), their values and a workbook
 to `target/`: `uv run python examples/three_statement.py`.
