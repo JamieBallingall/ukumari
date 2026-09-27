@@ -69,7 +69,7 @@ from ukumari.pipeline import export
 from ukumari.shape import Span
 from ukumari.uku import write_uku
 
-MONEY = "_(#,##0.0);(#,##0.0);_(-_)"
+MONEY = "_(#,##0.0_);(#,##0.0);_(-_)"
 PERCENT = "0.0%"
 DAYS = "0.0"
 DATE = "mmm-yy"
