@@ -13,14 +13,14 @@ else that is hard to undo.
 
 `ukumari` defines spreadsheets as text. A model is a short Python script; running it builds a
 calculation graph that carries no numbers and does no arithmetic. That graph is checked, then
-computed over data by an emitted NumPy program, laid out as an `.sls` file of live formulas, and
-saved as JSON (`.uku`). It is one of a family of two: `stliss` owns the `.sls` format, its reader,
+computed over data by an emitted NumPy program, laid out as a `.yup` file of live formulas, and
+saved as JSON (`.uku`). It is one of a family of two: `yupana` owns the `.yup` format, its reader,
 the xlsx writer, and an oracle that has the spreadsheet app compute a file. `ukumari` depends on
-`stliss` and NumPy, and nothing else.
+`yupana` and NumPy, and nothing else.
 
 ## Sibling repositories
 
-This repository is one of two, checked out side by side: `../stliss` and `../ukumari`. You may
+This repository is one of two, checked out side by side: `../yupana` and `../ukumari`. You may
 read the other one, but never change it from here.
 
 ## Commands
@@ -40,7 +40,7 @@ read the other one, but never change it from here.
 - Expected failures are values: `Result` from the family's `result` module. A bug raises an
   ordinary built-in exception (`AssertionError` for a broken invariant), and nothing catches it.
   A `try` appears only as a narrow boundary that turns one expected exception into an `Err`.
-- `result.py` is shared, byte-identical, by `stliss` and `ukumari`. Do not edit it.
+- `result.py` is shared, byte-identical, by `yupana` and `ukumari`. Do not edit it.
 - Text files are written with LF line endings on every platform: open them with `newline=""`
   (or write bytes), since Python's text mode on Windows turns `\n` into `\r\n`.
 - Comments and docstrings say why, in the present tense. Doctests are the examples.
@@ -60,9 +60,9 @@ read the other one, but never change it from here.
 
 ### In this repository
 
-- Dependencies are `stliss` and NumPy; pandas never. Nothing Windows-specific, not even for
-  development. `ukumari` never imports `stliss`'s oracle: a test marked `app` runs it as an
-  external command, and is skipped unless on Windows with `../stliss` present.
+- Dependencies are `yupana` and NumPy; pandas never. Nothing Windows-specific, not even for
+  development. `ukumari` never imports `yupana`'s oracle: a test marked `app` runs it as an
+  external command, and is skipped unless on Windows with `../yupana` present.
 - No text from a model ever becomes code. Emitted programs use generated identifiers, and names
   appear in them only as `repr` string literals. Generated code is executed in one place only.
 - The emitted NumPy program and the scalar-circuit evaluator agree bit for bit. A disagreement is

@@ -22,9 +22,9 @@ from ukumari.evaluate import cell_values
 from ukumari.expr import Binary, Literal, Op, Ref, walk
 from ukumari.pipeline import balanced, export
 from ukumari.result import Err, Ok
-from ukumari.stliss_stand_in import read_sls
 from ukumari.uku import load_uku, write_uku
 from ukumari.unroll import unroll
+from ukumari.yupana_stand_in import read_yup
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 
@@ -70,16 +70,16 @@ def test_2_is_checked() -> None:
 
 
 def test_3_becomes_a_workbook() -> None:
-    """The .sls reads back cleanly, with labels, indents, formats and widths.
+    """The .yup reads back cleanly, with labels, indents, formats and widths.
 
-    Writing the xlsx and opening it in the app wait for stliss.
+    Writing the xlsx and opening it in the app wait for yupana.
     """
     result = export(
         three_statement.build().unwrap(),
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    cells = read_sls(result.sls).unwrap()
+    cells = read_yup(result.yup).unwrap()
     formats = [c.format for c in cells]
     assert any("indent" in f for f in formats)
     assert any("numberformat" in f for f in formats)
@@ -92,22 +92,22 @@ def test_3_becomes_a_workbook() -> None:
 @pytest.mark.skipif(
     sys.platform != "win32"
     or os.environ.get("UKUMARI_APP_TESTS") != "1"
-    or not (Path(__file__).resolve().parents[2] / "stliss").exists(),
-    reason="needs Windows, the spreadsheet app, ../stliss, and UKUMARI_APP_TESTS=1",
+    or not (Path(__file__).resolve().parents[2] / "yupana").exists(),
+    reason="needs Windows, the spreadsheet app, ../yupana, and UKUMARI_APP_TESTS=1",
 )
 def test_4_agrees_with_the_app() -> None:
-    """The oracle has the app compute the committed .sls, and every cell must agree."""
-    stliss = Path(__file__).resolve().parents[2] / "stliss"
+    """The oracle has the app compute the committed .yup, and every cell must agree."""
+    yupana = Path(__file__).resolve().parents[2] / "yupana"
     command = [
         "uv",
         "run",
         "--directory",
-        str(stliss),
+        str(yupana),
         "--package",
-        "stliss-xlsx-oracle",
-        "stliss-xlsx-oracle",
+        "yupana-xlsx-oracle",
+        "yupana-xlsx-oracle",
         "compare",
-        str(EXAMPLES / "three_statement.sls"),
+        str(EXAMPLES / "three_statement.yup"),
         str(EXAMPLES / "three_statement.values.csv"),
         "--tolerance",
         "1e-9",
@@ -160,10 +160,10 @@ def test_8_is_data() -> None:
 
 
 def test_the_committed_model_file_builds_the_same_workbook() -> None:
-    """The committed .uku, read back, gives the same .sls as the script does."""
+    """The committed .uku, read back, gives the same .yup as the script does."""
     text = (EXAMPLES / "three_statement.uku").read_bytes().decode("utf-8")
     circuit = load_uku(text).unwrap()
     from_file = export(circuit, three_statement.data(), layout=three_statement.layout())
-    committed = (EXAMPLES / "three_statement.sls").read_bytes().decode("utf-8")
-    assert from_file.unwrap().sls == committed
+    committed = (EXAMPLES / "three_statement.yup").read_bytes().decode("utf-8")
+    assert from_file.unwrap().yup == committed
     assert circuit == three_statement.build().unwrap()

@@ -36,7 +36,7 @@ print(program.run({"principal": [100], "scheduled": [30] * 5})["closing"])
 # A workbook of live formulas, checked cell by cell against a second computation.
 data = {"principal": [100], "scheduled": [30] * 5}
 result = export(circuit, data, layout=Layout(label_width=20)).unwrap()
-print(result.sls)
+print(result.yup)
 ```
 
 Every vector is declared first and defined afterwards, which is what lets a recurrence refer to
@@ -58,7 +58,7 @@ uv run pytest
   made up). It balances by construction, in every year, at any horizon.
 - `examples/three_statement_sweep.py`: the same model over 1,000 growth scenarios in one call.
 
-Each example writes its model (`.uku`), its workbook cells (`.sls`), their values and a workbook
+Each example writes its model (`.uku`), its workbook cells (`.yup`), their values and a workbook
 to `target/`: `uv run python examples/three_statement.py`.
 
 ## The name

@@ -1,9 +1,9 @@
-"""A throwaway xlsx writer, standing in for ``stliss``'s until it exists.
+"""A throwaway xlsx writer, standing in for ``yupana``'s until it exists.
 
-It implements enough of ``01-stliss.md``'s writer to open the examples' workbooks: sheets,
+It implements enough of ``01-yupana.md``'s writer to open the examples' workbooks: sheets,
 numbers, text, logicals and formulas with no cached values, number formats, indents and
 column widths. It refuses a number format it cannot spell as the app would, rather than
-guess. **Delete it once ``stliss`` exists.** It has never been checked against the app.
+guess. **Delete it once ``yupana`` exists.** It has never been checked against the app.
 """
 
 import io
@@ -11,7 +11,7 @@ import math
 import re
 import zipfile
 
-from ukumari.stliss_stand_in import SlsCell
+from ukumari.yupana_stand_in import YupCell
 
 _MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 _REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -105,7 +105,7 @@ def _letters(column: int) -> str:
     return letters
 
 
-def _cell_xml(cell: SlsCell, style: int, strings: dict[str, int]) -> str:
+def _cell_xml(cell: YupCell, style: int, strings: dict[str, int]) -> str:
     where = f'r="{_letters(cell.col)}{cell.row}"' + (f' s="{style}"' if style else "")
     kind, rest = cell.cell[0], cell.cell[1:]
     match kind:
@@ -179,8 +179,8 @@ def _styles(custom: dict[str, int], styles: dict[tuple[int, int], int]) -> str:
     )
 
 
-def write_xlsx(cells: tuple[SlsCell, ...]) -> bytes:
-    """An xlsx holding the cells read from an ``.sls`` file. The output is deterministic."""
+def write_xlsx(cells: tuple[YupCell, ...]) -> bytes:
+    """An xlsx holding the cells read from a ``.yup`` file. The output is deterministic."""
     sheets = list(dict.fromkeys(c.sheet for c in cells))
     strings: dict[str, int] = {}
     custom: dict[str, int] = {}

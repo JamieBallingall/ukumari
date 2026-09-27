@@ -1,9 +1,9 @@
-"""A temporary stand-in for ``stliss``: an ``.sls`` reader and a values-CSV writer.
+"""A temporary stand-in for ``yupana``: a ``.yup`` reader and a values-CSV writer.
 
-``stliss`` does not exist yet. This module implements, from ``01-stliss.md``, just enough of
+``yupana`` does not exist yet. This module implements, from ``01-yupana.md``, just enough of
 its reader for ukumari's writer to be read back and checked, as the plan requires, and its
-values-CSV writer. **Delete it once ``stliss`` exists**, and read back through
-``stliss.read_sls`` and write with ``stliss.write_values`` instead. Its types are minimal
+values-CSV writer. **Delete it once ``yupana`` exists**, and read back through
+``yupana.read_yup`` and write with ``yupana.write_values`` instead. Its types are minimal
 on purpose, so nothing grows to depend on them.
 """
 
@@ -35,7 +35,7 @@ def _bad_characters(text: str) -> bool:
 
 
 @dataclass(frozen=True, slots=True)
-class SlsError:
+class YupError:
     line: int
     message: str
 
@@ -44,7 +44,7 @@ class SlsError:
 
 
 @dataclass(frozen=True, slots=True)
-class SlsCell:
+class YupCell:
     line: int
     sheet: str
     row: int
@@ -53,12 +53,12 @@ class SlsCell:
     format: dict[str, str]
 
 
-def read_sls(text: str) -> Result[tuple[SlsCell, ...], tuple[SlsError, ...]]:
-    """Every cell of an ``.sls`` file, or every problem with it, each with its line."""
-    errors: list[SlsError] = []
+def read_yup(text: str) -> Result[tuple[YupCell, ...], tuple[YupError, ...]]:
+    """Every cell of a ``.yup`` file, or every problem with it, each with its line."""
+    errors: list[YupError] = []
 
     def fail(line: int, message: str) -> None:
-        errors.append(SlsError(line, message))
+        errors.append(YupError(line, message))
 
     if text.startswith("﻿"):
         fail(1, "the file starts with a byte-order mark")
@@ -72,7 +72,7 @@ def read_sls(text: str) -> Result[tuple[SlsCell, ...], tuple[SlsError, ...]]:
     if len(lines) < 2:
         fail(1, "there are no cells")
 
-    cells: list[SlsCell] = []
+    cells: list[YupCell] = []
     seen: dict[tuple[str, int, int], int] = {}
     spelled: dict[str, str] = {}
     widths: dict[tuple[str, int], bool] = {}
@@ -169,7 +169,7 @@ def read_sls(text: str) -> Result[tuple[SlsCell, ...], tuple[SlsError, ...]]:
                     fail(number, "the first line for a column must carry columnwidth")
             elif width is not None:
                 fail(number, "only the first line for a column may carry columnwidth")
-            cells.append(SlsCell(number, sheet, row, col, cell, pairs))
+            cells.append(YupCell(number, sheet, row, col, cell, pairs))
     if errors:
         return Err(tuple(errors))
     return Ok(tuple(cells))

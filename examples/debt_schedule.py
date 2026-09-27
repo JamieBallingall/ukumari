@@ -63,7 +63,7 @@ def outputs() -> dict[str, str]:
     result = export(circuit, data(), layout=layout()).unwrap()
     return {
         "debt_schedule.uku": write_uku(circuit),
-        "debt_schedule.sls": result.sls,
+        "debt_schedule.yup": result.yup,
         "debt_schedule.values.csv": result.values_csv,
     }
 

@@ -28,8 +28,8 @@ interpretation of that one graph.
                                                             equal, bit for bit ◀── evaluate
                                                                                           │
                                                                                           ▼
-                                   S + layout ──▶ .sls ──read back, stliss──▶ xlsx (live formulas)
-                                                    └──stliss's oracle (tests)──▶ the app's values
+                                   S + layout ──▶ .yup ──read back, yupana──▶ xlsx (live formulas)
+                                                    └──yupana's oracle (tests)──▶ the app's values
 ```
 
 ## The transformations
@@ -37,13 +37,13 @@ interpretation of that one graph.
 | | From → to | Module |
 |---|---|---|
 | α | `.py` → L, and L ↔ `.uku` | `model`, `check` (with `guard` and `align`), `uku` |
-| β₁ | L + data → `.sls` and a values CSV | `bind`, `unroll`, `layout`, `sls` |
+| β₁ | L + data → `.yup` and a values CSV | `bind`, `unroll`, `layout`, `yup` |
 | β₂ | L + data → values | `emit` (running P) |
 | β₃ | L → P, a standalone NumPy program | `emit`, with `_runtime` copied in |
-| γ₁ | `.sls` → xlsx | `stliss` (a stand-in until it exists) |
+| γ₁ | `.yup` → xlsx | `yupana` (a stand-in until it exists) |
 
 `pipeline.export` runs the lot in one call: build, bind, unroll, lay out, run P, check P
-against the S evaluator, write the `.sls` and values CSV, and read the `.sls` back.
+against the S evaluator, write the `.yup` and values CSV, and read the `.yup` back.
 
 ## Key decisions
 
@@ -67,9 +67,9 @@ against the S evaluator, write the `.sls` and values CSV, and read the `.sls` ba
   that walks S one double at a time. Every export checks one against the other, cell by cell.
 - **No model text becomes code.** In P, identifiers are generated, names appear only as
   `repr` string literals, and numbers only as a float's `repr`.
-- **The `.sls` file is the contract** with `stliss`: ukumari writes it and reads it back
-  through `stliss`'s reader, so a workbook built in memory passes the same checks as a file.
-  The app's own values come from `stliss`'s oracle, run as a separate tool: ukumari never
+- **The `.yup` file is the contract** with `yupana`: ukumari writes it and reads it back
+  through `yupana`'s reader, so a workbook built in memory passes the same checks as a file.
+  The app's own values come from `yupana`'s oracle, run as a separate tool: ukumari never
   depends on anything Windows-specific.
 
 ## Finer points

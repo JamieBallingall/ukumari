@@ -22,7 +22,7 @@ addopts = "--doctest-modules --import-mode=importlib"
 doctest_optionflags = "ELLIPSIS"
 testpaths = ["src/ukumari", "tests"]
 pythonpath = ["tests", "examples"]
-markers = ["app: needs Windows, ../stliss and the spreadsheet app"]
+markers = ["app: needs Windows, ../yupana and the spreadsheet app"]
 
 [dependency-groups]
 dev = [

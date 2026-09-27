@@ -1,4 +1,4 @@
-"""β₁: writing S and a layout as ``.sls``, and the values CSV beside it.
+"""β₁: writing S and a layout as ``.yup``, and the values CSV beside it.
 
 - **Which cell holds the formula for a node:** its origin. Another cell holding the same node
   (the lag edge: ``opening[1]`` is ``closing[0]``) points at the origin: ``=B7``.
@@ -9,7 +9,7 @@
   becomes a reference; operand nodes without one are written inline, so a whole subtree
   becomes ``=B2*C2+D2``, not one cell per operation.
 - A cell whose node is a lone literal (a seed) holds the number. Input cells hold their data
-  as numbers; the error value is written ``=NA()``, since ``.sls`` has no error constants.
+  as numbers; the error value is written ``=NA()``, since ``.yup`` has no error constants.
 - **Order**, so every formula refers only to earlier lines: text cells row by row, then every
   node-holding cell in ascending node id, each node's origin before its other holders.
 """
@@ -20,8 +20,8 @@ from dataclasses import dataclass
 
 from ukumari.bind import Bound
 from ukumari.layout import FIRST_PERIOD_COLUMN, Grid
-from ukumari.stliss_stand_in import write_values
 from ukumari.unroll import Cell, Const, Element, Operation, Prim, Straight
+from ukumari.yupana_stand_in import write_values
 
 _SYMBOL = {Prim.ADD: "+", Prim.SUB: "-", Prim.MUL: "*", Prim.DIV: "/"}
 _BINDING = {Prim.ADD: 1, Prim.SUB: 1, Prim.MUL: 2, Prim.DIV: 2}
@@ -72,16 +72,16 @@ def _width(value: float | None) -> str:
 
 @dataclass(frozen=True, slots=True)
 class Written:
-    """An ``.sls`` file and, beside it, the values CSV, in the same order."""
+    """A ``.yup`` file and, beside it, the values CSV, in the same order."""
 
-    sls: str
+    yup: str
     values: str
 
 
-def write_sls(
+def write_yup(
     s: Straight, bound: Bound, grid: Grid, values: Mapping[Cell, float]
 ) -> Written:
-    """The ``.sls`` text and values CSV for S laid out on a grid.
+    """The ``.yup`` text and values CSV for S laid out on a grid.
 
     ``values`` holds P's value for every cell; the values CSV carries them.
     """

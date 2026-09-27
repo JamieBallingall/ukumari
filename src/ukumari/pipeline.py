@@ -1,6 +1,6 @@
 """The pipeline in one call: build, bind, unroll, lay out, run P, check, and write.
 
-Every expected failure (a model error, a data error, an ``.sls`` file the reader refuses)
+Every expected failure (a model error, a data error, a ``.yup`` file the reader refuses)
 flows into one ``Result``. A disagreement between P and the S evaluator is a bug in
 ukumari, so it raises ``AssertionError``; so does a layout written wrongly by hand, which
 raises ``ValueError``.
@@ -22,12 +22,12 @@ from ukumari.evaluate import cell_values
 from ukumari.layout import Grid, Layout, grid
 from ukumari.model import Model
 from ukumari.result import Err, Ok, Result
-from ukumari.sls import write_sls
-from ukumari.stliss_stand_in import SlsError, read_sls
-from ukumari.stliss_stand_in_xlsx import write_xlsx
 from ukumari.unroll import Cell, Straight, unroll
+from ukumari.yup import write_yup
+from ukumari.yupana_stand_in import YupError, read_yup
+from ukumari.yupana_stand_in_xlsx import write_xlsx
 
-type PipelineError = ModelError | DataError | SlsError
+type PipelineError = ModelError | DataError | YupError
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,15 +41,15 @@ class Export:
     program: str
     outputs: Mapping[str, np.ndarray]
     values: Mapping[Cell, float]
-    sls: str
+    yup: str
     values_csv: str
 
     def xlsx(self) -> bytes:
         """The workbook of live formulas.
 
-        Written through the stand-in for ``stliss``'s xlsx writer, until ``stliss`` exists.
+        Written through the stand-in for ``yupana``'s xlsx writer, until ``yupana`` exists.
         """
-        return write_xlsx(read_sls(self.sls).unwrap())
+        return write_xlsx(read_yup(self.yup).unwrap())
 
 
 def export(
@@ -59,7 +59,7 @@ def export(
     layout: Layout | None = None,
     program: ModuleType | None = None,
 ) -> Result[Export, tuple[PipelineError, ...]]:
-    """Run a model over one scenario of data, and write it as ``.sls`` and a values CSV.
+    """Run a model over one scenario of data, and write it as ``.yup`` and a values CSV.
 
     ``program`` replaces the emitted P, for tests that must see the check refuse.
     """
@@ -96,10 +96,10 @@ def export(
             else:
                 for index, t in enumerate(range(interval.start, interval.stop)):
                     values[(d.name, t)] = data[index]
-    written = write_sls(straight, bound, placed, values)
-    match read_sls(written.sls):
-        case Err(sls_errors):
-            return Err(sls_errors)
+    written = write_yup(straight, bound, placed, values)
+    match read_yup(written.yup):
+        case Err(yup_errors):
+            return Err(yup_errors)
         case Ok():
             pass
     return Ok(
@@ -111,7 +111,7 @@ def export(
             program=source,
             outputs=outputs,
             values=values,
-            sls=written.sls,
+            yup=written.yup,
             values_csv=written.values,
         )
     )

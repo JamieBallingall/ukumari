@@ -1,4 +1,4 @@
-"""β₁: the ``.sls`` writer, its formulas, and the pipeline that checks P against S."""
+"""β₁: the ``.yup`` writer, its formulas, and the pipeline that checks P against S."""
 
 import math
 from types import ModuleType
@@ -13,13 +13,13 @@ from ukumari.emit import emit, load
 from ukumari.pipeline import export
 from ukumari.result import Err
 from ukumari.shape import Span
-from ukumari.stliss_stand_in import SlsError, read_sls
+from ukumari.yupana_stand_in import YupError, read_yup
 
 
-def cells_of(sls: str) -> dict[tuple[int, int], tuple[str, str]]:
-    """(row, col) → (cell, format), from ``.sls`` text."""
+def cells_of(yup: str) -> dict[tuple[int, int], tuple[str, str]]:
+    """(row, col) → (cell, format), from ``.yup`` text."""
     found = {}
-    for line in sls.splitlines()[1:]:
+    for line in yup.splitlines()[1:]:
         _, row, col, cell, fmt = line.split("\t")
         found[(int(row), int(col))] = (cell, fmt)
     return found
@@ -28,7 +28,7 @@ def cells_of(sls: str) -> dict[tuple[int, int], tuple[str, str]]:
 def formula(m: Model, data: dict[str, list[float]], name: str) -> str:
     result = export(m, data).unwrap()
     row, col = result.grid.address(name, 0)
-    return cells_of(result.sls)[(row, col)][0]
+    return cells_of(result.yup)[(row, col)][0]
 
 
 def small() -> tuple[Model, Span]:
@@ -80,7 +80,7 @@ def test_formulas_reference_the_same_period_and_share_the_lag_edge() -> None:
         debt_schedule.data(),
         layout=debt_schedule.layout(),
     ).unwrap()
-    cells = cells_of(result.sls)
+    cells = cells_of(result.yup)
     # Rows: 2 principal, 3 scheduled, 4 opening, 5 payment, 6 closing.
     assert cells[(4, 2)][0] == "=B2"  # opening[0] is the principal: points at it
     assert cells[(4, 3)][0] == "=B6"  # opening[1] is closing[0]: points at it
@@ -97,9 +97,9 @@ def test_every_formula_refers_only_to_earlier_lines() -> None:
     written: set[str] = set()
     import re
 
-    from ukumari.sls import column_letters
+    from ukumari.yup import column_letters
 
-    for line in result.sls.splitlines()[1:]:
+    for line in result.yup.splitlines()[1:]:
         _, row, col, cell, _ = line.split("\t")
         if cell.startswith("="):
             for ref in re.findall(r"[A-Z]+[0-9]+", cell):
@@ -113,7 +113,7 @@ def test_formats_indents_and_widths() -> None:
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    lines = result.sls.splitlines()
+    lines = result.yup.splitlines()
     assert lines[0] == "sheet\trow\tcol\tcell\tformat"
     first_of_column: dict[str, str] = {}
     for line in lines[1:]:
@@ -125,7 +125,7 @@ def test_formats_indents_and_widths() -> None:
         for c, fmt in first_of_column.items()
         if c != "1"
     )
-    cells = cells_of(result.sls)
+    cells = cells_of(result.yup)
     row_of = {r.label: r.number for r in result.grid.rows}
     assert cells[(row_of["Revenue growth"], 1)] == ("$Revenue growth", "indent=1")
     assert cells[(row_of["Cost of sales"], 3)][1] == "numberformat=#,##0.0;(#,##0.0)"
@@ -139,7 +139,7 @@ def test_an_error_input_is_written_as_na() -> None:
     a = m.input("a", t)
     m.vector("b", t).define(a * 2)
     result = export(m, {"a": [math.inf, 1.0]}).unwrap()
-    cells = cells_of(result.sls)
+    cells = cells_of(result.yup)
     assert cells[(2, 2)][0] == "=NA()"
     assert "Model,2,2,16,#N/A" in result.values_csv
     assert "Model,3,2,16,#N/A" in result.values_csv
@@ -152,9 +152,9 @@ def test_the_values_csv_lists_every_cell_in_the_same_order() -> None:
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    sls_cells = [line.split("\t")[:3] for line in result.sls.splitlines()[1:]]
+    yup_cells = [line.split("\t")[:3] for line in result.yup.splitlines()[1:]]
     values = [line.split(",")[:3] for line in result.values_csv.splitlines()[1:]]
-    assert sls_cells == values
+    assert yup_cells == values
 
 
 def test_a_scalar_sits_in_the_first_period_column() -> None:
@@ -168,7 +168,7 @@ def test_a_scalar_sits_in_the_first_period_column() -> None:
     result = export(m, {"k": [1.0], "x": [1.0, 2.0, 3.0]}).unwrap()
     assert result.grid.address("k", None) == (2, 2)
     assert result.grid.address("total", None) == (5, 2)
-    assert cells_of(result.sls)[(5, 2)][0] == "=D4*2"
+    assert cells_of(result.yup)[(5, 2)][0] == "=D4*2"
 
 
 def test_the_export_refuses_when_p_is_one_ulp_out() -> None:
@@ -203,7 +203,7 @@ def test_a_file_the_reader_refuses_comes_back_as_errors() -> None:
     m.input("bad\u0001name", t)
     match export(m, {"bad\u0001name": [1.0]}):
         case Err(errors):
-            assert all(isinstance(e, SlsError) for e in errors)
+            assert all(isinstance(e, YupError) for e in errors)
         case _:
             raise AssertionError("expected the read-back to refuse a control character")
 
@@ -216,7 +216,7 @@ def test_the_stand_in_reader_reports_every_problem() -> None:
         "Model\t0\t2\t#01\tcolumnwidth=default\n"  # row 0, a malformed number
         "model\t3\t2\t%x\t\n"  # another spelling of the sheet; unknown kind
     )
-    match read_sls(text):
+    match read_yup(text):
         case Err(errors):
             assert {e.line for e in errors} == {2, 3, 4, 5}
         case _:
