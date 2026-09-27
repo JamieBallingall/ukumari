@@ -67,7 +67,9 @@ and run only when `UKUMARI_APP_TESTS=1` is set.
 - `examples/quarterly.py`: a quarterly three-statement model of a fictional maker of garden
   equipment, over four sheets: the reported history, the assumptions, an analysis of the
   history, and the forecast. Revenue keeps its seasons, growing on the same quarter a year
-  earlier at the history's compound annual growth.
+  earlier, with a seasonal autoregression and the economy on top of the history's compound
+  growth; cash runs through a waterfall with a revolver; two bonds mature and two loans
+  float. Everything that looks back further than a quarter is carried as state.
 
 Each example writes its model (`.uku`), its workbook cells (`.yup`), their values and a workbook
 to `target/`: `uv run python examples/three_statement.py`.

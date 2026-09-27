@@ -1,6 +1,6 @@
 yup 0.0.1 Yupana Straight Line Spreadsheet Format
 sheet	row	col	cell	format
-Historicals	1	1	$Quarter ending	columnwidth=30
+Historicals	1	1	$Quarter ending	columnwidth=32
 Historicals	3	1	$Income statement	
 Historicals	4	1	$Revenue	indent=1
 Historicals	5	1	$Cost of sales	indent=1
@@ -34,15 +34,15 @@ Historicals	34	1	$Share buybacks	indent=1
 Historicals	36	1	$Economy	
 Historicals	37	1	$GDP growth, year on year	indent=1
 Historicals	38	1	$Own price change, year on year	indent=1
-Assumptions	1	1	$Quarter ending	columnwidth=36
+Assumptions	1	1	$Quarter ending	columnwidth=38
 Assumptions	3	1	$Revenue	
 Assumptions	4	1	$Growth adjustment, year on year	indent=1
 Assumptions	5	1	$GDP growth, year on year	indent=1
 Assumptions	6	1	$Own price change, year on year	indent=1
-Assumptions	7	1	$Growth per point of GDP growth above average	indent=1
-Assumptions	8	1	$Growth per point of price change above average	indent=1
-Assumptions	9	1	$Surprise carried from the quarter before	indent=1
-Assumptions	10	1	$Surprise carried from a year before	indent=1
+Assumptions	7	1	$Growth per point of GDP growth	indent=1
+Assumptions	8	1	$Growth per point of price change	indent=1
+Assumptions	9	1	$Surprise kept from the last quarter	indent=1
+Assumptions	10	1	$Surprise kept from a year earlier	indent=1
 Assumptions	12	1	$Operations	
 Assumptions	13	1	$Cost of sales, % of revenue	indent=1
 Assumptions	14	1	$Operating expenses, % of revenue	indent=1
@@ -62,10 +62,10 @@ Assumptions	28	1	$Revolver, margin over base rate	indent=1
 Assumptions	29	1	$Revolver limit	indent=1
 Assumptions	30	1	$Minimum cash	indent=1
 Assumptions	31	1	$Target dividend a quarter	indent=1
-Assumptions	32	1	$Share buybacks, % of cash left over	indent=1
+Assumptions	32	1	$Buybacks, % of cash left over	indent=1
 Assumptions	33	1	$Bond A, quarters to maturity	indent=1
 Assumptions	34	1	$Bond B, quarters to maturity	indent=1
-Analysis	1	1	$Quarter ending	columnwidth=36
+Analysis	1	1	$Quarter ending	columnwidth=38
 Analysis	2	1	$Quarter	indent=0
 Analysis	4	1	$Revenue	
 Analysis	5	1	$Revenue	indent=1
@@ -74,69 +74,68 @@ Analysis	7	1	$2 quarters earlier	indent=1
 Analysis	8	1	$3 quarters earlier	indent=1
 Analysis	9	1	$4 quarters earlier	indent=1
 Analysis	10	1	$Last 12 months	indent=1
-Analysis	11	1	$Years of 12-month revenue	indent=1
+Analysis	11	1	$Quarters with a growth rate	indent=1
 Analysis	12	1	$Compound annual growth	indent=1
 Analysis	13	1	$Growth, year on year	indent=1
 Analysis	14	1	$GDP growth, running total	indent=1
 Analysis	15	1	$Price change, running total	indent=1
-Analysis	16	1	$Quarters with a growth rate	indent=1
-Analysis	17	1	$GDP growth, average	indent=1
-Analysis	18	1	$Own price change, average	indent=1
-Analysis	19	1	$GDP effect	indent=1
-Analysis	20	1	$Price effect	indent=1
-Analysis	21	1	$Surprise	indent=1
-Analysis	22	1	$1 quarter earlier	indent=1
-Analysis	23	1	$2 quarters earlier	indent=1
-Analysis	24	1	$3 quarters earlier	indent=1
-Analysis	25	1	$4 quarters earlier	indent=1
-Analysis	27	1	$Margins and working capital	
-Analysis	28	1	$Gross margin	indent=1
-Analysis	29	1	$EBITDA margin	indent=1
-Analysis	30	1	$Days in the quarter	indent=1
-Analysis	31	1	$Receivable days	indent=1
-Analysis	32	1	$Inventory days	indent=1
-Analysis	33	1	$Payable days	indent=1
-Analysis	34	1	$Capital expenditure, % of revenue	indent=1
-Analysis	35	1	$Tax, % of profit before tax	indent=1
-Analysis	37	1	$EBITDA	
-Analysis	38	1	$EBITDA	indent=1
-Analysis	39	1	$1 quarter earlier	indent=1
-Analysis	40	1	$2 quarters earlier	indent=1
-Analysis	41	1	$3 quarters earlier	indent=1
-Analysis	42	1	$Last 12 months	indent=1
-Analysis	44	1	$Initial state, at the last reported quarter	
-Analysis	45	1	$Quarter ending	indent=1
-Analysis	46	1	$Revenue	indent=1
-Analysis	47	1	$Revenue, 1 quarter earlier	indent=1
-Analysis	48	1	$Revenue, 2 quarters earlier	indent=1
-Analysis	49	1	$Revenue, 3 quarters earlier	indent=1
-Analysis	50	1	$EBITDA	indent=1
-Analysis	51	1	$EBITDA, 1 quarter earlier	indent=1
-Analysis	52	1	$EBITDA, 2 quarters earlier	indent=1
-Analysis	53	1	$Surprise	indent=1
-Analysis	54	1	$Surprise, 1 quarter earlier	indent=1
-Analysis	55	1	$Surprise, 2 quarters earlier	indent=1
-Analysis	56	1	$Surprise, 3 quarters earlier	indent=1
-Analysis	57	1	$Surprise, 4 quarters earlier	indent=1
-Analysis	58	1	$Cash	indent=1
-Analysis	59	1	$Receivables	indent=1
-Analysis	60	1	$Inventory	indent=1
-Analysis	61	1	$PP&E	indent=1
-Analysis	62	1	$Payables	indent=1
-Analysis	63	1	$Revolver	indent=1
-Analysis	64	1	$Bond A	indent=1
-Analysis	65	1	$Bond B	indent=1
-Analysis	66	1	$Term loan	indent=1
-Analysis	67	1	$Equity	indent=1
-Forecast	1	1	$Quarter ending	columnwidth=34
+Analysis	16	1	$GDP growth, average	indent=1
+Analysis	17	1	$Own price change, average	indent=1
+Analysis	18	1	$GDP effect	indent=1
+Analysis	19	1	$Price effect	indent=1
+Analysis	20	1	$Surprise	indent=1
+Analysis	21	1	$1 quarter earlier	indent=1
+Analysis	22	1	$2 quarters earlier	indent=1
+Analysis	23	1	$3 quarters earlier	indent=1
+Analysis	24	1	$4 quarters earlier	indent=1
+Analysis	26	1	$Margins and working capital	
+Analysis	27	1	$Gross margin	indent=1
+Analysis	28	1	$EBITDA margin	indent=1
+Analysis	29	1	$Days in the quarter	indent=1
+Analysis	30	1	$Receivable days	indent=1
+Analysis	31	1	$Inventory days	indent=1
+Analysis	32	1	$Payable days	indent=1
+Analysis	33	1	$Capital expenditure, % of revenue	indent=1
+Analysis	34	1	$Tax, % of profit before tax	indent=1
+Analysis	36	1	$EBITDA	
+Analysis	37	1	$EBITDA	indent=1
+Analysis	38	1	$1 quarter earlier	indent=1
+Analysis	39	1	$2 quarters earlier	indent=1
+Analysis	40	1	$3 quarters earlier	indent=1
+Analysis	41	1	$Last 12 months	indent=1
+Analysis	43	1	$Initial state, at the last reported quarter	
+Analysis	44	1	$Quarter ending	indent=1
+Analysis	45	1	$Revenue	indent=1
+Analysis	46	1	$Revenue, 1 quarter earlier	indent=1
+Analysis	47	1	$Revenue, 2 quarters earlier	indent=1
+Analysis	48	1	$Revenue, 3 quarters earlier	indent=1
+Analysis	49	1	$EBITDA	indent=1
+Analysis	50	1	$EBITDA, 1 quarter earlier	indent=1
+Analysis	51	1	$EBITDA, 2 quarters earlier	indent=1
+Analysis	52	1	$Surprise	indent=1
+Analysis	53	1	$Surprise, 1 quarter earlier	indent=1
+Analysis	54	1	$Surprise, 2 quarters earlier	indent=1
+Analysis	55	1	$Surprise, 3 quarters earlier	indent=1
+Analysis	56	1	$Surprise, 4 quarters earlier	indent=1
+Analysis	57	1	$Cash	indent=1
+Analysis	58	1	$Receivables	indent=1
+Analysis	59	1	$Inventory	indent=1
+Analysis	60	1	$PP&E	indent=1
+Analysis	61	1	$Payables	indent=1
+Analysis	62	1	$Revolver	indent=1
+Analysis	63	1	$Bond A	indent=1
+Analysis	64	1	$Bond B	indent=1
+Analysis	65	1	$Term loan	indent=1
+Analysis	66	1	$Equity	indent=1
+Forecast	1	1	$Quarter ending	columnwidth=38
 Forecast	3	1	$Assumptions	
 Forecast	4	1	$Revenue growth adjustment	indent=1
 Forecast	5	1	$GDP growth	indent=1
 Forecast	6	1	$Own price change	indent=1
-Forecast	7	1	$Growth per point of GDP growth above average	indent=1
-Forecast	8	1	$Growth per point of price change above average	indent=1
-Forecast	9	1	$Surprise carried from the quarter before	indent=1
-Forecast	10	1	$Surprise carried from a year before	indent=1
+Forecast	7	1	$Growth per point of GDP growth	indent=1
+Forecast	8	1	$Growth per point of price change	indent=1
+Forecast	9	1	$Surprise kept from the last quarter	indent=1
+Forecast	10	1	$Surprise kept from a year earlier	indent=1
 Forecast	11	1	$Cost of sales, % of revenue	indent=1
 Forecast	12	1	$Operating expenses, % of revenue	indent=1
 Forecast	13	1	$Depreciation, % of opening PP&E	indent=1
@@ -154,7 +153,7 @@ Forecast	24	1	$Revolver, margin over base rate	indent=1
 Forecast	25	1	$Revolver limit	indent=1
 Forecast	26	1	$Minimum cash	indent=1
 Forecast	27	1	$Target dividend a quarter	indent=1
-Forecast	28	1	$Share buybacks, % of cash left over	indent=1
+Forecast	28	1	$Buybacks, % of cash left over	indent=1
 Forecast	29	1	$Bond A, quarters to maturity	indent=1
 Forecast	30	1	$Bond B, quarters to maturity	indent=1
 Forecast	32	1	$Initial state	
@@ -356,8 +355,8 @@ Historicals	1	21	#45930.0	columnwidth=9|numberformat=mmm-yy
 Analysis	1	21	='Historicals'!U1	columnwidth=9|numberformat=mmm-yy
 Historicals	1	22	#46022.0	columnwidth=9|numberformat=mmm-yy
 Analysis	1	22	='Historicals'!V1	columnwidth=9|numberformat=mmm-yy
-Analysis	45	2	=V1	columnwidth=9|numberformat=mmm-yy
-Forecast	33	2	='Analysis'!$B$45	columnwidth=9|numberformat=mmm-yy
+Analysis	44	2	=V1	columnwidth=9|numberformat=mmm-yy
+Forecast	33	2	='Analysis'!$B$44	columnwidth=9|numberformat=mmm-yy
 Historicals	37	3	#0.055	numberformat=0.0%
 Historicals	37	4	#0.05	numberformat=0.0%
 Historicals	37	5	#0.042	numberformat=0.0%
@@ -499,29 +498,29 @@ Analysis	5	19	='Historicals'!S4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	6	20	=S5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	7	21	=T6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	8	22	=U7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	49	2	=V8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	40	2	='Analysis'!$B$49	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	48	2	=V8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	40	2	='Analysis'!$B$48	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	73	3	=$B$40	columnwidth=9|numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	4	20	#153.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	5	20	='Historicals'!T4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	6	21	=T5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	7	22	=U6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	48	2	=V7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	39	2	='Analysis'!$B$48	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	47	2	=V7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	39	2	='Analysis'!$B$47	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	72	3	=$B$39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	73	4	=C72	columnwidth=9|numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	4	21	#120.8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	5	21	='Historicals'!U4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	6	22	=U5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	47	2	=V6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	38	2	='Analysis'!$B$47	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	46	2	=V6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	38	2	='Analysis'!$B$46	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	71	3	=$B$38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	72	4	=C71	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	73	5	=D72	columnwidth=9|numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	4	22	#91.8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	5	22	='Historicals'!V4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	46	2	=V5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	37	2	='Analysis'!$B$46	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	45	2	=V5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	37	2	='Analysis'!$B$45	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	70	3	=$B$37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	71	4	=C70	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	72	5	=D71	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -646,8 +645,8 @@ Historicals	17	19	#20.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	17	20	#20.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	17	21	#20.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	17	22	#29.4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	58	2	='Historicals'!V17	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	49	2	='Analysis'!$B$58	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	57	2	='Historicals'!V17	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	49	2	='Analysis'!$B$57	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	124	3	=$B$49	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	183	3	=C124	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	18	3	#58.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -670,8 +669,8 @@ Historicals	18	19	#69.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	18	20	#92.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	18	21	#72.2	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	18	22	#54.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	59	2	='Historicals'!V18	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	50	2	='Analysis'!$B$59	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	58	2	='Historicals'!V18	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	50	2	='Analysis'!$B$58	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	19	3	#70.4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	19	4	#95.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	19	5	#74.6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -692,8 +691,8 @@ Historicals	19	19	#83.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	19	20	#111.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	19	21	#86.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	19	22	#65.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	60	2	='Historicals'!V19	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	51	2	='Analysis'!$B$60	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	59	2	='Historicals'!V19	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	51	2	='Analysis'!$B$59	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	20	3	#200.3	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	20	4	#202.6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	20	5	#203.2	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -714,8 +713,8 @@ Historicals	20	19	#213.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	20	20	#216.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	20	21	#218.1	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	20	22	#217.6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	61	2	='Historicals'!V20	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	52	2	='Analysis'!$B$61	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	60	2	='Historicals'!V20	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	52	2	='Analysis'!$B$60	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	87	3	=$B$52	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	22	3	#32.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	22	4	#43.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -737,8 +736,8 @@ Historicals	22	19	#37.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	22	20	#50.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	22	21	#39.4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	22	22	#29.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	62	2	='Historicals'!V22	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	53	2	='Analysis'!$B$62	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	61	2	='Historicals'!V22	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	53	2	='Analysis'!$B$61	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	23	3	#0.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	23	4	#22.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	23	5	#0.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -759,8 +758,8 @@ Historicals	23	19	#15.4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	23	20	#45.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	23	21	#9.6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	23	22	#0.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	63	2	='Historicals'!V23	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	54	2	='Analysis'!$B$63	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	62	2	='Historicals'!V23	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	54	2	='Analysis'!$B$62	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	129	3	=$B$54	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	24	3	#60.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	24	4	#60.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -782,8 +781,8 @@ Historicals	24	19	#60.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	24	20	#60.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	24	21	#60.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	24	22	#60.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	64	2	='Historicals'!V24	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	55	2	='Analysis'!$B$64	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	63	2	='Historicals'!V24	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	55	2	='Analysis'!$B$63	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	99	3	=$B$55	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	25	3	#80.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	25	4	#80.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -805,8 +804,8 @@ Historicals	25	19	#80.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	25	20	#80.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	25	21	#80.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	25	22	#80.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	65	2	='Historicals'!V25	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	56	2	='Analysis'!$B$65	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	64	2	='Historicals'!V25	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	56	2	='Analysis'!$B$64	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	104	3	=$B$56	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	26	3	#117.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	26	4	#115.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -828,8 +827,8 @@ Historicals	26	19	#77.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	26	20	#75.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	26	21	#72.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	26	22	#70.0	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	66	2	='Historicals'!V26	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	57	2	='Analysis'!$B$66	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	65	2	='Historicals'!V26	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	57	2	='Analysis'!$B$65	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	108	3	=$B$57	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	27	3	#64.6	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	27	4	#76.7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -851,8 +850,8 @@ Historicals	27	19	#115.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	27	20	#130.1	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	27	21	#135.5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	27	22	#127.9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	67	2	='Historicals'!V27	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	58	2	='Analysis'!$B$67	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	66	2	='Historicals'!V27	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	58	2	='Analysis'!$B$66	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	137	3	=$B$58	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	32	3	#5.3	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	32	4	#7.3	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -1981,10 +1980,10 @@ Assumptions	32	22	=$B$32	numberformat=0.0%
 Forecast	28	22	='Assumptions'!V32	numberformat=0.0%
 Historicals	6	3	=C4-C5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	3	=C6-C7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	3	='Historicals'!C8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	4	=C38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	5	=D39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	6	=E40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	3	='Historicals'!C8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	4	=C37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	5	=D38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	6	=E39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	3	=C8-C9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	3	=C10-C11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	3	=C12-C13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -1992,16 +1991,16 @@ Historicals	21	3	=C17+C18+C19+C20	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	28	3	=C22+C23+C24+C25+C26+C27	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	29	3	=C21-C28	
 Analysis	2	3	#1.0	numberformat=0
-Analysis	28	3	='Historicals'!C6/C5	numberformat=0.0%
-Analysis	29	3	='Historicals'!C8/C5	numberformat=0.0%
-Analysis	34	3	='Historicals'!C32/C5	numberformat=0.0%
-Analysis	35	3	='Historicals'!C13/'Historicals'!C12	numberformat=0.0%
+Analysis	27	3	='Historicals'!C6/C5	numberformat=0.0%
+Analysis	28	3	='Historicals'!C8/C5	numberformat=0.0%
+Analysis	33	3	='Historicals'!C32/C5	numberformat=0.0%
+Analysis	34	3	='Historicals'!C13/'Historicals'!C12	numberformat=0.0%
 Historicals	6	4	=D4-D5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	4	=D6-D7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	4	='Historicals'!D8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	5	=D38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	6	=E39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	7	=F40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	4	='Historicals'!D8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	5	=D37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	6	=E38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	7	=F39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	4	=D8-D9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	4	=D10-D11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	4	=D12-D13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2009,20 +2008,20 @@ Historicals	21	4	=D17+D18+D19+D20	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	28	4	=D22+D23+D24+D25+D26+D27	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	29	4	=D21-D28	
 Analysis	2	4	=C2+1	numberformat=0
-Analysis	28	4	='Historicals'!D6/D5	numberformat=0.0%
-Analysis	29	4	='Historicals'!D8/D5	numberformat=0.0%
-Analysis	34	4	='Historicals'!D32/D5	numberformat=0.0%
-Analysis	35	4	='Historicals'!D13/'Historicals'!D12	numberformat=0.0%
-Analysis	30	4	=D1-C1	numberformat=0
-Analysis	31	4	='Historicals'!D18/D5*D30	numberformat=0.0
-Analysis	32	4	='Historicals'!D19/'Historicals'!D5*D30	numberformat=0.0
-Analysis	33	4	='Historicals'!D22/'Historicals'!D5*D30	numberformat=0.0
+Analysis	27	4	='Historicals'!D6/D5	numberformat=0.0%
+Analysis	28	4	='Historicals'!D8/D5	numberformat=0.0%
+Analysis	33	4	='Historicals'!D32/D5	numberformat=0.0%
+Analysis	34	4	='Historicals'!D13/'Historicals'!D12	numberformat=0.0%
+Analysis	29	4	=D1-C1	numberformat=0
+Analysis	30	4	='Historicals'!D18/D5*D29	numberformat=0.0
+Analysis	31	4	='Historicals'!D19/'Historicals'!D5*D29	numberformat=0.0
+Analysis	32	4	='Historicals'!D22/'Historicals'!D5*D29	numberformat=0.0
 Historicals	6	5	=E4-E5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	5	=E6-E7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	5	='Historicals'!E8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	6	=E38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	7	=F39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	8	=G40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	5	='Historicals'!E8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	6	=E37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	7	=F38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	8	=G39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	5	=E8-E9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	5	=E10-E11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	5	=E12-E13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2030,20 +2029,20 @@ Historicals	21	5	=E17+E18+E19+E20	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	28	5	=E22+E23+E24+E25+E26+E27	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	29	5	=E21-E28	
 Analysis	2	5	=D2+1	numberformat=0
-Analysis	28	5	='Historicals'!E6/E5	numberformat=0.0%
-Analysis	29	5	='Historicals'!E8/E5	numberformat=0.0%
-Analysis	34	5	='Historicals'!E32/E5	numberformat=0.0%
-Analysis	35	5	='Historicals'!E13/'Historicals'!E12	numberformat=0.0%
-Analysis	30	5	=E1-D1	numberformat=0
-Analysis	31	5	='Historicals'!E18/E5*E30	numberformat=0.0
-Analysis	32	5	='Historicals'!E19/'Historicals'!E5*E30	numberformat=0.0
-Analysis	33	5	='Historicals'!E22/'Historicals'!E5*E30	numberformat=0.0
+Analysis	27	5	='Historicals'!E6/E5	numberformat=0.0%
+Analysis	28	5	='Historicals'!E8/E5	numberformat=0.0%
+Analysis	33	5	='Historicals'!E32/E5	numberformat=0.0%
+Analysis	34	5	='Historicals'!E13/'Historicals'!E12	numberformat=0.0%
+Analysis	29	5	=E1-D1	numberformat=0
+Analysis	30	5	='Historicals'!E18/E5*E29	numberformat=0.0
+Analysis	31	5	='Historicals'!E19/'Historicals'!E5*E29	numberformat=0.0
+Analysis	32	5	='Historicals'!E22/'Historicals'!E5*E29	numberformat=0.0
 Historicals	6	6	=F4-F5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	6	=F6-F7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	6	='Historicals'!F8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	7	=F38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	8	=G39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	9	=H40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	6	='Historicals'!F8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	7	=F37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	8	=G38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	9	=H39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	6	=F8-F9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	6	=F10-F11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	6	=F12-F13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2052,21 +2051,21 @@ Historicals	28	6	=F22+F23+F24+F25+F26+F27	numberformat=_(#,##0.0);(#,##0.0);_(-_
 Historicals	29	6	=F21-F28	
 Analysis	2	6	=E2+1	numberformat=0
 Analysis	10	6	=F5+F6+F7+F8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	28	6	='Historicals'!F6/F5	numberformat=0.0%
-Analysis	29	6	='Historicals'!F8/F5	numberformat=0.0%
-Analysis	34	6	='Historicals'!F32/F5	numberformat=0.0%
-Analysis	35	6	='Historicals'!F13/'Historicals'!F12	numberformat=0.0%
-Analysis	30	6	=F1-E1	numberformat=0
-Analysis	31	6	='Historicals'!F18/F5*F30	numberformat=0.0
-Analysis	32	6	='Historicals'!F19/'Historicals'!F5*F30	numberformat=0.0
-Analysis	33	6	='Historicals'!F22/'Historicals'!F5*F30	numberformat=0.0
-Analysis	42	6	=F38+F39+F40+F41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	6	='Historicals'!F6/F5	numberformat=0.0%
+Analysis	28	6	='Historicals'!F8/F5	numberformat=0.0%
+Analysis	33	6	='Historicals'!F32/F5	numberformat=0.0%
+Analysis	34	6	='Historicals'!F13/'Historicals'!F12	numberformat=0.0%
+Analysis	29	6	=F1-E1	numberformat=0
+Analysis	30	6	='Historicals'!F18/F5*F29	numberformat=0.0
+Analysis	31	6	='Historicals'!F19/'Historicals'!F5*F29	numberformat=0.0
+Analysis	32	6	='Historicals'!F22/'Historicals'!F5*F29	numberformat=0.0
+Analysis	41	6	=F37+F38+F39+F40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	7	=G4-G5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	7	=G6-G7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	7	='Historicals'!G8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	8	=G38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	9	=H39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	10	=I40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	7	='Historicals'!G8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	8	=G37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	9	=H38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	10	=I39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	7	=G8-G9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	7	=G10-G11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	7	=G12-G13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2078,21 +2077,21 @@ Analysis	10	7	=G5+G6+G7+G8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	7	=G5/G9-1	numberformat=0.0%
 Analysis	14	7	=0+'Historicals'!G37	numberformat=0.0%
 Analysis	15	7	=0+'Historicals'!G38	numberformat=0.0%
-Analysis	28	7	='Historicals'!G6/G5	numberformat=0.0%
-Analysis	29	7	='Historicals'!G8/G5	numberformat=0.0%
-Analysis	34	7	='Historicals'!G32/G5	numberformat=0.0%
-Analysis	35	7	='Historicals'!G13/'Historicals'!G12	numberformat=0.0%
-Analysis	30	7	=G1-F1	numberformat=0
-Analysis	31	7	='Historicals'!G18/G5*G30	numberformat=0.0
-Analysis	32	7	='Historicals'!G19/'Historicals'!G5*G30	numberformat=0.0
-Analysis	33	7	='Historicals'!G22/'Historicals'!G5*G30	numberformat=0.0
-Analysis	42	7	=G38+G39+G40+G41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	7	='Historicals'!G6/G5	numberformat=0.0%
+Analysis	28	7	='Historicals'!G8/G5	numberformat=0.0%
+Analysis	33	7	='Historicals'!G32/G5	numberformat=0.0%
+Analysis	34	7	='Historicals'!G13/'Historicals'!G12	numberformat=0.0%
+Analysis	29	7	=G1-F1	numberformat=0
+Analysis	30	7	='Historicals'!G18/G5*G29	numberformat=0.0
+Analysis	31	7	='Historicals'!G19/'Historicals'!G5*G29	numberformat=0.0
+Analysis	32	7	='Historicals'!G22/'Historicals'!G5*G29	numberformat=0.0
+Analysis	41	7	=G37+G38+G39+G40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	8	=H4-H5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	8	=H6-H7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	8	='Historicals'!H8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	9	=H38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	10	=I39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	11	=J40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	8	='Historicals'!H8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	9	=H37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	10	=I38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	11	=J39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	8	=H8-H9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	8	=H10-H11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	8	=H12-H13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2104,21 +2103,21 @@ Analysis	10	8	=H5+H6+H7+H8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	8	=H5/H9-1	numberformat=0.0%
 Analysis	14	8	=G14+'Historicals'!H37	numberformat=0.0%
 Analysis	15	8	=G15+'Historicals'!H38	numberformat=0.0%
-Analysis	28	8	='Historicals'!H6/H5	numberformat=0.0%
-Analysis	29	8	='Historicals'!H8/H5	numberformat=0.0%
-Analysis	34	8	='Historicals'!H32/H5	numberformat=0.0%
-Analysis	35	8	='Historicals'!H13/'Historicals'!H12	numberformat=0.0%
-Analysis	30	8	=H1-G1	numberformat=0
-Analysis	31	8	='Historicals'!H18/H5*H30	numberformat=0.0
-Analysis	32	8	='Historicals'!H19/'Historicals'!H5*H30	numberformat=0.0
-Analysis	33	8	='Historicals'!H22/'Historicals'!H5*H30	numberformat=0.0
-Analysis	42	8	=H38+H39+H40+H41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	8	='Historicals'!H6/H5	numberformat=0.0%
+Analysis	28	8	='Historicals'!H8/H5	numberformat=0.0%
+Analysis	33	8	='Historicals'!H32/H5	numberformat=0.0%
+Analysis	34	8	='Historicals'!H13/'Historicals'!H12	numberformat=0.0%
+Analysis	29	8	=H1-G1	numberformat=0
+Analysis	30	8	='Historicals'!H18/H5*H29	numberformat=0.0
+Analysis	31	8	='Historicals'!H19/'Historicals'!H5*H29	numberformat=0.0
+Analysis	32	8	='Historicals'!H22/'Historicals'!H5*H29	numberformat=0.0
+Analysis	41	8	=H37+H38+H39+H40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	9	=I4-I5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	9	=I6-I7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	9	='Historicals'!I8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	10	=I38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	11	=J39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	12	=K40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	9	='Historicals'!I8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	10	=I37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	11	=J38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	12	=K39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	9	=I8-I9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	9	=I10-I11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	9	=I12-I13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2130,21 +2129,21 @@ Analysis	10	9	=I5+I6+I7+I8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	9	=I5/I9-1	numberformat=0.0%
 Analysis	14	9	=H14+'Historicals'!I37	numberformat=0.0%
 Analysis	15	9	=H15+'Historicals'!I38	numberformat=0.0%
-Analysis	28	9	='Historicals'!I6/I5	numberformat=0.0%
-Analysis	29	9	='Historicals'!I8/I5	numberformat=0.0%
-Analysis	34	9	='Historicals'!I32/I5	numberformat=0.0%
-Analysis	35	9	='Historicals'!I13/'Historicals'!I12	numberformat=0.0%
-Analysis	30	9	=I1-H1	numberformat=0
-Analysis	31	9	='Historicals'!I18/I5*I30	numberformat=0.0
-Analysis	32	9	='Historicals'!I19/'Historicals'!I5*I30	numberformat=0.0
-Analysis	33	9	='Historicals'!I22/'Historicals'!I5*I30	numberformat=0.0
-Analysis	42	9	=I38+I39+I40+I41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	9	='Historicals'!I6/I5	numberformat=0.0%
+Analysis	28	9	='Historicals'!I8/I5	numberformat=0.0%
+Analysis	33	9	='Historicals'!I32/I5	numberformat=0.0%
+Analysis	34	9	='Historicals'!I13/'Historicals'!I12	numberformat=0.0%
+Analysis	29	9	=I1-H1	numberformat=0
+Analysis	30	9	='Historicals'!I18/I5*I29	numberformat=0.0
+Analysis	31	9	='Historicals'!I19/'Historicals'!I5*I29	numberformat=0.0
+Analysis	32	9	='Historicals'!I22/'Historicals'!I5*I29	numberformat=0.0
+Analysis	41	9	=I37+I38+I39+I40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	10	=J4-J5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	10	=J6-J7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	10	='Historicals'!J8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	11	=J38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	12	=K39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	13	=L40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	10	='Historicals'!J8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	11	=J37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	12	=K38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	13	=L39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	10	=J8-J9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	10	=J10-J11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	10	=J12-J13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2156,21 +2155,21 @@ Analysis	10	10	=J5+J6+J7+J8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	10	=J5/J9-1	numberformat=0.0%
 Analysis	14	10	=I14+'Historicals'!J37	numberformat=0.0%
 Analysis	15	10	=I15+'Historicals'!J38	numberformat=0.0%
-Analysis	28	10	='Historicals'!J6/J5	numberformat=0.0%
-Analysis	29	10	='Historicals'!J8/J5	numberformat=0.0%
-Analysis	34	10	='Historicals'!J32/J5	numberformat=0.0%
-Analysis	35	10	='Historicals'!J13/'Historicals'!J12	numberformat=0.0%
-Analysis	30	10	=J1-I1	numberformat=0
-Analysis	31	10	='Historicals'!J18/J5*J30	numberformat=0.0
-Analysis	32	10	='Historicals'!J19/'Historicals'!J5*J30	numberformat=0.0
-Analysis	33	10	='Historicals'!J22/'Historicals'!J5*J30	numberformat=0.0
-Analysis	42	10	=J38+J39+J40+J41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	10	='Historicals'!J6/J5	numberformat=0.0%
+Analysis	28	10	='Historicals'!J8/J5	numberformat=0.0%
+Analysis	33	10	='Historicals'!J32/J5	numberformat=0.0%
+Analysis	34	10	='Historicals'!J13/'Historicals'!J12	numberformat=0.0%
+Analysis	29	10	=J1-I1	numberformat=0
+Analysis	30	10	='Historicals'!J18/J5*J29	numberformat=0.0
+Analysis	31	10	='Historicals'!J19/'Historicals'!J5*J29	numberformat=0.0
+Analysis	32	10	='Historicals'!J22/'Historicals'!J5*J29	numberformat=0.0
+Analysis	41	10	=J37+J38+J39+J40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	11	=K4-K5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	11	=K6-K7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	11	='Historicals'!K8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	12	=K38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	13	=L39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	14	=M40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	11	='Historicals'!K8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	12	=K37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	13	=L38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	14	=M39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	11	=K8-K9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	11	=K10-K11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	11	=K12-K13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2182,21 +2181,21 @@ Analysis	10	11	=K5+K6+K7+K8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	11	=K5/K9-1	numberformat=0.0%
 Analysis	14	11	=J14+'Historicals'!K37	numberformat=0.0%
 Analysis	15	11	=J15+'Historicals'!K38	numberformat=0.0%
-Analysis	28	11	='Historicals'!K6/K5	numberformat=0.0%
-Analysis	29	11	='Historicals'!K8/K5	numberformat=0.0%
-Analysis	34	11	='Historicals'!K32/K5	numberformat=0.0%
-Analysis	35	11	='Historicals'!K13/'Historicals'!K12	numberformat=0.0%
-Analysis	30	11	=K1-J1	numberformat=0
-Analysis	31	11	='Historicals'!K18/K5*K30	numberformat=0.0
-Analysis	32	11	='Historicals'!K19/'Historicals'!K5*K30	numberformat=0.0
-Analysis	33	11	='Historicals'!K22/'Historicals'!K5*K30	numberformat=0.0
-Analysis	42	11	=K38+K39+K40+K41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	11	='Historicals'!K6/K5	numberformat=0.0%
+Analysis	28	11	='Historicals'!K8/K5	numberformat=0.0%
+Analysis	33	11	='Historicals'!K32/K5	numberformat=0.0%
+Analysis	34	11	='Historicals'!K13/'Historicals'!K12	numberformat=0.0%
+Analysis	29	11	=K1-J1	numberformat=0
+Analysis	30	11	='Historicals'!K18/K5*K29	numberformat=0.0
+Analysis	31	11	='Historicals'!K19/'Historicals'!K5*K29	numberformat=0.0
+Analysis	32	11	='Historicals'!K22/'Historicals'!K5*K29	numberformat=0.0
+Analysis	41	11	=K37+K38+K39+K40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	12	=L4-L5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	12	=L6-L7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	12	='Historicals'!L8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	13	=L38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	14	=M39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	15	=N40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	12	='Historicals'!L8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	13	=L37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	14	=M38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	15	=N39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	12	=L8-L9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	12	=L10-L11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	12	=L12-L13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2208,21 +2207,21 @@ Analysis	10	12	=L5+L6+L7+L8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	12	=L5/L9-1	numberformat=0.0%
 Analysis	14	12	=K14+'Historicals'!L37	numberformat=0.0%
 Analysis	15	12	=K15+'Historicals'!L38	numberformat=0.0%
-Analysis	28	12	='Historicals'!L6/L5	numberformat=0.0%
-Analysis	29	12	='Historicals'!L8/L5	numberformat=0.0%
-Analysis	34	12	='Historicals'!L32/L5	numberformat=0.0%
-Analysis	35	12	='Historicals'!L13/'Historicals'!L12	numberformat=0.0%
-Analysis	30	12	=L1-K1	numberformat=0
-Analysis	31	12	='Historicals'!L18/L5*L30	numberformat=0.0
-Analysis	32	12	='Historicals'!L19/'Historicals'!L5*L30	numberformat=0.0
-Analysis	33	12	='Historicals'!L22/'Historicals'!L5*L30	numberformat=0.0
-Analysis	42	12	=L38+L39+L40+L41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	12	='Historicals'!L6/L5	numberformat=0.0%
+Analysis	28	12	='Historicals'!L8/L5	numberformat=0.0%
+Analysis	33	12	='Historicals'!L32/L5	numberformat=0.0%
+Analysis	34	12	='Historicals'!L13/'Historicals'!L12	numberformat=0.0%
+Analysis	29	12	=L1-K1	numberformat=0
+Analysis	30	12	='Historicals'!L18/L5*L29	numberformat=0.0
+Analysis	31	12	='Historicals'!L19/'Historicals'!L5*L29	numberformat=0.0
+Analysis	32	12	='Historicals'!L22/'Historicals'!L5*L29	numberformat=0.0
+Analysis	41	12	=L37+L38+L39+L40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	13	=M4-M5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	13	=M6-M7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	13	='Historicals'!M8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	14	=M38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	15	=N39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	16	=O40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	13	='Historicals'!M8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	14	=M37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	15	=N38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	16	=O39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	13	=M8-M9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	13	=M10-M11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	13	=M12-M13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2234,21 +2233,21 @@ Analysis	10	13	=M5+M6+M7+M8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	13	=M5/M9-1	numberformat=0.0%
 Analysis	14	13	=L14+'Historicals'!M37	numberformat=0.0%
 Analysis	15	13	=L15+'Historicals'!M38	numberformat=0.0%
-Analysis	28	13	='Historicals'!M6/M5	numberformat=0.0%
-Analysis	29	13	='Historicals'!M8/M5	numberformat=0.0%
-Analysis	34	13	='Historicals'!M32/M5	numberformat=0.0%
-Analysis	35	13	='Historicals'!M13/'Historicals'!M12	numberformat=0.0%
-Analysis	30	13	=M1-L1	numberformat=0
-Analysis	31	13	='Historicals'!M18/M5*M30	numberformat=0.0
-Analysis	32	13	='Historicals'!M19/'Historicals'!M5*M30	numberformat=0.0
-Analysis	33	13	='Historicals'!M22/'Historicals'!M5*M30	numberformat=0.0
-Analysis	42	13	=M38+M39+M40+M41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	13	='Historicals'!M6/M5	numberformat=0.0%
+Analysis	28	13	='Historicals'!M8/M5	numberformat=0.0%
+Analysis	33	13	='Historicals'!M32/M5	numberformat=0.0%
+Analysis	34	13	='Historicals'!M13/'Historicals'!M12	numberformat=0.0%
+Analysis	29	13	=M1-L1	numberformat=0
+Analysis	30	13	='Historicals'!M18/M5*M29	numberformat=0.0
+Analysis	31	13	='Historicals'!M19/'Historicals'!M5*M29	numberformat=0.0
+Analysis	32	13	='Historicals'!M22/'Historicals'!M5*M29	numberformat=0.0
+Analysis	41	13	=M37+M38+M39+M40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	14	=N4-N5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	14	=N6-N7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	14	='Historicals'!N8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	15	=N38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	16	=O39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	17	=P40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	14	='Historicals'!N8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	15	=N37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	16	=O38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	17	=P39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	14	=N8-N9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	14	=N10-N11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	14	=N12-N13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2260,21 +2259,21 @@ Analysis	10	14	=N5+N6+N7+N8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	14	=N5/N9-1	numberformat=0.0%
 Analysis	14	14	=M14+'Historicals'!N37	numberformat=0.0%
 Analysis	15	14	=M15+'Historicals'!N38	numberformat=0.0%
-Analysis	28	14	='Historicals'!N6/N5	numberformat=0.0%
-Analysis	29	14	='Historicals'!N8/N5	numberformat=0.0%
-Analysis	34	14	='Historicals'!N32/N5	numberformat=0.0%
-Analysis	35	14	='Historicals'!N13/'Historicals'!N12	numberformat=0.0%
-Analysis	30	14	=N1-M1	numberformat=0
-Analysis	31	14	='Historicals'!N18/N5*N30	numberformat=0.0
-Analysis	32	14	='Historicals'!N19/'Historicals'!N5*N30	numberformat=0.0
-Analysis	33	14	='Historicals'!N22/'Historicals'!N5*N30	numberformat=0.0
-Analysis	42	14	=N38+N39+N40+N41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	14	='Historicals'!N6/N5	numberformat=0.0%
+Analysis	28	14	='Historicals'!N8/N5	numberformat=0.0%
+Analysis	33	14	='Historicals'!N32/N5	numberformat=0.0%
+Analysis	34	14	='Historicals'!N13/'Historicals'!N12	numberformat=0.0%
+Analysis	29	14	=N1-M1	numberformat=0
+Analysis	30	14	='Historicals'!N18/N5*N29	numberformat=0.0
+Analysis	31	14	='Historicals'!N19/'Historicals'!N5*N29	numberformat=0.0
+Analysis	32	14	='Historicals'!N22/'Historicals'!N5*N29	numberformat=0.0
+Analysis	41	14	=N37+N38+N39+N40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	15	=O4-O5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	15	=O6-O7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	15	='Historicals'!O8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	16	=O38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	17	=P39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	18	=Q40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	15	='Historicals'!O8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	16	=O37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	17	=P38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	18	=Q39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	15	=O8-O9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	15	=O10-O11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	15	=O12-O13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2286,21 +2285,21 @@ Analysis	10	15	=O5+O6+O7+O8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	15	=O5/O9-1	numberformat=0.0%
 Analysis	14	15	=N14+'Historicals'!O37	numberformat=0.0%
 Analysis	15	15	=N15+'Historicals'!O38	numberformat=0.0%
-Analysis	28	15	='Historicals'!O6/O5	numberformat=0.0%
-Analysis	29	15	='Historicals'!O8/O5	numberformat=0.0%
-Analysis	34	15	='Historicals'!O32/O5	numberformat=0.0%
-Analysis	35	15	='Historicals'!O13/'Historicals'!O12	numberformat=0.0%
-Analysis	30	15	=O1-N1	numberformat=0
-Analysis	31	15	='Historicals'!O18/O5*O30	numberformat=0.0
-Analysis	32	15	='Historicals'!O19/'Historicals'!O5*O30	numberformat=0.0
-Analysis	33	15	='Historicals'!O22/'Historicals'!O5*O30	numberformat=0.0
-Analysis	42	15	=O38+O39+O40+O41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	15	='Historicals'!O6/O5	numberformat=0.0%
+Analysis	28	15	='Historicals'!O8/O5	numberformat=0.0%
+Analysis	33	15	='Historicals'!O32/O5	numberformat=0.0%
+Analysis	34	15	='Historicals'!O13/'Historicals'!O12	numberformat=0.0%
+Analysis	29	15	=O1-N1	numberformat=0
+Analysis	30	15	='Historicals'!O18/O5*O29	numberformat=0.0
+Analysis	31	15	='Historicals'!O19/'Historicals'!O5*O29	numberformat=0.0
+Analysis	32	15	='Historicals'!O22/'Historicals'!O5*O29	numberformat=0.0
+Analysis	41	15	=O37+O38+O39+O40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	16	=P4-P5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	16	=P6-P7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	16	='Historicals'!P8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	17	=P38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	18	=Q39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	19	=R40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	16	='Historicals'!P8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	17	=P37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	18	=Q38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	19	=R39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	16	=P8-P9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	16	=P10-P11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	16	=P12-P13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2312,21 +2311,21 @@ Analysis	10	16	=P5+P6+P7+P8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	16	=P5/P9-1	numberformat=0.0%
 Analysis	14	16	=O14+'Historicals'!P37	numberformat=0.0%
 Analysis	15	16	=O15+'Historicals'!P38	numberformat=0.0%
-Analysis	28	16	='Historicals'!P6/P5	numberformat=0.0%
-Analysis	29	16	='Historicals'!P8/P5	numberformat=0.0%
-Analysis	34	16	='Historicals'!P32/P5	numberformat=0.0%
-Analysis	35	16	='Historicals'!P13/'Historicals'!P12	numberformat=0.0%
-Analysis	30	16	=P1-O1	numberformat=0
-Analysis	31	16	='Historicals'!P18/P5*P30	numberformat=0.0
-Analysis	32	16	='Historicals'!P19/'Historicals'!P5*P30	numberformat=0.0
-Analysis	33	16	='Historicals'!P22/'Historicals'!P5*P30	numberformat=0.0
-Analysis	42	16	=P38+P39+P40+P41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	16	='Historicals'!P6/P5	numberformat=0.0%
+Analysis	28	16	='Historicals'!P8/P5	numberformat=0.0%
+Analysis	33	16	='Historicals'!P32/P5	numberformat=0.0%
+Analysis	34	16	='Historicals'!P13/'Historicals'!P12	numberformat=0.0%
+Analysis	29	16	=P1-O1	numberformat=0
+Analysis	30	16	='Historicals'!P18/P5*P29	numberformat=0.0
+Analysis	31	16	='Historicals'!P19/'Historicals'!P5*P29	numberformat=0.0
+Analysis	32	16	='Historicals'!P22/'Historicals'!P5*P29	numberformat=0.0
+Analysis	41	16	=P37+P38+P39+P40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	17	=Q4-Q5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	17	=Q6-Q7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	17	='Historicals'!Q8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	18	=Q38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	19	=R39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	20	=S40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	17	='Historicals'!Q8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	18	=Q37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	19	=R38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	20	=S39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	17	=Q8-Q9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	17	=Q10-Q11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	17	=Q12-Q13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2338,21 +2337,21 @@ Analysis	10	17	=Q5+Q6+Q7+Q8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	17	=Q5/Q9-1	numberformat=0.0%
 Analysis	14	17	=P14+'Historicals'!Q37	numberformat=0.0%
 Analysis	15	17	=P15+'Historicals'!Q38	numberformat=0.0%
-Analysis	28	17	='Historicals'!Q6/Q5	numberformat=0.0%
-Analysis	29	17	='Historicals'!Q8/Q5	numberformat=0.0%
-Analysis	34	17	='Historicals'!Q32/Q5	numberformat=0.0%
-Analysis	35	17	='Historicals'!Q13/'Historicals'!Q12	numberformat=0.0%
-Analysis	30	17	=Q1-P1	numberformat=0
-Analysis	31	17	='Historicals'!Q18/Q5*Q30	numberformat=0.0
-Analysis	32	17	='Historicals'!Q19/'Historicals'!Q5*Q30	numberformat=0.0
-Analysis	33	17	='Historicals'!Q22/'Historicals'!Q5*Q30	numberformat=0.0
-Analysis	42	17	=Q38+Q39+Q40+Q41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	17	='Historicals'!Q6/Q5	numberformat=0.0%
+Analysis	28	17	='Historicals'!Q8/Q5	numberformat=0.0%
+Analysis	33	17	='Historicals'!Q32/Q5	numberformat=0.0%
+Analysis	34	17	='Historicals'!Q13/'Historicals'!Q12	numberformat=0.0%
+Analysis	29	17	=Q1-P1	numberformat=0
+Analysis	30	17	='Historicals'!Q18/Q5*Q29	numberformat=0.0
+Analysis	31	17	='Historicals'!Q19/'Historicals'!Q5*Q29	numberformat=0.0
+Analysis	32	17	='Historicals'!Q22/'Historicals'!Q5*Q29	numberformat=0.0
+Analysis	41	17	=Q37+Q38+Q39+Q40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	18	=R4-R5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	18	=R6-R7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	18	='Historicals'!R8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	19	=R38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	20	=S39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	21	=T40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	18	='Historicals'!R8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	19	=R37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	20	=S38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	21	=T39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	18	=R8-R9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	18	=R10-R11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	18	=R12-R13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2364,21 +2363,21 @@ Analysis	10	18	=R5+R6+R7+R8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	18	=R5/R9-1	numberformat=0.0%
 Analysis	14	18	=Q14+'Historicals'!R37	numberformat=0.0%
 Analysis	15	18	=Q15+'Historicals'!R38	numberformat=0.0%
-Analysis	28	18	='Historicals'!R6/R5	numberformat=0.0%
-Analysis	29	18	='Historicals'!R8/R5	numberformat=0.0%
-Analysis	34	18	='Historicals'!R32/R5	numberformat=0.0%
-Analysis	35	18	='Historicals'!R13/'Historicals'!R12	numberformat=0.0%
-Analysis	30	18	=R1-Q1	numberformat=0
-Analysis	31	18	='Historicals'!R18/R5*R30	numberformat=0.0
-Analysis	32	18	='Historicals'!R19/'Historicals'!R5*R30	numberformat=0.0
-Analysis	33	18	='Historicals'!R22/'Historicals'!R5*R30	numberformat=0.0
-Analysis	42	18	=R38+R39+R40+R41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	18	='Historicals'!R6/R5	numberformat=0.0%
+Analysis	28	18	='Historicals'!R8/R5	numberformat=0.0%
+Analysis	33	18	='Historicals'!R32/R5	numberformat=0.0%
+Analysis	34	18	='Historicals'!R13/'Historicals'!R12	numberformat=0.0%
+Analysis	29	18	=R1-Q1	numberformat=0
+Analysis	30	18	='Historicals'!R18/R5*R29	numberformat=0.0
+Analysis	31	18	='Historicals'!R19/'Historicals'!R5*R29	numberformat=0.0
+Analysis	32	18	='Historicals'!R22/'Historicals'!R5*R29	numberformat=0.0
+Analysis	41	18	=R37+R38+R39+R40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	19	=S4-S5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	19	=S6-S7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	19	='Historicals'!S8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	20	=S38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	21	=T39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	41	22	=U40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	19	='Historicals'!S8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	20	=S37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	21	=T38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	40	22	=U39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	19	=S8-S9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	19	=S10-S11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	14	19	=S12-S13	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2390,22 +2389,22 @@ Analysis	10	19	=S5+S6+S7+S8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	19	=S5/S9-1	numberformat=0.0%
 Analysis	14	19	=R14+'Historicals'!S37	numberformat=0.0%
 Analysis	15	19	=R15+'Historicals'!S38	numberformat=0.0%
-Analysis	28	19	='Historicals'!S6/S5	numberformat=0.0%
-Analysis	29	19	='Historicals'!S8/S5	numberformat=0.0%
-Analysis	34	19	='Historicals'!S32/S5	numberformat=0.0%
-Analysis	35	19	='Historicals'!S13/'Historicals'!S12	numberformat=0.0%
-Analysis	30	19	=S1-R1	numberformat=0
-Analysis	31	19	='Historicals'!S18/S5*S30	numberformat=0.0
-Analysis	32	19	='Historicals'!S19/'Historicals'!S5*S30	numberformat=0.0
-Analysis	33	19	='Historicals'!S22/'Historicals'!S5*S30	numberformat=0.0
-Analysis	42	19	=S38+S39+S40+S41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	19	='Historicals'!S6/S5	numberformat=0.0%
+Analysis	28	19	='Historicals'!S8/S5	numberformat=0.0%
+Analysis	33	19	='Historicals'!S32/S5	numberformat=0.0%
+Analysis	34	19	='Historicals'!S13/'Historicals'!S12	numberformat=0.0%
+Analysis	29	19	=S1-R1	numberformat=0
+Analysis	30	19	='Historicals'!S18/S5*S29	numberformat=0.0
+Analysis	31	19	='Historicals'!S19/'Historicals'!S5*S29	numberformat=0.0
+Analysis	32	19	='Historicals'!S22/'Historicals'!S5*S29	numberformat=0.0
+Analysis	41	19	=S37+S38+S39+S40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	20	=T4-T5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	20	=T6-T7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	20	='Historicals'!T8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	21	=T38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	40	22	=U39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	52	2	=V40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	43	2	='Analysis'!$B$52	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	20	='Historicals'!T8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	21	=T37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	39	22	=U38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	51	2	=V39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	43	2	='Analysis'!$B$51	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	84	3	=$B$43	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	20	=T8-T9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	12	20	=T10-T11	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2418,21 +2417,21 @@ Analysis	10	20	=T5+T6+T7+T8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	20	=T5/T9-1	numberformat=0.0%
 Analysis	14	20	=S14+'Historicals'!T37	numberformat=0.0%
 Analysis	15	20	=S15+'Historicals'!T38	numberformat=0.0%
-Analysis	28	20	='Historicals'!T6/T5	numberformat=0.0%
-Analysis	29	20	='Historicals'!T8/T5	numberformat=0.0%
-Analysis	34	20	='Historicals'!T32/T5	numberformat=0.0%
-Analysis	35	20	='Historicals'!T13/'Historicals'!T12	numberformat=0.0%
-Analysis	30	20	=T1-S1	numberformat=0
-Analysis	31	20	='Historicals'!T18/T5*T30	numberformat=0.0
-Analysis	32	20	='Historicals'!T19/'Historicals'!T5*T30	numberformat=0.0
-Analysis	33	20	='Historicals'!T22/'Historicals'!T5*T30	numberformat=0.0
-Analysis	42	20	=T38+T39+T40+T41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	20	='Historicals'!T6/T5	numberformat=0.0%
+Analysis	28	20	='Historicals'!T8/T5	numberformat=0.0%
+Analysis	33	20	='Historicals'!T32/T5	numberformat=0.0%
+Analysis	34	20	='Historicals'!T13/'Historicals'!T12	numberformat=0.0%
+Analysis	29	20	=T1-S1	numberformat=0
+Analysis	30	20	='Historicals'!T18/T5*T29	numberformat=0.0
+Analysis	31	20	='Historicals'!T19/'Historicals'!T5*T29	numberformat=0.0
+Analysis	32	20	='Historicals'!T22/'Historicals'!T5*T29	numberformat=0.0
+Analysis	41	20	=T37+T38+T39+T40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	21	=U4-U5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	21	=U6-U7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	21	='Historicals'!U8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	39	22	=U38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	51	2	=V39	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	42	2	='Analysis'!$B$51	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	21	='Historicals'!U8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	38	22	=U37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	50	2	=V38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	42	2	='Analysis'!$B$50	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	83	3	=$B$42	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	84	4	=C83	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	10	21	=U8-U9	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2446,20 +2445,20 @@ Analysis	10	21	=U5+U6+U7+U8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	21	=U5/U9-1	numberformat=0.0%
 Analysis	14	21	=T14+'Historicals'!U37	numberformat=0.0%
 Analysis	15	21	=T15+'Historicals'!U38	numberformat=0.0%
-Analysis	28	21	='Historicals'!U6/U5	numberformat=0.0%
-Analysis	29	21	='Historicals'!U8/U5	numberformat=0.0%
-Analysis	34	21	='Historicals'!U32/U5	numberformat=0.0%
-Analysis	35	21	='Historicals'!U13/'Historicals'!U12	numberformat=0.0%
-Analysis	30	21	=U1-T1	numberformat=0
-Analysis	31	21	='Historicals'!U18/U5*U30	numberformat=0.0
-Analysis	32	21	='Historicals'!U19/'Historicals'!U5*U30	numberformat=0.0
-Analysis	33	21	='Historicals'!U22/'Historicals'!U5*U30	numberformat=0.0
-Analysis	42	21	=U38+U39+U40+U41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	21	='Historicals'!U6/U5	numberformat=0.0%
+Analysis	28	21	='Historicals'!U8/U5	numberformat=0.0%
+Analysis	33	21	='Historicals'!U32/U5	numberformat=0.0%
+Analysis	34	21	='Historicals'!U13/'Historicals'!U12	numberformat=0.0%
+Analysis	29	21	=U1-T1	numberformat=0
+Analysis	30	21	='Historicals'!U18/U5*U29	numberformat=0.0
+Analysis	31	21	='Historicals'!U19/'Historicals'!U5*U29	numberformat=0.0
+Analysis	32	21	='Historicals'!U22/'Historicals'!U5*U29	numberformat=0.0
+Analysis	41	21	=U37+U38+U39+U40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	6	22	=V4-V5	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Historicals	8	22	=V6-V7	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	38	22	='Historicals'!V8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	50	2	=V38	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Forecast	41	2	='Analysis'!$B$50	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	37	22	='Historicals'!V8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	49	2	=V37	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Forecast	41	2	='Analysis'!$B$49	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	82	3	=$B$41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	83	4	=C82	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	84	5	=D83	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2474,15 +2473,15 @@ Analysis	10	22	=V5+V6+V7+V8	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Analysis	13	22	=V5/V9-1	numberformat=0.0%
 Analysis	14	22	=U14+'Historicals'!V37	numberformat=0.0%
 Analysis	15	22	=U15+'Historicals'!V38	numberformat=0.0%
-Analysis	28	22	='Historicals'!V6/V5	numberformat=0.0%
-Analysis	29	22	='Historicals'!V8/V5	numberformat=0.0%
-Analysis	34	22	='Historicals'!V32/V5	numberformat=0.0%
-Analysis	35	22	='Historicals'!V13/'Historicals'!V12	numberformat=0.0%
-Analysis	30	22	=V1-U1	numberformat=0
-Analysis	31	22	='Historicals'!V18/V5*V30	numberformat=0.0
-Analysis	32	22	='Historicals'!V19/'Historicals'!V5*V30	numberformat=0.0
-Analysis	33	22	='Historicals'!V22/'Historicals'!V5*V30	numberformat=0.0
-Analysis	42	22	=V38+V39+V40+V41	numberformat=_(#,##0.0);(#,##0.0);_(-_)
+Analysis	27	22	='Historicals'!V6/V5	numberformat=0.0%
+Analysis	28	22	='Historicals'!V8/V5	numberformat=0.0%
+Analysis	33	22	='Historicals'!V32/V5	numberformat=0.0%
+Analysis	34	22	='Historicals'!V13/'Historicals'!V12	numberformat=0.0%
+Analysis	29	22	=V1-U1	numberformat=0
+Analysis	30	22	='Historicals'!V18/V5*V29	numberformat=0.0
+Analysis	31	22	='Historicals'!V19/'Historicals'!V5*V29	numberformat=0.0
+Analysis	32	22	='Historicals'!V22/'Historicals'!V5*V29	numberformat=0.0
+Analysis	41	22	=V37+V38+V39+V40	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	98	3	=$B$29-1	numberformat=0
 Forecast	101	3	=$B$55*MIN(1,MAX(C98,0))	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	164	3	=C101	numberformat=_(#,##0.0);(#,##0.0);_(-_)
@@ -2860,136 +2859,135 @@ Forecast	166	22	=V110	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	114	22	=V108*(V19+V22)/4	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	125	22	=V100+V105+V109	numberformat=_(#,##0.0);(#,##0.0);_(-_)
 Forecast	177	22	=-V125	numberformat=_(#,##0.0);(#,##0.0);_(-_)
-Analysis	11	2	=(V2-4)/4	numberformat=0.00
-Analysis	12	2	=(V10/F10)^(1/$B$11)-1	numberformat=0.0%
+Analysis	11	2	=V2-4	numberformat=0
+Analysis	12	2	=(V10/F10)^(4/$B$11)-1	numberformat=0.0%
 Forecast	34	2	='Analysis'!$B$12	numberformat=0.0%
-Analysis	16	2	=V2-4	numberformat=0
-Analysis	17	2	=V14/$B$16	numberformat=0.0%
-Forecast	35	2	='Analysis'!$B$17	numberformat=0.0%
-Analysis	18	2	=V15/$B$16	numberformat=0.0%
-Forecast	36	2	='Analysis'!$B$18	numberformat=0.0%
-Analysis	19	7	='Assumptions'!$B$7*('Historicals'!G37-$B$17)	numberformat=0.0%
-Analysis	20	7	='Assumptions'!$B$8*('Historicals'!G38-$B$18)	numberformat=0.0%
-Analysis	21	7	=G13-$B$12-G19-G20	numberformat=0.0%
-Analysis	22	8	=G21	numberformat=0.0%
-Analysis	23	9	=H22	numberformat=0.0%
-Analysis	24	10	=I23	numberformat=0.0%
-Analysis	25	11	=J24	numberformat=0.0%
-Analysis	19	8	='Assumptions'!$B$7*('Historicals'!H37-$B$17)	numberformat=0.0%
-Analysis	20	8	='Assumptions'!$B$8*('Historicals'!H38-$B$18)	numberformat=0.0%
-Analysis	21	8	=H13-$B$12-H19-H20	numberformat=0.0%
+Analysis	16	2	=V14/$B$11	numberformat=0.0%
+Forecast	35	2	='Analysis'!$B$16	numberformat=0.0%
+Analysis	17	2	=V15/$B$11	numberformat=0.0%
+Forecast	36	2	='Analysis'!$B$17	numberformat=0.0%
+Analysis	18	7	='Assumptions'!$B$7*('Historicals'!G37-$B$16)	numberformat=0.0%
+Analysis	19	7	='Assumptions'!$B$8*('Historicals'!G38-$B$17)	numberformat=0.0%
+Analysis	20	7	=G13-$B$12-G18-G19	numberformat=0.0%
+Analysis	21	8	=G20	numberformat=0.0%
 Analysis	22	9	=H21	numberformat=0.0%
 Analysis	23	10	=I22	numberformat=0.0%
 Analysis	24	11	=J23	numberformat=0.0%
-Analysis	25	12	=K24	numberformat=0.0%
-Analysis	19	9	='Assumptions'!$B$7*('Historicals'!I37-$B$17)	numberformat=0.0%
-Analysis	20	9	='Assumptions'!$B$8*('Historicals'!I38-$B$18)	numberformat=0.0%
-Analysis	21	9	=I13-$B$12-I19-I20	numberformat=0.0%
+Analysis	18	8	='Assumptions'!$B$7*('Historicals'!H37-$B$16)	numberformat=0.0%
+Analysis	19	8	='Assumptions'!$B$8*('Historicals'!H38-$B$17)	numberformat=0.0%
+Analysis	20	8	=H13-$B$12-H18-H19	numberformat=0.0%
+Analysis	21	9	=H20	numberformat=0.0%
 Analysis	22	10	=I21	numberformat=0.0%
 Analysis	23	11	=J22	numberformat=0.0%
 Analysis	24	12	=K23	numberformat=0.0%
-Analysis	25	13	=L24	numberformat=0.0%
-Analysis	19	10	='Assumptions'!$B$7*('Historicals'!J37-$B$17)	numberformat=0.0%
-Analysis	20	10	='Assumptions'!$B$8*('Historicals'!J38-$B$18)	numberformat=0.0%
-Analysis	21	10	=J13-$B$12-J19-J20	numberformat=0.0%
+Analysis	18	9	='Assumptions'!$B$7*('Historicals'!I37-$B$16)	numberformat=0.0%
+Analysis	19	9	='Assumptions'!$B$8*('Historicals'!I38-$B$17)	numberformat=0.0%
+Analysis	20	9	=I13-$B$12-I18-I19	numberformat=0.0%
+Analysis	21	10	=I20	numberformat=0.0%
 Analysis	22	11	=J21	numberformat=0.0%
 Analysis	23	12	=K22	numberformat=0.0%
 Analysis	24	13	=L23	numberformat=0.0%
-Analysis	25	14	=M24	numberformat=0.0%
-Analysis	19	11	='Assumptions'!$B$7*('Historicals'!K37-$B$17)	numberformat=0.0%
-Analysis	20	11	='Assumptions'!$B$8*('Historicals'!K38-$B$18)	numberformat=0.0%
-Analysis	21	11	=K13-$B$12-K19-K20	numberformat=0.0%
+Analysis	18	10	='Assumptions'!$B$7*('Historicals'!J37-$B$16)	numberformat=0.0%
+Analysis	19	10	='Assumptions'!$B$8*('Historicals'!J38-$B$17)	numberformat=0.0%
+Analysis	20	10	=J13-$B$12-J18-J19	numberformat=0.0%
+Analysis	21	11	=J20	numberformat=0.0%
 Analysis	22	12	=K21	numberformat=0.0%
 Analysis	23	13	=L22	numberformat=0.0%
 Analysis	24	14	=M23	numberformat=0.0%
-Analysis	25	15	=N24	numberformat=0.0%
-Analysis	19	12	='Assumptions'!$B$7*('Historicals'!L37-$B$17)	numberformat=0.0%
-Analysis	20	12	='Assumptions'!$B$8*('Historicals'!L38-$B$18)	numberformat=0.0%
-Analysis	21	12	=L13-$B$12-L19-L20	numberformat=0.0%
+Analysis	18	11	='Assumptions'!$B$7*('Historicals'!K37-$B$16)	numberformat=0.0%
+Analysis	19	11	='Assumptions'!$B$8*('Historicals'!K38-$B$17)	numberformat=0.0%
+Analysis	20	11	=K13-$B$12-K18-K19	numberformat=0.0%
+Analysis	21	12	=K20	numberformat=0.0%
 Analysis	22	13	=L21	numberformat=0.0%
 Analysis	23	14	=M22	numberformat=0.0%
 Analysis	24	15	=N23	numberformat=0.0%
-Analysis	25	16	=O24	numberformat=0.0%
-Analysis	19	13	='Assumptions'!$B$7*('Historicals'!M37-$B$17)	numberformat=0.0%
-Analysis	20	13	='Assumptions'!$B$8*('Historicals'!M38-$B$18)	numberformat=0.0%
-Analysis	21	13	=M13-$B$12-M19-M20	numberformat=0.0%
+Analysis	18	12	='Assumptions'!$B$7*('Historicals'!L37-$B$16)	numberformat=0.0%
+Analysis	19	12	='Assumptions'!$B$8*('Historicals'!L38-$B$17)	numberformat=0.0%
+Analysis	20	12	=L13-$B$12-L18-L19	numberformat=0.0%
+Analysis	21	13	=L20	numberformat=0.0%
 Analysis	22	14	=M21	numberformat=0.0%
 Analysis	23	15	=N22	numberformat=0.0%
 Analysis	24	16	=O23	numberformat=0.0%
-Analysis	25	17	=P24	numberformat=0.0%
-Analysis	19	14	='Assumptions'!$B$7*('Historicals'!N37-$B$17)	numberformat=0.0%
-Analysis	20	14	='Assumptions'!$B$8*('Historicals'!N38-$B$18)	numberformat=0.0%
-Analysis	21	14	=N13-$B$12-N19-N20	numberformat=0.0%
+Analysis	18	13	='Assumptions'!$B$7*('Historicals'!M37-$B$16)	numberformat=0.0%
+Analysis	19	13	='Assumptions'!$B$8*('Historicals'!M38-$B$17)	numberformat=0.0%
+Analysis	20	13	=M13-$B$12-M18-M19	numberformat=0.0%
+Analysis	21	14	=M20	numberformat=0.0%
 Analysis	22	15	=N21	numberformat=0.0%
 Analysis	23	16	=O22	numberformat=0.0%
 Analysis	24	17	=P23	numberformat=0.0%
-Analysis	25	18	=Q24	numberformat=0.0%
-Analysis	19	15	='Assumptions'!$B$7*('Historicals'!O37-$B$17)	numberformat=0.0%
-Analysis	20	15	='Assumptions'!$B$8*('Historicals'!O38-$B$18)	numberformat=0.0%
-Analysis	21	15	=O13-$B$12-O19-O20	numberformat=0.0%
+Analysis	18	14	='Assumptions'!$B$7*('Historicals'!N37-$B$16)	numberformat=0.0%
+Analysis	19	14	='Assumptions'!$B$8*('Historicals'!N38-$B$17)	numberformat=0.0%
+Analysis	20	14	=N13-$B$12-N18-N19	numberformat=0.0%
+Analysis	21	15	=N20	numberformat=0.0%
 Analysis	22	16	=O21	numberformat=0.0%
 Analysis	23	17	=P22	numberformat=0.0%
 Analysis	24	18	=Q23	numberformat=0.0%
-Analysis	25	19	=R24	numberformat=0.0%
-Analysis	19	16	='Assumptions'!$B$7*('Historicals'!P37-$B$17)	numberformat=0.0%
-Analysis	20	16	='Assumptions'!$B$8*('Historicals'!P38-$B$18)	numberformat=0.0%
-Analysis	21	16	=P13-$B$12-P19-P20	numberformat=0.0%
+Analysis	18	15	='Assumptions'!$B$7*('Historicals'!O37-$B$16)	numberformat=0.0%
+Analysis	19	15	='Assumptions'!$B$8*('Historicals'!O38-$B$17)	numberformat=0.0%
+Analysis	20	15	=O13-$B$12-O18-O19	numberformat=0.0%
+Analysis	21	16	=O20	numberformat=0.0%
 Analysis	22	17	=P21	numberformat=0.0%
 Analysis	23	18	=Q22	numberformat=0.0%
 Analysis	24	19	=R23	numberformat=0.0%
-Analysis	25	20	=S24	numberformat=0.0%
-Analysis	19	17	='Assumptions'!$B$7*('Historicals'!Q37-$B$17)	numberformat=0.0%
-Analysis	20	17	='Assumptions'!$B$8*('Historicals'!Q38-$B$18)	numberformat=0.0%
-Analysis	21	17	=Q13-$B$12-Q19-Q20	numberformat=0.0%
+Analysis	18	16	='Assumptions'!$B$7*('Historicals'!P37-$B$16)	numberformat=0.0%
+Analysis	19	16	='Assumptions'!$B$8*('Historicals'!P38-$B$17)	numberformat=0.0%
+Analysis	20	16	=P13-$B$12-P18-P19	numberformat=0.0%
+Analysis	21	17	=P20	numberformat=0.0%
 Analysis	22	18	=Q21	numberformat=0.0%
 Analysis	23	19	=R22	numberformat=0.0%
 Analysis	24	20	=S23	numberformat=0.0%
-Analysis	25	21	=T24	numberformat=0.0%
-Analysis	19	18	='Assumptions'!$B$7*('Historicals'!R37-$B$17)	numberformat=0.0%
-Analysis	20	18	='Assumptions'!$B$8*('Historicals'!R38-$B$18)	numberformat=0.0%
-Analysis	21	18	=R13-$B$12-R19-R20	numberformat=0.0%
+Analysis	18	17	='Assumptions'!$B$7*('Historicals'!Q37-$B$16)	numberformat=0.0%
+Analysis	19	17	='Assumptions'!$B$8*('Historicals'!Q38-$B$17)	numberformat=0.0%
+Analysis	20	17	=Q13-$B$12-Q18-Q19	numberformat=0.0%
+Analysis	21	18	=Q20	numberformat=0.0%
 Analysis	22	19	=R21	numberformat=0.0%
 Analysis	23	20	=S22	numberformat=0.0%
 Analysis	24	21	=T23	numberformat=0.0%
-Analysis	25	22	=U24	numberformat=0.0%
-Analysis	57	2	=V25	numberformat=0.0%
-Forecast	48	2	='Analysis'!$B$57	numberformat=0.0%
-Forecast	67	3	=$B$48	numberformat=0.0%
-Analysis	19	19	='Assumptions'!$B$7*('Historicals'!S37-$B$17)	numberformat=0.0%
-Analysis	20	19	='Assumptions'!$B$8*('Historicals'!S38-$B$18)	numberformat=0.0%
-Analysis	21	19	=S13-$B$12-S19-S20	numberformat=0.0%
+Analysis	18	18	='Assumptions'!$B$7*('Historicals'!R37-$B$16)	numberformat=0.0%
+Analysis	19	18	='Assumptions'!$B$8*('Historicals'!R38-$B$17)	numberformat=0.0%
+Analysis	20	18	=R13-$B$12-R18-R19	numberformat=0.0%
+Analysis	21	19	=R20	numberformat=0.0%
 Analysis	22	20	=S21	numberformat=0.0%
 Analysis	23	21	=T22	numberformat=0.0%
 Analysis	24	22	=U23	numberformat=0.0%
 Analysis	56	2	=V24	numberformat=0.0%
-Forecast	47	2	='Analysis'!$B$56	numberformat=0.0%
-Forecast	66	3	=$B$47	numberformat=0.0%
-Forecast	67	4	=C66	numberformat=0.0%
-Analysis	19	20	='Assumptions'!$B$7*('Historicals'!T37-$B$17)	numberformat=0.0%
-Analysis	20	20	='Assumptions'!$B$8*('Historicals'!T38-$B$18)	numberformat=0.0%
-Analysis	21	20	=T13-$B$12-T19-T20	numberformat=0.0%
+Forecast	48	2	='Analysis'!$B$56	numberformat=0.0%
+Forecast	67	3	=$B$48	numberformat=0.0%
+Analysis	18	19	='Assumptions'!$B$7*('Historicals'!S37-$B$16)	numberformat=0.0%
+Analysis	19	19	='Assumptions'!$B$8*('Historicals'!S38-$B$17)	numberformat=0.0%
+Analysis	20	19	=S13-$B$12-S18-S19	numberformat=0.0%
+Analysis	21	20	=S20	numberformat=0.0%
 Analysis	22	21	=T21	numberformat=0.0%
 Analysis	23	22	=U22	numberformat=0.0%
 Analysis	55	2	=V23	numberformat=0.0%
-Forecast	46	2	='Analysis'!$B$55	numberformat=0.0%
+Forecast	47	2	='Analysis'!$B$55	numberformat=0.0%
+Forecast	66	3	=$B$47	numberformat=0.0%
+Forecast	67	4	=C66	numberformat=0.0%
+Analysis	18	20	='Assumptions'!$B$7*('Historicals'!T37-$B$16)	numberformat=0.0%
+Analysis	19	20	='Assumptions'!$B$8*('Historicals'!T38-$B$17)	numberformat=0.0%
+Analysis	20	20	=T13-$B$12-T18-T19	numberformat=0.0%
+Analysis	21	21	=T20	numberformat=0.0%
+Analysis	22	22	=U21	numberformat=0.0%
+Analysis	54	2	=V22	numberformat=0.0%
+Forecast	46	2	='Analysis'!$B$54	numberformat=0.0%
 Forecast	65	3	=$B$46	numberformat=0.0%
 Forecast	66	4	=C65	numberformat=0.0%
 Forecast	67	5	=D66	numberformat=0.0%
-Analysis	19	21	='Assumptions'!$B$7*('Historicals'!U37-$B$17)	numberformat=0.0%
-Analysis	20	21	='Assumptions'!$B$8*('Historicals'!U38-$B$18)	numberformat=0.0%
-Analysis	21	21	=U13-$B$12-U19-U20	numberformat=0.0%
-Analysis	22	22	=U21	numberformat=0.0%
-Analysis	54	2	=V22	numberformat=0.0%
-Forecast	45	2	='Analysis'!$B$54	numberformat=0.0%
+Analysis	18	21	='Assumptions'!$B$7*('Historicals'!U37-$B$16)	numberformat=0.0%
+Analysis	19	21	='Assumptions'!$B$8*('Historicals'!U38-$B$17)	numberformat=0.0%
+Analysis	20	21	=U13-$B$12-U18-U19	numberformat=0.0%
+Analysis	21	22	=U20	numberformat=0.0%
+Analysis	53	2	=V21	numberformat=0.0%
+Forecast	45	2	='Analysis'!$B$53	numberformat=0.0%
 Forecast	64	3	=$B$45	numberformat=0.0%
 Forecast	65	4	=C64	numberformat=0.0%
 Forecast	66	5	=D65	numberformat=0.0%
 Forecast	67	6	=E66	numberformat=0.0%
-Analysis	19	22	='Assumptions'!$B$7*('Historicals'!V37-$B$17)	numberformat=0.0%
-Analysis	20	22	='Assumptions'!$B$8*('Historicals'!V38-$B$18)	numberformat=0.0%
-Analysis	21	22	=V13-$B$12-V19-V20	numberformat=0.0%
-Analysis	53	2	=V21	numberformat=0.0%
-Forecast	44	2	='Analysis'!$B$53	numberformat=0.0%
+Analysis	18	22	='Assumptions'!$B$7*('Historicals'!V37-$B$16)	numberformat=0.0%
+Analysis	19	22	='Assumptions'!$B$8*('Historicals'!V38-$B$17)	numberformat=0.0%
+Analysis	20	22	=V13-$B$12-V18-V19	numberformat=0.0%
+Analysis	52	2	=V20	numberformat=0.0%
+Forecast	44	2	='Analysis'!$B$52	numberformat=0.0%
 Forecast	63	3	=$B$44	numberformat=0.0%
 Forecast	64	4	=C63	numberformat=0.0%
 Forecast	65	5	=D64	numberformat=0.0%

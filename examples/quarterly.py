@@ -109,10 +109,15 @@ CASH_FLOWS = {
     "buybacks": "Share buybacks",
 }
 BALANCES = ASSETS | LIABILITIES
-DEBT = ("revolver", "bond_a", "bond_b", "term_loan")
 
 # Single values on the Assumptions sheet, each stretched across the forecast: model name,
 # label and number format.
+REVENUE_MODEL = {
+    "gdp_beta": ("Growth per point of GDP growth", "0.00"),
+    "price_beta": ("Growth per point of price change", "0.00"),
+    "ar": ("Surprise kept from the last quarter", "0.00"),
+    "seasonal_ar": ("Surprise kept from a year earlier", "0.00"),
+}
 OPERATIONS = {
     "cost_of_sales_pct": ("Cost of sales, % of revenue", PERCENT),
     "operating_expenses_pct": ("Operating expenses, % of revenue", PERCENT),
@@ -132,18 +137,9 @@ FINANCING = {
     "revolver_limit": ("Revolver limit", MONEY),
     "minimum_cash": ("Minimum cash", MONEY),
     "dividend": ("Target dividend a quarter", MONEY),
-    "buyback_share": ("Share buybacks, % of cash left over", PERCENT),
+    "buyback_share": ("Buybacks, % of cash left over", PERCENT),
 }
-STRETCHED = OPERATIONS | FINANCING
-
-# The revenue model's single values, stretched like the rest.
-REVENUE_MODEL = {
-    "gdp_beta": ("Growth per point of GDP growth above average", "0.00"),
-    "price_beta": ("Growth per point of price change above average", "0.00"),
-    "ar": ("Surprise carried from the quarter before", "0.00"),
-    "seasonal_ar": ("Surprise carried from a year before", "0.00"),
-}
-STRETCHED = REVENUE_MODEL | STRETCHED
+STRETCHED = REVENUE_MODEL | OPERATIONS | FINANCING
 
 # Single values used once, as the seed of a countdown, so never stretched.
 MATURITIES = {
@@ -165,7 +161,7 @@ STATEMENT_COPIES = {
         "tax": "Tax",
         "net_income": "Net income",
     },
-    "_bs": {name: label for name, label in BALANCES.items()},
+    "_bs": BALANCES,
     "_cf": {
         "net_income": "Net income",
         "depreciation": "Depreciation",
@@ -255,12 +251,12 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     price_change = m.input("price_change", forecast)
     base_rate = m.input("base_rate", forecast)
     maturity = {name: m.input(name, scalar) for name in MATURITIES}
-    value: dict[str, Declared] = {}
+    single: dict[str, Declared] = {}
     stretched: dict[str, Declared] = {}
     for name in STRETCHED:
-        value[name] = m.input(name, scalar)
+        single[name] = m.input(name, scalar)
         stretched[name] = m.vector(f"{name}_stretched", forecast)
-        stretched[name].define(value[name])
+        stretched[name].define(single[name])
 
     # --- Analysis: the history spread out, and the state at its last quarter. -----------
     quarter_end_a = copy("quarter_end_a", quarter_end_actual)
@@ -272,10 +268,11 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     )
     revenue_12m = m.vector("revenue_12m", history[3:])
     revenue_12m.define(revenue_a + revenue_1q + revenue_2q + revenue_3q)
-    # Twelve-month revenue first covers a whole year at the fourth quarter.
-    years, cagr = m.vectors(scalar, "years", "cagr")
-    years.define((last(quarter_number) - 4) / 4)
-    cagr.define((last(revenue_12m) / first(revenue_12m)) ** (1 / years) - 1)
+    # Twelve-month revenue first covers a whole year at the fourth quarter, so every
+    # quarter after it has a year-on-year growth rate, and a quarter is a quarter-year.
+    growth_quarters, cagr = m.vectors(scalar, "growth_quarters", "cagr")
+    growth_quarters.define(last(quarter_number) - 4)
+    cagr.define((last(revenue_12m) / first(revenue_12m)) ** (4 / growth_quarters) - 1)
     # The compound growth already includes the economy the history had, so the economy's
     # effects are measured from its average over the quarters that have a growth rate:
     # a running total, carried a quarter at a time, over their count.
@@ -298,16 +295,13 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     revenue_growth_a.define(revenue_a / revenue_4q - 1)
     gdp_total.define(lag(gdp_total, seed=0) + gdp_growth_actual)
     price_total.define(lag(price_total, seed=0) + price_change_actual)
-    growth_quarters, gdp_average, price_average = m.vectors(
-        scalar, "growth_quarters", "gdp_average", "price_average"
-    )
-    growth_quarters.define(last(quarter_number) - 4)
+    gdp_average, price_average = m.vectors(scalar, "gdp_average", "price_average")
     gdp_average.define(last(gdp_total) / growth_quarters)
     price_average.define(last(price_total) / growth_quarters)
     # Each quarter's growth, less what the compound growth and the economy explain, is
     # that quarter's surprise.
-    gdp_effect_a.define(value["gdp_beta"] * (gdp_growth_actual - gdp_average))
-    price_effect_a.define(value["price_beta"] * (price_change_actual - price_average))
+    gdp_effect_a.define(single["gdp_beta"] * (gdp_growth_actual - gdp_average))
+    price_effect_a.define(single["price_beta"] * (price_change_actual - price_average))
     surprise_a.define(revenue_growth_a - cagr - gdp_effect_a - price_effect_a)
     surprise_earlier = earlier("surprise", surprise_a, history[4:], 4)
 
@@ -360,7 +354,7 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     gdp_growth_f = copy("gdp_growth_f", gdp_growth)
     price_change_f = copy("price_change_f", price_change)
     base_rate_f = copy("base_rate_f", base_rate)
-    maturity_f = {name: copy(f"{name}_f", value) for name, value in maturity.items()}
+    maturity_f = {name: copy(f"{name}_f", given) for name, given in maturity.items()}
     use = {name: copy(f"{name}_f", row) for name, row in stretched.items()}
     start_quarter_end_f = copy("start_quarter_end_f", start_quarter_end)
     cagr_f = copy("cagr_f", cagr)
@@ -561,13 +555,8 @@ def build() -> Result[Circuit, tuple[ModelError, ...]]:
     opening_equity.define(lag(equity, seed=start["equity"]))
     equity.define(opening_equity + net_income - dividends - buybacks)
 
-    ebitda_state = []
-    before = ebitda
-    for k, seed in enumerate(start_ebitda_f, start=1):
-        row = m.vector(f"ebitda_{k}q_f", forecast)
-        row.define(lag(before, seed=seed))
-        ebitda_state.append(row)
-        before = row
+    # Twelve-month EBITDA, for leverage, needs the last three quarters' as state.
+    ebitda_state = rolled_on("ebitda", ebitda, start_ebitda_f)
     ebitda_12m = m.vector("ebitda_12m", forecast)
     ebitda_12m.define(ebitda + ebitda_state[0] + ebitda_state[1] + ebitda_state[2])
 
@@ -897,7 +886,7 @@ def workbook() -> Workbook:
             line("Own price change, year on year", "price_change_actual", fmt=PERCENT),
         ),
         start="history",
-        label_width=30,
+        label_width=32,
         period_width=9,
     )
     assumptions = Sheet(
@@ -929,7 +918,7 @@ def workbook() -> Workbook:
             *(line(label, name, fmt=COUNT) for name, label in MATURITIES.items()),
         ),
         start="forecast",
-        label_width=36,
+        label_width=38,
         period_width=9,
     )
     analysis = Sheet(
@@ -945,12 +934,11 @@ def workbook() -> Workbook:
             line("3 quarters earlier", "revenue_3q"),
             line("4 quarters earlier", "revenue_4q"),
             line("Last 12 months", "revenue_12m"),
-            line("Years of 12-month revenue", "years", fmt="0.00"),
+            line("Quarters with a growth rate", "growth_quarters", fmt=COUNT),
             line("Compound annual growth", "cagr", fmt=PERCENT),
             line("Growth, year on year", "revenue_growth_a", fmt=PERCENT),
             line("GDP growth, running total", "gdp_total", fmt=PERCENT),
             line("Price change, running total", "price_total", fmt=PERCENT),
-            line("Quarters with a growth rate", "growth_quarters", fmt=COUNT),
             line("GDP growth, average", "gdp_average", fmt=PERCENT),
             line("Own price change, average", "price_average", fmt=PERCENT),
             line("GDP effect", "gdp_effect_a", fmt=PERCENT),
@@ -1007,7 +995,7 @@ def workbook() -> Workbook:
             *(line(label, f"start_{name}") for name, label in BALANCES.items()),
         ),
         start="history",
-        label_width=36,
+        label_width=38,
         period_width=9,
     )
     forecast = Sheet(
@@ -1202,7 +1190,7 @@ def workbook() -> Workbook:
             step("Cash and undrawn revolver", "liquidity"),
         ),
         start="forecast",
-        label_width=34,
+        label_width=38,
         period_width=9,
     )
     return Workbook((historicals, assumptions, analysis, forecast))
