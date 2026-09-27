@@ -1,0 +1,19 @@
+{
+  "format": "ukumari.model",
+  "version": 1,
+  "axes": [
+    {"name": "month", "regions": ["period"]}
+  ],
+  "declarations": [
+    {"name": "principal", "kind": "input", "shape": "scalar"},
+    {"name": "scheduled", "kind": "input", "shape": {"region": "period", "front": 0, "back": 0}},
+    {"name": "opening", "kind": "vector", "shape": {"region": "period", "front": 0, "back": 0}},
+    {"name": "payment", "kind": "vector", "shape": {"region": "period", "front": 0, "back": 0}},
+    {"name": "closing", "kind": "vector", "shape": {"region": "period", "front": 0, "back": 0}}
+  ],
+  "equations": [
+    {"name": "opening", "expression": {"op": "lag", "body": {"op": "name", "name": "closing"}, "seed": {"op": "name", "name": "principal"}}},
+    {"name": "payment", "expression": {"op": "min", "left": {"op": "name", "name": "scheduled"}, "right": {"op": "name", "name": "opening"}}},
+    {"name": "closing", "expression": {"op": "sub", "left": {"op": "name", "name": "opening"}, "right": {"op": "name", "name": "payment"}}}
+  ]
+}

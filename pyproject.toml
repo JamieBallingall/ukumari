@@ -21,6 +21,8 @@ packages = ["src/ukumari"]
 addopts = "--doctest-modules --import-mode=importlib"
 doctest_optionflags = "ELLIPSIS"
 testpaths = ["src/ukumari", "tests"]
+pythonpath = ["tests", "examples"]
+markers = ["app: needs Windows, ../stliss and the spreadsheet app"]
 
 [dependency-groups]
 dev = [
@@ -28,3 +30,7 @@ dev = [
     "ruff>=0.16.9",
     "ty==0.0.84",
 ]
+
+[tool.ty.environment]
+# The tests import the examples as modules, as pytest's `pythonpath` lets them.
+extra-paths = ["tests", "examples"]
