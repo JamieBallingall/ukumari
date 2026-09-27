@@ -17,8 +17,8 @@ Model	3	3	#30.0	numberformat=#,##0.00
 Model	3	4	#30.0	numberformat=#,##0.00
 Model	3	5	#30.0	numberformat=#,##0.00
 Model	3	6	#30.0	numberformat=#,##0.00
-Model	5	2	=MIN(B3,B2)	numberformat=#,##0.00
-Model	6	2	=B2-B5	numberformat=#,##0.00
+Model	5	2	=MIN(B3,B4)	numberformat=#,##0.00
+Model	6	2	=B4-B5	numberformat=#,##0.00
 Model	4	3	=B6	numberformat=#,##0.00
 Model	5	3	=MIN(C3,C4)	numberformat=#,##0.00
 Model	6	3	=C4-C5	numberformat=#,##0.00

@@ -137,8 +137,8 @@ def test_copies_link_across_sheets_and_formulas_read_local_copies() -> None:
     assert cells[("Actuals", 2, 3)][0] == "='Inputs'!C4"
     # The last of the copy, not the input it copies.
     assert cells[("Actuals", 3, 2)][0] == "=D2"
-    # The seed's value is first held by the input; the rest reads this sheet's own copies.
-    assert cells[("Forecast", 4, 3)][0] == "='Inputs'!D4*(1+C1)"
+    # The seed is the single value the model names; the rest reads this sheet's own copies.
+    assert cells[("Forecast", 4, 3)][0] == "='Actuals'!B3*(1+C1)"
     assert cells[("Forecast", 4, 4)][0] == "=C4*(1+D1)"
     assert cells[("Forecast", 5, 5)][0] == "=E4*E2"
     assert result.xlsx().is_ok()

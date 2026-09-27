@@ -4,12 +4,14 @@
   links to the cell its equation reads, when that is a bare reference: the lag edge
   ``opening[1]`` is ``closing[0]``, so it is ``=B7``, and a copy of a copy links to the copy
   it was made from. Any other cell holding the node links to the origin.
-- **Which cell a formula references for a node**, the first of these that holds it: one in
-  the formula's own column on its own sheet; one on its own sheet; one at the same position
-  on another sheet; the origin. Within each, the origin first, then unroll order. So
-  ``closing[1] = opening[1] − payment[1]`` is written ``=C3-C4``, with both operands from
-  the period-1 column, as a modeller writes it, and a formula reads a copy on its own sheet
-  in preference to the row it was copied from.
+- **Which cell a formula references for a node:** a cell its equation names, if one holds
+  the node, since that is what the modeller wrote; otherwise any cell holding it. Among
+  those, the first of these groups that has one: the formula's own column on its own sheet;
+  its own sheet; the same position on another sheet; the rest. Within a group, the origin
+  first, then unroll order. So ``closing[1] = opening[1] − payment[1]`` is written
+  ``=C3-C4``, with both operands from the period-1 column, as a modeller writes it; a seed
+  is read from the cell the model names, not from the input that first held its value; and
+  a formula reads a copy on its own sheet in preference to the row it was copied from.
 - **A reference to another sheet** names it in single quotes, ``'Assumptions'!C8``, with
   any apostrophe doubled.
 - **A cell's formula renders its node's expression.** Every operand node that has a cell
@@ -105,16 +107,17 @@ def write_yup(
     def reference(node: int, cell: Cell) -> str:
         here = address[cell]
         origin = s.origins[node]
-        on_sheet = [c for c in holders[node] if address[c].sheet == here.sheet]
+        named = [c for c in s.reads[cell] if s.cells[c] == node]
+        found = named or holders[node]
+        on_sheet = [c for c in found if address[c].sheet == here.sheet]
         tiers = (
             [c for c in on_sheet if address[c].column == here.column],
             on_sheet,
-            [c for c in holders[node] if c[1] == cell[1]],
+            [c for c in found if c[1] == cell[1]],
+            found,
         )
-        for tier in tiers:
-            if tier:
-                return link(origin if origin in tier else tier[0], here)
-        return link(origin, here)
+        chosen = next(tier for tier in tiers if tier)
+        return link(origin if origin in chosen else chosen[0], here)
 
     def render(node: int, cell: Cell, top: bool) -> tuple[str, int]:
         """Formula text for a node, and how tightly it binds."""

@@ -27,7 +27,18 @@ from enum import StrEnum
 
 from ukumari.bind import Bound, Whole, Written, at_position
 from ukumari.circuit import Kind
-from ukumari.expr import At, Binary, Expr, Lag, Last, Literal, Neg, Ref, to_double
+from ukumari.expr import (
+    At,
+    Binary,
+    Expr,
+    Lag,
+    Last,
+    Literal,
+    Neg,
+    Ref,
+    to_double,
+    walk,
+)
 
 
 class Prim(StrEnum):
@@ -77,13 +88,15 @@ class Straight:
     ``sources`` maps a cell whose equation, written out at its position, is a bare
     reference (a copy, the previous position of a lag, a seed, a reduction) to the cell that
     reference reads. So a copy of a copy knows what it copies, not merely which cell held
-    the value first.
+    the value first. ``reads`` lists, for every computed cell, the cells its equation names
+    through such references, in order, so a formula can name the cells its equation does.
     """
 
     nodes: tuple[Node, ...]
     cells: Mapping[Cell, int]
     origins: Mapping[int, Cell]
     sources: Mapping[Cell, Cell]
+    reads: Mapping[Cell, tuple[Cell, ...]]
 
 
 def unroll(bound: Bound) -> Straight:
@@ -95,6 +108,7 @@ def unroll(bound: Bound) -> Straight:
     cells: dict[Cell, int] = {}
     origins: dict[int, Cell] = {}
     sources: dict[Cell, Cell] = {}
+    reads: dict[Cell, tuple[Cell, ...]] = {}
 
     def new(node: Node) -> int:
         nodes.append(node)
@@ -130,6 +144,7 @@ def unroll(bound: Bound) -> Straight:
         hold(cell, build(e))
         if (source := read(e)) is not None:
             sources[cell] = source
+        reads[cell] = tuple(c for node in walk(e) if (c := read(node)) is not None)
 
     def build(e: Expr) -> int:
         match e:
@@ -190,4 +205,4 @@ def unroll(bound: Bound) -> Straight:
                 for name, interval in on_axis:
                     if interval.start <= t < interval.stop:
                         define((name, t), written(name, t))
-    return Straight(tuple(nodes), cells, origins, sources)
+    return Straight(tuple(nodes), cells, origins, sources, reads)

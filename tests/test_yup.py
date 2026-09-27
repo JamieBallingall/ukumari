@@ -87,6 +87,8 @@ def test_formulas_reference_the_same_period_and_share_the_lag_edge() -> None:
     assert cells[(4, 3)][0] == "=B6"  # opening[1] is closing[0]: points at it
     assert cells[(6, 3)][0] == "=C4-C5"  # both operands from the period-1 column
     assert cells[(5, 3)][0] == "=MIN(C3,C4)"
+    # opening[0] holds the principal's value, but the equation names opening: B4, not B2.
+    assert cells[(5, 2)][0] == "=MIN(B3,B4)"
 
 
 def test_a_copy_links_to_the_cell_it_copies() -> None:
