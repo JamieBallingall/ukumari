@@ -14,6 +14,11 @@ The workbook has four sheets:
   forward a quarter at a time, picks the three statements out of the roll-forward, and ends
   with ratios.
 
+The workbook is dressed as a modeller would dress it. Every number typed in is blue and
+every formula black; each section sits under a pale band, totals under a line and grand
+totals over a double one, and ratios and checks are in italics. The dates, labels and
+single values stay in view as a sheet scrolls, and each sheet's tab has its own colour.
+
 Revenue grows on the same quarter a year earlier, so the seasons survive. Its growth is the
 compound annual growth of the history's twelve-month revenue (which is why the model needs
 ``first`` and a fractional power), plus the effects of GDP growth and of the company's own
@@ -46,14 +51,21 @@ quarter.
 from datetime import date
 from pathlib import Path
 
+from yupana import LineStyle
 from yupana.result import Result
 
 from ukumari import (
+    GRAND_TOTAL,
+    HEADING,
+    INPUT,
+    TOTAL,
     Blank,
     Heading,
     Line,
     Model,
     Sheet,
+    Style,
+    View,
     Workbook,
     first,
     lag,
@@ -75,6 +87,14 @@ DAYS = "0.0"
 DATE = "mmm-yy"
 COUNT = "0"
 MULTIPLE = '0.0"x"'
+
+# How the workbook looks: the dates across the top over a line, each section under a pale
+# band, totals under a line and grand totals over a double one, ratios and checks in
+# italics, a thin gap between sections, and every number typed in, in blue.
+HEADER = Style(bold=True, border_bottom=LineStyle.THIN)
+SECTION = HEADING | Style(fill="DDEBF7")
+ASIDE = Style(italic=True)
+GAP = Blank(height=8)
 
 HISTORY = 20
 FORECAST = 20
@@ -838,13 +858,24 @@ def data(history: int = HISTORY, forecast: int = FORECAST) -> dict[str, list[flo
     }
 
 
-def line(label: str, *names: str, fmt: str | None = MONEY, indent: int = 1) -> Line:
-    return Line(label, names, fmt, indent)
+def line(
+    label: str,
+    *names: str,
+    fmt: str | None = MONEY,
+    indent: int = 1,
+    style: Style | None = None,
+) -> Line:
+    return Line(label, names, fmt, indent, style)
+
+
+def heading(label: str) -> Heading:
+    """The title of a section, on a band across the sheet."""
+    return Heading(label, SECTION)
 
 
 def part(label: str) -> Line:
     """The title of a part of a section: a row of no values, indented under the heading."""
-    return Line(label, (), None, 1)
+    return Line(label, (), None, 1, ASIDE)
 
 
 def step(label: str, *names: str, fmt: str | None = MONEY) -> Line:
@@ -852,49 +883,62 @@ def step(label: str, *names: str, fmt: str | None = MONEY) -> Line:
     return Line(label, names, fmt, 2)
 
 
+def view(tab: str) -> View:
+    """How every sheet is shown: without gridlines, with the dates and the labels and
+    single values held in view as it scrolls, and with a tab of its own colour."""
+    return View(
+        gridlines=False, zoom=90, tab_color=tab, freeze_rows=1, freeze_columns=2
+    )
+
+
 def workbook() -> Workbook:
     historicals = Sheet(
         "Historicals",
         (
-            Line("Quarter ending", ("quarter_end_actual",), DATE),
-            Blank(),
-            Heading("Income statement"),
+            Line("Quarter ending", ("quarter_end_actual",), DATE, style=HEADER),
+            GAP,
+            heading("Income statement"),
             line("Revenue", "revenue_actual"),
             line("Cost of sales", "cost_of_sales_actual"),
-            line("Gross profit", "gross_profit_actual"),
+            line("Gross profit", "gross_profit_actual", style=TOTAL),
             line("Operating expenses", "operating_expenses_actual"),
-            line("EBITDA", "ebitda_actual"),
+            line("EBITDA", "ebitda_actual", style=TOTAL),
             line("Depreciation", "depreciation_actual"),
-            line("Operating profit", "operating_profit_actual"),
+            line("Operating profit", "operating_profit_actual", style=TOTAL),
             line("Interest", "interest_actual"),
-            line("Profit before tax", "profit_before_tax_actual"),
+            line("Profit before tax", "profit_before_tax_actual", style=TOTAL),
             line("Tax", "tax_actual"),
-            line("Net income", "net_income_actual"),
-            Blank(),
-            Heading("Balance sheet"),
+            line("Net income", "net_income_actual", style=GRAND_TOTAL),
+            GAP,
+            heading("Balance sheet"),
             *(line(label, f"{name}_actual") for name, label in ASSETS.items()),
-            line("Total assets", "total_assets_actual"),
+            line("Total assets", "total_assets_actual", style=GRAND_TOTAL),
             *(line(label, f"{name}_actual") for name, label in LIABILITIES.items()),
-            line("Total liabilities and equity", "total_liabilities_and_equity_actual"),
-            line("Balance check", "balance_check_actual", fmt=None),
-            Blank(),
-            Heading("Cash flow"),
+            line(
+                "Total liabilities and equity",
+                "total_liabilities_and_equity_actual",
+                style=GRAND_TOTAL,
+            ),
+            line("Balance check", "balance_check_actual", fmt=None, style=ASIDE),
+            GAP,
+            heading("Cash flow"),
             *(line(label, f"{name}_actual") for name, label in CASH_FLOWS.items()),
-            Blank(),
-            Heading("Economy"),
+            GAP,
+            heading("Economy"),
             line("GDP growth, year on year", "gdp_growth_actual", fmt=PERCENT),
             line("Own price change, year on year", "price_change_actual", fmt=PERCENT),
         ),
         start="history",
         label_width=32,
         period_width=9,
+        view=view("A6A6A6"),
     )
     assumptions = Sheet(
         "Assumptions",
         (
-            Line("Quarter ending", ("quarter_end",), DATE),
-            Blank(),
-            Heading("Revenue"),
+            Line("Quarter ending", ("quarter_end",), DATE, style=HEADER),
+            GAP,
+            heading("Revenue"),
             line("Growth adjustment, year on year", "growth_adjustment", fmt=PERCENT),
             line("GDP growth, year on year", "gdp_growth", fmt=PERCENT),
             line("Own price change, year on year", "price_change", fmt=PERCENT),
@@ -902,14 +946,14 @@ def workbook() -> Workbook:
                 line(label, name, f"{name}_stretched", fmt=fmt)
                 for name, (label, fmt) in REVENUE_MODEL.items()
             ),
-            Blank(),
-            Heading("Operations"),
+            GAP,
+            heading("Operations"),
             *(
                 line(label, name, f"{name}_stretched", fmt=fmt)
                 for name, (label, fmt) in OPERATIONS.items()
             ),
-            Blank(),
-            Heading("Financing"),
+            GAP,
+            heading("Financing"),
             line("Base rate", "base_rate", fmt=PERCENT),
             *(
                 line(label, name, f"{name}_stretched", fmt=fmt)
@@ -920,20 +964,21 @@ def workbook() -> Workbook:
         start="forecast",
         label_width=38,
         period_width=9,
+        view=view("0070C0"),
     )
     analysis = Sheet(
         "Analysis",
         (
-            Line("Quarter ending", ("quarter_end_a",), DATE),
+            Line("Quarter ending", ("quarter_end_a",), DATE, style=HEADER),
             line("Quarter", "quarter_number", fmt=COUNT, indent=0),
-            Blank(),
-            Heading("Revenue"),
+            GAP,
+            heading("Revenue"),
             line("Revenue", "revenue_a"),
             line("1 quarter earlier", "revenue_1q"),
             line("2 quarters earlier", "revenue_2q"),
             line("3 quarters earlier", "revenue_3q"),
             line("4 quarters earlier", "revenue_4q"),
-            line("Last 12 months", "revenue_12m"),
+            line("Last 12 months", "revenue_12m", style=TOTAL),
             line("Quarters with a growth rate", "growth_quarters", fmt=COUNT),
             line("Compound annual growth", "cagr", fmt=PERCENT),
             line("Growth, year on year", "revenue_growth_a", fmt=PERCENT),
@@ -948,8 +993,8 @@ def workbook() -> Workbook:
             line("2 quarters earlier", "surprise_2q", fmt=PERCENT),
             line("3 quarters earlier", "surprise_3q", fmt=PERCENT),
             line("4 quarters earlier", "surprise_4q", fmt=PERCENT),
-            Blank(),
-            Heading("Margins and working capital"),
+            GAP,
+            heading("Margins and working capital"),
             line("Gross margin", "gross_margin_a", fmt=PERCENT),
             line("EBITDA margin", "ebitda_margin_a", fmt=PERCENT),
             line("Days in the quarter", "days_a", fmt=COUNT),
@@ -958,15 +1003,15 @@ def workbook() -> Workbook:
             line("Payable days", "payable_days_a", fmt=DAYS),
             line("Capital expenditure, % of revenue", "capex_pct_a", fmt=PERCENT),
             line("Tax, % of profit before tax", "tax_rate_a", fmt=PERCENT),
-            Blank(),
-            Heading("EBITDA"),
+            GAP,
+            heading("EBITDA"),
             line("EBITDA", "ebitda_a"),
             line("1 quarter earlier", "ebitda_1q"),
             line("2 quarters earlier", "ebitda_2q"),
             line("3 quarters earlier", "ebitda_3q"),
-            line("Last 12 months", "ebitda_12m_a"),
-            Blank(),
-            Heading("Initial state, at the last reported quarter"),
+            line("Last 12 months", "ebitda_12m_a", style=TOTAL),
+            GAP,
+            heading("Initial state, at the last reported quarter"),
             line("Quarter ending", "start_quarter_end", fmt=DATE),
             line("Revenue", "start_revenue_0q"),
             line("Revenue, 1 quarter earlier", "start_revenue_1q"),
@@ -997,13 +1042,14 @@ def workbook() -> Workbook:
         start="history",
         label_width=38,
         period_width=9,
+        view=view("70AD47"),
     )
     forecast = Sheet(
         "Forecast",
         (
-            Line("Quarter ending", ("quarter_end_f",), DATE),
-            Blank(),
-            Heading("Assumptions"),
+            Line("Quarter ending", ("quarter_end_f",), DATE, style=HEADER),
+            GAP,
+            heading("Assumptions"),
             line("Revenue growth adjustment", "growth_adjustment_f", fmt=PERCENT),
             line("GDP growth", "gdp_growth_f", fmt=PERCENT),
             line("Own price change", "price_change_f", fmt=PERCENT),
@@ -1024,8 +1070,8 @@ def workbook() -> Workbook:
                 line(label, f"{name}_f", fmt=COUNT)
                 for name, label in MATURITIES.items()
             ),
-            Blank(),
-            Heading("Initial state"),
+            GAP,
+            heading("Initial state"),
             line("Quarter ending", "start_quarter_end_f", fmt=DATE),
             line("Compound annual growth", "cagr_f", fmt=PERCENT),
             line("GDP growth, average", "gdp_average_f", fmt=PERCENT),
@@ -1055,8 +1101,8 @@ def workbook() -> Workbook:
                 )
             ),
             *(line(label, f"start_{name}_f") for name, label in BALANCES.items()),
-            Blank(),
-            Heading("Roll-forward"),
+            GAP,
+            heading("Roll-forward"),
             line("Days in the quarter", "days", fmt=COUNT),
             part("Surprise"),
             *(
@@ -1139,46 +1185,50 @@ def workbook() -> Workbook:
             part("Equity"),
             step("Opening", "opening_equity"),
             step("Closing", "equity"),
-            Blank(),
-            Heading("Income statement"),
+            GAP,
+            heading("Income statement"),
             line("Revenue", "revenue_is"),
             line("Cost of sales", "cost_of_sales_is"),
-            line("Gross profit", "gross_profit"),
-            line("Gross margin", "gross_margin", fmt=PERCENT, indent=2),
+            line("Gross profit", "gross_profit", style=TOTAL),
+            line("Gross margin", "gross_margin", fmt=PERCENT, indent=2, style=ASIDE),
             line("Operating expenses", "operating_expenses_is"),
-            line("EBITDA", "ebitda_is"),
-            line("EBITDA margin", "ebitda_margin", fmt=PERCENT, indent=2),
+            line("EBITDA", "ebitda_is", style=TOTAL),
+            line("EBITDA margin", "ebitda_margin", fmt=PERCENT, indent=2, style=ASIDE),
             line("Depreciation", "depreciation_is"),
-            line("Operating profit", "operating_profit_is"),
+            line("Operating profit", "operating_profit_is", style=TOTAL),
             line("Interest", "interest_is"),
-            line("Profit before tax", "profit_before_tax_is"),
+            line("Profit before tax", "profit_before_tax_is", style=TOTAL),
             line("Tax", "tax_is"),
-            line("Net income", "net_income_is"),
-            line("Net margin", "net_margin", fmt=PERCENT, indent=2),
-            Blank(),
-            Heading("Balance sheet"),
+            line("Net income", "net_income_is", style=GRAND_TOTAL),
+            line("Net margin", "net_margin", fmt=PERCENT, indent=2, style=ASIDE),
+            GAP,
+            heading("Balance sheet"),
             *(line(label, f"{name}_bs") for name, label in ASSETS.items()),
-            line("Total assets", "total_assets"),
+            line("Total assets", "total_assets", style=GRAND_TOTAL),
             *(line(label, f"{name}_bs") for name, label in LIABILITIES.items()),
-            line("Total liabilities and equity", "total_liabilities_and_equity"),
-            line("Balance check", "balance_check", fmt=None),
-            Blank(),
-            Heading("Cash flow statement"),
+            line(
+                "Total liabilities and equity",
+                "total_liabilities_and_equity",
+                style=GRAND_TOTAL,
+            ),
+            line("Balance check", "balance_check", fmt=None, style=ASIDE),
+            GAP,
+            heading("Cash flow statement"),
             line("Net income", "net_income_cf"),
             line("Depreciation", "depreciation_cf"),
             line("Change in working capital", "working_capital_cf"),
-            line("Cash from operations", "cash_from_operations_cf"),
+            line("Cash from operations", "cash_from_operations_cf", style=TOTAL),
             line("Capital expenditure", "capex_cf"),
             line("Debt repaid", "debt_repaid_cf"),
             line("Revolver drawn (repaid)", "revolver_drawn_cf"),
             line("Dividends", "dividends_cf"),
             line("Share buybacks", "buybacks_cf"),
-            line("Cash from financing", "cash_from_financing"),
-            line("Net change in cash", "net_change_in_cash"),
+            line("Cash from financing", "cash_from_financing", style=TOTAL),
+            line("Net change in cash", "net_change_in_cash", style=TOTAL),
             line("Opening cash", "opening_cash_cf"),
-            line("Closing cash", "cash_cf"),
-            Blank(),
-            Heading("Ratios"),
+            line("Closing cash", "cash_cf", style=GRAND_TOTAL),
+            GAP,
+            heading("Ratios"),
             part("Leverage"),
             step("Net debt", "net_debt"),
             step("Debt / EBITDA, last 12 months", "debt_to_ebitda", fmt=MULTIPLE),
@@ -1192,8 +1242,9 @@ def workbook() -> Workbook:
         start="forecast",
         label_width=38,
         period_width=9,
+        view=view("ED7D31"),
     )
-    return Workbook((historicals, assumptions, analysis, forecast))
+    return Workbook((historicals, assumptions, analysis, forecast), input_style=INPUT)
 
 
 def outputs() -> dict[str, str]:
