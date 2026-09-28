@@ -1,14 +1,19 @@
-/.venv/
+# Regenerable: safe to delete at any time
 /target/
 /dist/
-/plan/
+/.venv/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+
+# No workbook is ever committed, wherever one lands
 *.xlsx
 *.xlsm
 *.xlsb
 *.xls
 ~$*
+
+# Personal files live in ../, outside the repository; these catch a stray copy
 HUMAN.md
 THREADS.md
+/plan/
