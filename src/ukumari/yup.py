@@ -22,11 +22,17 @@
 - A cell whose node is a lone literal (a seed) holds the number. Input cells hold their data
   as numbers; the error value is written ``=NA()``, since ``.yup`` has no error constants.
 - **Widths**: a sheet's period width is the width of every column, on a ``|`` line for col
-  ``*``, and its label width is column A's.
+  ``*``, and its label width is column A's. A blank row given a height has a ``-`` line.
+- **Styles**: a row's style goes on its label and its values. Its fill and lines also go
+  on the row's empty cells, as blank cells (``.`` lines) from column B to the last column
+  the sheet fills, so a total's line spans the table. The input style goes on every
+  number typed in rather than computed, an input's data or a seed, over the row's style.
 - **Order**, so every formula refers only to earlier lines: sheet by sheet, its widths and
-  then its text cells row by row; then every node-holding cell in ascending node id, each
-  node's origin before its other holders. Sheets appear in the workbook in the order of
-  their first line, so the text cells put them in the layout's order.
+  heights, then its text cells row by row, each followed by the row's blank cells; then
+  every node-holding cell in ascending node id, each node's origin before its other
+  holders; and last, each sheet's view, as a ``!`` line. Sheets appear in the workbook in
+  the order of their first line, so the widths and text cells put them in the layout's
+  order.
 """
 
 import math
@@ -37,6 +43,7 @@ from yupana import PREAMBLE, Type, Value, write_values
 
 from ukumari.bind import Bound
 from ukumari.layout import Address, Grid, column_letters
+from ukumari.style import Style
 from ukumari.unroll import Cell, Const, Element, Operation, Prim, Straight
 
 _SYMBOL = {Prim.ADD: "+", Prim.SUB: "-", Prim.MUL: "*", Prim.DIV: "/", Prim.POW: "^"}
@@ -198,31 +205,65 @@ def write_yup(
         if value is not None:
             lines.append(f"{sheet}\t*\t{col}\t|\t\tcolumnwidth={_width(value)}")
 
+    # The columns each row fills, and the last column each sheet fills, so that a row's
+    # fill and lines can run across the rest.
+    taken: dict[tuple[str, int], set[int]] = {}
+    for at in address.values():
+        taken.setdefault((at.sheet, at.row), set()).add(at.column)
+    last = {
+        page.name: max(
+            (at.column for at in address.values() if at.sheet == page.name),
+            default=1,
+        )
+        for page in grid.pages
+    }
+
     for page in grid.pages:
         width(page.name, "*", page.period_width)
         width(page.name, "1", page.label_width)
+        for blank, height in sorted(page.heights.items()):
+            lines.append(f"{page.name}\t{blank}\t*\t-\t\trowheight={_width(height)}")
         for period in range(page.spine):
             text = f"P{period + 1}"
             spine = Address(page.name, 1, page.first_period_column + period)
             emit(spine, ("$", text), [], (2, text))
         for row in page.rows:
-            indent = [] if row.indent is None else [f"indent={row.indent}"]
+            label = [] if row.indent is None else [f"indent={row.indent}"]
+            style = row.style or Style()
             emit(
                 Address(page.name, row.number, 1),
                 ("$", row.label),
-                indent,
+                label + style.pairs(),
                 (2, row.label),
             )
+            across = "|".join(style.across().pairs())
+            filled = taken.get((page.name, row.number), set())
+            for column in range(2, last[page.name] + 1) if across else ():
+                if column not in filled:
+                    lines.append(f"{page.name}\t{row.number}\t{column}\t.\t\t{across}")
+
+    def typed_in(cell: Cell) -> bool:
+        """Whether a cell holds a number typed in, not computed: data, or a seed."""
+        return cell not in s.sources and isinstance(
+            s.nodes[s.cells[cell]], Const | Element
+        )
 
     order = sorted(
         s.cells,
         key=lambda cell: (s.cells[cell], cell != s.origins[s.cells[cell]]),
     )
     for cell in order:
-        name = cell[0]
-        number_format = grid.row_of[name].number_format
-        formats = [] if number_format is None else [f"numberformat={number_format}"]
+        row = grid.row_of[cell[0]]
+        formats = (
+            [] if row.number_format is None else [f"numberformat={row.number_format}"]
+        )
+        style = row.style or Style()
+        if grid.input_style is not None and typed_in(cell):
+            style = style | grid.input_style
         value = values[cell]
         typed = (16, "#N/A") if math.isnan(value) else (1, number(value))
-        emit(address[cell], content(cell), formats, typed)
+        emit(address[cell], content(cell), formats + style.pairs(), typed)
+    for page in grid.pages:
+        if shown := page.view.pairs():
+            lines.append(f"{page.name}\t*\t*\t!\t\t{'|'.join(shown)}")
     return Written(PREAMBLE + "\n".join(lines) + "\n", write_values(value_rows))

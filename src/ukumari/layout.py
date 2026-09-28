@@ -27,6 +27,7 @@ from dataclasses import dataclass, field, replace
 
 from ukumari.bind import Bound
 from ukumari.shape import place
+from ukumari.style import Style, View
 
 FIRST_PERIOD_COLUMN = 2
 VALUE_COLUMN = 2
@@ -52,42 +53,51 @@ class Layout:
     ``rows`` maps a row label to the vectors sharing that row. ``formats`` maps a row label
     to a number-format code for that row's value cells; an unformatted row is ``General``,
     deliberately, since a blanket format would round a 1e-11 balance residual into a
-    reassuring zero. ``indents`` maps a row label to an indent level for its label cell.
-    ``label_width`` and ``period_width`` set column widths; unset means the app's default.
+    reassuring zero. ``indents`` maps a row label to an indent level for its label cell,
+    and ``styles`` to a style for the row. ``label_width`` and ``period_width`` set column
+    widths; unset means the app's default. ``input_style`` marks every number typed in
+    rather than computed, and ``view`` is how the sheet is shown.
     """
 
     rows: Mapping[str, tuple[str, ...]] = field(default_factory=dict)
     formats: Mapping[str, str] = field(default_factory=dict)
     indents: Mapping[str, int] = field(default_factory=dict)
+    styles: Mapping[str, Style] = field(default_factory=dict)
     label_width: float | None = None
     period_width: float | None = None
     sheet: str = "Model"
+    input_style: Style | None = None
+    view: View = field(default_factory=View)
 
 
 @dataclass(frozen=True, slots=True)
 class Line:
     """A row of values: its label, and the declared names whose cells it holds.
 
-    Its value cells take ``number_format`` (``General`` when unset, as in ``Layout``), and
-    its label is indented by ``indent``.
+    Its value cells take ``number_format`` (``General`` when unset, as in ``Layout``), its
+    label is indented by ``indent``, and the whole row takes ``style``.
     """
 
     label: str
     names: tuple[str, ...]
     number_format: str | None = None
     indent: int | None = None
+    style: Style | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class Heading:
-    """A row holding only its label: the title of the rows below it."""
+    """A row holding only its label, in ``style``: the title of the rows below it."""
 
     label: str
+    style: Style | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class Blank:
-    """An empty row."""
+    """An empty row, ``height`` points high, or as high as any other when unset."""
+
+    height: float | None = None
 
 
 type Item = Line | Heading | Blank
@@ -99,7 +109,7 @@ class Sheet:
 
     Column C shows the first position of the region ``start``, or the first position of the
     axis when it is None. ``label_width`` sets column A's width, and ``period_width`` every
-    other column's; unset means the app's default.
+    other column's; unset means the app's default. ``view`` is how the sheet is shown.
     """
 
     name: str
@@ -107,13 +117,18 @@ class Sheet:
     start: str | None = None
     label_width: float | None = None
     period_width: float | None = None
+    view: View = field(default_factory=View)
 
 
 @dataclass(frozen=True, slots=True)
 class Workbook:
-    """How to lay a model out over several sheets, in the order they appear."""
+    """How to lay a model out over several sheets, in the order they appear.
+
+    ``input_style`` marks every number typed in rather than computed, on every sheet.
+    """
 
     sheets: tuple[Sheet, ...]
+    input_style: Style | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,6 +141,7 @@ class Row:
     names: tuple[str, ...]
     number_format: str | None
     indent: int | None
+    style: Style | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -133,6 +149,7 @@ class Page:
     """A sheet, resolved: its labelled rows, and which column shows which position.
 
     ``spine`` is how many period columns row 1 labels ``P1``, ``P2``, …; 0 for none.
+    ``heights`` holds the height of each blank row given one, by row number.
     """
 
     name: str
@@ -143,6 +160,8 @@ class Page:
     start: int
     label_width: float | None
     period_width: float | None
+    heights: Mapping[int, float] = field(default_factory=dict)
+    view: View = field(default_factory=View)
 
     def column(self, position: int | None) -> int:
         """The column of a position on the axis, or of a single value (``None``)."""
@@ -165,6 +184,7 @@ class Grid:
     pages: tuple[Page, ...]
     row_of: Mapping[str, Row]
     page_of: Mapping[str, Page]
+    input_style: Style | None = None
 
     @property
     def rows(self) -> tuple[Row, ...]:
@@ -189,18 +209,30 @@ class _Plan:
     start: str | None
     label_width: float | None
     period_width: float | None
+    view: View
 
 
 def _one_sheet(layout: Layout, declared: Sequence[str]) -> tuple[_Plan, list[str]]:
     """A ``Layout`` as a plan, the names it leaves out appended, and its own problems."""
     problems: list[str] = []
-    for option, labels in (("formats", layout.formats), ("indents", layout.indents)):
+    options = (
+        ("formats", layout.formats),
+        ("indents", layout.indents),
+        ("styles", layout.styles),
+    )
+    for option, labels in options:
         for label in labels:
             if label not in layout.rows:
                 problems.append(f"{option} names row {label!r}, which is not in rows")
     named = {name for names in layout.rows.values() for name in names}
     items: list[Item] = [
-        Line(label, tuple(names), layout.formats.get(label), layout.indents.get(label))
+        Line(
+            label,
+            tuple(names),
+            layout.formats.get(label),
+            layout.indents.get(label),
+            layout.styles.get(label),
+        )
         for label, names in layout.rows.items()
     ]
     items += [Line(name, (name,)) for name in declared if name not in named]
@@ -214,6 +246,7 @@ def _one_sheet(layout: Layout, declared: Sequence[str]) -> tuple[_Plan, list[str
         start=None,
         label_width=layout.label_width,
         period_width=layout.period_width,
+        view=layout.view,
     )
     return plan, problems
 
@@ -247,6 +280,7 @@ def _sheets(
             start=sheet.start,
             label_width=sheet.label_width,
             period_width=sheet.period_width,
+            view=sheet.view,
         )
         for sheet in workbook.sheets
     ]
@@ -270,6 +304,7 @@ def grid(layout: Layout | Workbook, bound: Bound) -> Grid:
             plans = [plan]
         case Workbook():
             plans, problems = _sheets(layout, regions)
+    input_style = layout.input_style
     starts = {
         region: i.start for region, i in place(circuit.axes, bound.extents).items()
     }
@@ -289,14 +324,18 @@ def grid(layout: Layout | Workbook, bound: Bound) -> Grid:
             start=0 if plan.start is None else starts.get(plan.start, 0),
             label_width=plan.label_width,
             period_width=plan.period_width,
+            view=plan.view,
         )
         rows: list[Row] = []
+        heights: dict[int, float] = {}
         for offset, item in enumerate(plan.items):
             match item:
-                case Blank():
+                case Blank(height):
+                    if height is not None:
+                        heights[plan.first_row + offset] = height
                     continue
-                case Heading(label):
-                    line = Line(label, ())
+                case Heading(label, style):
+                    line = Line(label, (), style=style)
                 case Line():
                     line = item
             where = f"row {line.label!r}"
@@ -343,9 +382,10 @@ def grid(layout: Layout | Workbook, bound: Bound) -> Grid:
                     line.names,
                     line.number_format,
                     line.indent,
+                    line.style,
                 )
             )
-        pages.append(replace(page, rows=tuple(rows)))
+        pages.append(replace(page, rows=tuple(rows), heights=heights))
     for name in declared:
         if name not in placed:
             problems.append(f"{name!r} is on no sheet")
@@ -355,4 +395,5 @@ def grid(layout: Layout | Workbook, bound: Bound) -> Grid:
         pages=tuple(pages),
         row_of={name: row for page in pages for row in page.rows for name in row.names},
         page_of={page.name: page for page in pages},
+        input_style=input_style,
     )

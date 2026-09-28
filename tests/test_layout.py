@@ -1,8 +1,28 @@
 """The layout over several sheets: headings, blank rows, columns, and links across sheets."""
 
-import pytest
+from dataclasses import replace
 
-from ukumari import Blank, Heading, Line, Model, Sheet, Workbook, lag, last, scalar
+import pytest
+from yupana import LineStyle
+
+from ukumari import (
+    GRAND_TOTAL,
+    HEADING,
+    INPUT,
+    TOTAL,
+    Blank,
+    Heading,
+    Layout,
+    Line,
+    Model,
+    Sheet,
+    Style,
+    View,
+    Workbook,
+    lag,
+    last,
+    scalar,
+)
 from ukumari.layout import Address
 from ukumari.pipeline import Export, export
 
@@ -188,3 +208,101 @@ def test_mistakes_in_a_workbook_are_all_named() -> None:
         "'tax' is on no sheet",
     ):
         assert fragment in message, fragment
+
+
+def styled() -> Workbook:
+    """The workbook above, dressed: a header row, a filled heading, a short blank row, a
+    total and a grand total, inputs in blue, and a view on two sheets."""
+    inputs, actuals, forecast = workbook().sheets
+    header = Style(bold=True, border_bottom=LineStyle.THIN)
+    return Workbook(
+        (
+            replace(
+                inputs,
+                items=(
+                    Line("Quarter", ("date_history", "date_forecast"), "mmm-yy", None, header),
+                    Blank(height=6),
+                    Heading("History", HEADING | Style(fill="DDEBF7")),
+                    Line("Sales", ("sales",), indent=1),
+                    Heading("Assumptions"),
+                    Line("Growth", ("growth",), "0.0%"),
+                    Line("Tax rate", ("tax_rate", "tax_rate_stretched"), "0.0%"),
+                ),
+                view=View(gridlines=False, tab_color="0070C0", freeze_rows=1, freeze_columns=2),
+            ),
+            actuals,
+            replace(
+                forecast,
+                items=(
+                    *forecast.items[:3],
+                    Line("Sales", ("projected",), style=TOTAL),
+                    Line("Tax", ("tax",), style=GRAND_TOTAL),
+                ),
+                view=View(zoom=85),
+            ),
+        ),
+        input_style=INPUT,
+    )  # fmt: skip
+
+
+def all_lines(result: Export) -> dict[tuple[str, str, str], tuple[str, str]]:
+    """(sheet, row, col) → (type, format), for every line of ``.yup`` text after the
+    header, the row or col ``*`` where the line has one."""
+    found = {}
+    for line in result.yup.splitlines()[2:]:
+        sheet, row, col, kind, _, fmt = line.split("\t")
+        found[(sheet, row, col)] = (kind, fmt)
+    return found
+
+
+def test_a_rows_style_goes_on_its_label_and_values_and_across_its_empty_cells() -> None:
+    lines = all_lines(export(two_regions(), data(), layout=styled()).unwrap())
+    header = "bold=true|borderbottom=thin"
+    assert lines[("Inputs", "1", "1")] == ("$", header)
+    # The dates are typed in, so they are blue as well; column B, empty, has the line.
+    assert lines[("Inputs", "1", "3")] == (
+        "#",
+        "numberformat=mmm-yy|bold=true|fontcolor=0000FF|borderbottom=thin",
+    )
+    assert lines[("Inputs", "1", "2")] == (".", "borderbottom=thin")
+    assert lines[("Inputs", "2", "*")] == ("-", "rowheight=6")
+    assert lines[("Inputs", "3", "1")] == ("$", "bold=true|fill=DDEBF7")
+    assert [lines[("Inputs", "3", str(col))] for col in range(2, 8)] == [
+        (".", "fill=DDEBF7")
+    ] * 6
+    assert ("Inputs", "3", "8") not in lines, (
+        "the fill stops at the sheet's last column"
+    )
+    assert ("Inputs", "5", "2") not in lines, "a heading without a style fills nothing"
+    # A typed-in single value is blue; the row that links to it is not.
+    assert lines[("Inputs", "7", "2")] == ("#", "numberformat=0.0%|fontcolor=0000FF")
+    assert lines[("Inputs", "7", "5")] == ("=", "numberformat=0.0%")
+    assert lines[("Forecast", "4", "1")] == ("$", "bold=true|bordertop=thin")
+    assert lines[("Forecast", "4", "3")] == ("=", "bold=true|bordertop=thin")
+    assert lines[("Forecast", "4", "2")] == (".", "bordertop=thin")
+    assert lines[("Forecast", "5", "2")] == (".", "bordertop=thin|borderbottom=double")
+
+
+def test_the_views_come_last() -> None:
+    result = export(two_regions(), data(), layout=styled()).unwrap()
+    assert result.yup.splitlines()[-2:] == [
+        "Inputs\t*\t*\t!\t\tgridlines=false|tabcolor=0070C0|freezerows=1|freezecolumns=2",
+        "Forecast\t*\t*\t!\t\tzoom=85",
+    ]
+    assert [v.sheet for v in result.checked.views] == ["Inputs", "Forecast"]
+
+
+def test_the_styles_of_a_one_sheet_layout_name_its_rows() -> None:
+    m = Model()
+    t = m.region("t")
+    m.axis("time", t)
+    a = m.input("a", t)
+    m.vector("b", t).define(a * 2)
+    layout = Layout(
+        rows={"A": ("a",), "B": ("b",)}, styles={"B": TOTAL}, input_style=INPUT
+    )
+    lines = all_lines(export(m, {"a": [1.0, 2.0]}, layout=layout).unwrap())
+    assert lines[("Model", "2", "2")] == ("#", "fontcolor=0000FF")
+    assert lines[("Model", "3", "3")] == ("=", "bold=true|bordertop=thin")
+    with pytest.raises(ValueError, match="styles names row 'C', which is not in rows"):
+        export(m, {"a": [1.0, 2.0]}, layout=replace(layout, styles={"C": TOTAL}))

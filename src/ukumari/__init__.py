@@ -49,14 +49,21 @@ a cycle of references that no lag crosses: 'a' -> 'b' -> 'a'
 from ukumari.layout import Blank, Heading, Layout, Line, Sheet, Workbook
 from ukumari.model import Model, first, lag, last, maximum, minimum, power
 from ukumari.shape import scalar
+from ukumari.style import GRAND_TOTAL, HEADING, INPUT, TOTAL, Style, View
 
 __all__ = [
+    "GRAND_TOTAL",
+    "HEADING",
+    "INPUT",
+    "TOTAL",
     "Blank",
     "Heading",
     "Layout",
     "Line",
     "Model",
     "Sheet",
+    "Style",
+    "View",
     "Workbook",
     "first",
     "lag",
