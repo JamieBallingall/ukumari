@@ -37,7 +37,7 @@ This repository is one of two, checked out side by side: `../yupana` and `../uku
 
 - No third-party material: no downloaded workbooks, no data from anyone else. Examples use made-up numbers.
 - No workbook is ever committed. Generated files go to `target/`.
-- Nothing personal: no names, paths or e-mail addresses.
+- Nothing personal: no e-mail addresses, no paths on anyone's machine, and no other personal details. The repositories' own details are fine, such as their URLs and the account name in them.
 - Describe techniques generically, never as if from inside an organisation.
 - Call the file format "xlsx" and the program "the spreadsheet app". No product names in any identifier, module, file or command.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`), one concern per commit.
