@@ -8,11 +8,22 @@ from ukumari.pipeline import Export, export
 
 
 def cells_of(result: Export) -> dict[tuple[str, int, int], tuple[str, str]]:
-    """(sheet, row, col) → (cell, format), from ``.yup`` text."""
+    """(sheet, row, col) → (type and cell, format), for the cells in ``.yup`` text."""
     found = {}
     for line in result.yup.splitlines()[2:]:
-        sheet, row, col, cell, fmt = line.split("\t")
-        found[(sheet, int(row), int(col))] = (cell, fmt)
+        sheet, row, col, kind, cell, fmt = line.split("\t")
+        if kind in ("=", "#", "$", "?", "."):
+            found[(sheet, int(row), int(col))] = (kind + cell, fmt)
+    return found
+
+
+def widths_of(result: Export) -> dict[tuple[str, str], str]:
+    """(sheet, col) → format, for the columns in ``.yup`` text, ``*`` for every one."""
+    found = {}
+    for line in result.yup.splitlines()[2:]:
+        sheet, _, col, kind, _, fmt = line.split("\t")
+        if kind == "|":
+            found[(sheet, col)] = fmt
     return found
 
 
@@ -115,9 +126,14 @@ def test_headings_blank_rows_formats_and_widths() -> None:
     assert cells[("Inputs", 3, 1)] == ("$History", "")
     assert cells[("Inputs", 4, 1)] == ("$Sales", "indent=1")
     assert not any(sheet == "Inputs" and row == 2 for sheet, row, _ in cells)
-    assert cells[("Inputs", 1, 1)][1] == "columnwidth=20"
-    assert cells[("Inputs", 1, 3)] == ("#46022.0", "columnwidth=9|numberformat=mmm-yy")
-    assert cells[("Actuals", 1, 1)] == ("$Quarter", "columnwidth=default")
+    assert cells[("Inputs", 1, 3)] == ("#46022.0", "numberformat=mmm-yy")
+    assert cells[("Actuals", 1, 1)] == ("$Quarter", "")
+    # A sheet's period width is every column's, and its label width column A's; a sheet
+    # that sets neither has no widths.
+    assert widths_of(result) == {
+        ("Inputs", "*"): "columnwidth=9",
+        ("Inputs", "1"): "columnwidth=20",
+    }
     # The sheets appear in the workbook in the layout's order.
     assert list(result.checked.sheets) == [
         "Inputs",

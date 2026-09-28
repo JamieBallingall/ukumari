@@ -79,7 +79,7 @@ def test_3_becomes_a_workbook() -> None:
     formats = [c.format for c in cells]
     assert any(f.indent for f in formats)
     assert any(f.number_format is not None for f in formats)
-    assert any(f.column_width == 34.0 for f in formats)
+    assert any(c.col == 1 and c.width == 34.0 for c in result.checked.columns)
     assert any(c.content == Text("Revenue growth") for c in cells)
     assert sum(isinstance(c.content, Formula) for c in cells) > 100
     assert result.xlsx().unwrap()[:2] == b"PK"

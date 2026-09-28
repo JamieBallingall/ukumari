@@ -1,211 +1,213 @@
-yup 0.0.1 Yupana Straight Line Spreadsheet Format
-sheet	row	col	cell	format
-Model	1	2	$P1	columnwidth=10
-Model	1	3	$P2	columnwidth=10
-Model	1	4	$P3	columnwidth=10
-Model	1	5	$P4	columnwidth=10
-Model	1	6	$P5	columnwidth=10
-Model	1	7	$P6	columnwidth=10
-Model	2	1	$Year	columnwidth=34
-Model	3	1	$Revenue growth	indent=1
-Model	4	1	$Cost of sales, % of revenue	indent=1
-Model	5	1	$Operating expenses, % of revenue	indent=1
-Model	6	1	$Depreciation, % of opening PP&E	indent=1
-Model	7	1	$Interest, % of opening debt	indent=1
-Model	8	1	$Tax, % of profit before tax	indent=1
-Model	9	1	$Receivables, % of revenue	indent=1
-Model	10	1	$Payables, % of cost of sales	indent=1
-Model	11	1	$Capital expenditure, % of revenue	indent=1
-Model	12	1	$Dividends, % of net income	indent=1
-Model	13	1	$Scheduled debt repayment	indent=1
-Model	14	1	$Revenue	
-Model	15	1	$Cost of sales	indent=1
-Model	16	1	$Gross profit	
-Model	17	1	$Operating expenses	indent=1
-Model	18	1	$Depreciation	indent=1
-Model	19	1	$Operating profit	
-Model	20	1	$Interest	indent=1
-Model	21	1	$Profit before tax	
-Model	22	1	$Tax	indent=1
-Model	23	1	$Net income	
-Model	24	1	$Cash	
-Model	25	1	$Receivables	
-Model	26	1	$PP&E	
-Model	27	1	$Total assets	
-Model	28	1	$Payables	
-Model	29	1	$Debt	
-Model	30	1	$Equity	
-Model	31	1	$Liabilities and equity	
-Model	32	1	$Balance check	
-Model	33	1	$Change in receivables	indent=1
-Model	34	1	$Change in payables	indent=1
-Model	35	1	$Cash from operations	
-Model	36	1	$Capital expenditure	indent=1
-Model	37	1	$Debt repayment	indent=1
-Model	38	1	$Dividends	indent=1
-Model	39	1	$Net change in cash	
-Model	2	2	#2025.0	numberformat=0
-Model	2	3	#2026.0	numberformat=0
-Model	2	4	#2027.0	numberformat=0
-Model	2	5	#2028.0	numberformat=0
-Model	2	6	#2029.0	numberformat=0
-Model	2	7	#2030.0	numberformat=0
-Model	3	3	#0.08	numberformat=0.0%
-Model	3	4	#0.07	numberformat=0.0%
-Model	3	5	#0.06	numberformat=0.0%
-Model	3	6	#0.05	numberformat=0.0%
-Model	3	7	#0.04	numberformat=0.0%
-Model	13	3	#50.0	numberformat=#,##0.0;(#,##0.0)
-Model	13	4	#50.0	numberformat=#,##0.0;(#,##0.0)
-Model	13	5	#50.0	numberformat=#,##0.0;(#,##0.0)
-Model	13	6	#50.0	numberformat=#,##0.0;(#,##0.0)
-Model	13	7	#50.0	numberformat=#,##0.0;(#,##0.0)
-Model	4	2	#0.6	numberformat=0.0%
-Model	5	2	#0.2	numberformat=0.0%
-Model	6	2	#0.1	numberformat=0.0%
-Model	7	2	#0.05	numberformat=0.0%
-Model	8	2	#0.25	numberformat=0.0%
-Model	9	2	#0.15	numberformat=0.0%
-Model	10	2	#0.15	numberformat=0.0%
-Model	11	2	#0.08	numberformat=0.0%
-Model	12	2	#0.4	numberformat=0.0%
-Model	14	2	#1000.0	numberformat=#,##0.0;(#,##0.0)
-Model	24	2	#120.0	numberformat=#,##0.0;(#,##0.0)
-Model	25	2	#150.0	numberformat=#,##0.0;(#,##0.0)
-Model	26	2	#600.0	numberformat=#,##0.0;(#,##0.0)
-Model	28	2	#90.0	numberformat=#,##0.0;(#,##0.0)
-Model	29	2	#300.0	numberformat=#,##0.0;(#,##0.0)
-Model	30	2	#480.0	numberformat=#,##0.0;(#,##0.0)
-Model	27	2	=B24+B25+B26	numberformat=#,##0.0;(#,##0.0)
-Model	31	2	=B28+B29+B30	numberformat=#,##0.0;(#,##0.0)
-Model	32	2	=B27-B31	
-Model	14	3	=B14*(1+C3)	numberformat=#,##0.0;(#,##0.0)
-Model	15	3	=C14*$B$4	numberformat=#,##0.0;(#,##0.0)
-Model	16	3	=C14-C15	numberformat=#,##0.0;(#,##0.0)
-Model	17	3	=C14*$B$5	numberformat=#,##0.0;(#,##0.0)
-Model	36	3	=-(C14*$B$11)	numberformat=#,##0.0;(#,##0.0)
-Model	18	3	=B26*$B$6	numberformat=#,##0.0;(#,##0.0)
-Model	26	3	=B26-C36-C18	numberformat=#,##0.0;(#,##0.0)
-Model	19	3	=C16-C17-C18	numberformat=#,##0.0;(#,##0.0)
-Model	37	3	=-MIN(C13,B29)	numberformat=#,##0.0;(#,##0.0)
-Model	29	3	=B29+C37	numberformat=#,##0.0;(#,##0.0)
-Model	20	3	=B29*$B$7	numberformat=#,##0.0;(#,##0.0)
-Model	21	3	=C19-C20	numberformat=#,##0.0;(#,##0.0)
-Model	22	3	=C21*$B$8	numberformat=#,##0.0;(#,##0.0)
-Model	23	3	=C21-C22	numberformat=#,##0.0;(#,##0.0)
-Model	38	3	=-(C23*$B$12)	numberformat=#,##0.0;(#,##0.0)
-Model	25	3	=C14*$B$9	numberformat=#,##0.0;(#,##0.0)
-Model	33	3	=B25-C25	numberformat=#,##0.0;(#,##0.0)
-Model	28	3	=C15*$B$10	numberformat=#,##0.0;(#,##0.0)
-Model	34	3	=C28-B28	numberformat=#,##0.0;(#,##0.0)
-Model	35	3	=C23+C18+C33+C34	numberformat=#,##0.0;(#,##0.0)
-Model	39	3	=C35+C36+C37+C38	numberformat=#,##0.0;(#,##0.0)
-Model	24	3	=B24+C39	numberformat=#,##0.0;(#,##0.0)
-Model	27	3	=C24+C25+C26	numberformat=#,##0.0;(#,##0.0)
-Model	30	3	=B30+C23+C38	numberformat=#,##0.0;(#,##0.0)
-Model	31	3	=C28+C29+C30	numberformat=#,##0.0;(#,##0.0)
-Model	32	3	=C27-C31	
-Model	14	4	=C14*(1+D3)	numberformat=#,##0.0;(#,##0.0)
-Model	15	4	=D14*$B$4	numberformat=#,##0.0;(#,##0.0)
-Model	16	4	=D14-D15	numberformat=#,##0.0;(#,##0.0)
-Model	17	4	=D14*$B$5	numberformat=#,##0.0;(#,##0.0)
-Model	36	4	=-(D14*$B$11)	numberformat=#,##0.0;(#,##0.0)
-Model	18	4	=C26*$B$6	numberformat=#,##0.0;(#,##0.0)
-Model	26	4	=C26-D36-D18	numberformat=#,##0.0;(#,##0.0)
-Model	19	4	=D16-D17-D18	numberformat=#,##0.0;(#,##0.0)
-Model	37	4	=-MIN(D13,C29)	numberformat=#,##0.0;(#,##0.0)
-Model	29	4	=C29+D37	numberformat=#,##0.0;(#,##0.0)
-Model	20	4	=C29*$B$7	numberformat=#,##0.0;(#,##0.0)
-Model	21	4	=D19-D20	numberformat=#,##0.0;(#,##0.0)
-Model	22	4	=D21*$B$8	numberformat=#,##0.0;(#,##0.0)
-Model	23	4	=D21-D22	numberformat=#,##0.0;(#,##0.0)
-Model	38	4	=-(D23*$B$12)	numberformat=#,##0.0;(#,##0.0)
-Model	25	4	=D14*$B$9	numberformat=#,##0.0;(#,##0.0)
-Model	33	4	=C25-D25	numberformat=#,##0.0;(#,##0.0)
-Model	28	4	=D15*$B$10	numberformat=#,##0.0;(#,##0.0)
-Model	34	4	=D28-C28	numberformat=#,##0.0;(#,##0.0)
-Model	35	4	=D23+D18+D33+D34	numberformat=#,##0.0;(#,##0.0)
-Model	39	4	=D35+D36+D37+D38	numberformat=#,##0.0;(#,##0.0)
-Model	24	4	=C24+D39	numberformat=#,##0.0;(#,##0.0)
-Model	27	4	=D24+D25+D26	numberformat=#,##0.0;(#,##0.0)
-Model	30	4	=C30+D23+D38	numberformat=#,##0.0;(#,##0.0)
-Model	31	4	=D28+D29+D30	numberformat=#,##0.0;(#,##0.0)
-Model	32	4	=D27-D31	
-Model	14	5	=D14*(1+E3)	numberformat=#,##0.0;(#,##0.0)
-Model	15	5	=E14*$B$4	numberformat=#,##0.0;(#,##0.0)
-Model	16	5	=E14-E15	numberformat=#,##0.0;(#,##0.0)
-Model	17	5	=E14*$B$5	numberformat=#,##0.0;(#,##0.0)
-Model	36	5	=-(E14*$B$11)	numberformat=#,##0.0;(#,##0.0)
-Model	18	5	=D26*$B$6	numberformat=#,##0.0;(#,##0.0)
-Model	26	5	=D26-E36-E18	numberformat=#,##0.0;(#,##0.0)
-Model	19	5	=E16-E17-E18	numberformat=#,##0.0;(#,##0.0)
-Model	37	5	=-MIN(E13,D29)	numberformat=#,##0.0;(#,##0.0)
-Model	29	5	=D29+E37	numberformat=#,##0.0;(#,##0.0)
-Model	20	5	=D29*$B$7	numberformat=#,##0.0;(#,##0.0)
-Model	21	5	=E19-E20	numberformat=#,##0.0;(#,##0.0)
-Model	22	5	=E21*$B$8	numberformat=#,##0.0;(#,##0.0)
-Model	23	5	=E21-E22	numberformat=#,##0.0;(#,##0.0)
-Model	38	5	=-(E23*$B$12)	numberformat=#,##0.0;(#,##0.0)
-Model	25	5	=E14*$B$9	numberformat=#,##0.0;(#,##0.0)
-Model	33	5	=D25-E25	numberformat=#,##0.0;(#,##0.0)
-Model	28	5	=E15*$B$10	numberformat=#,##0.0;(#,##0.0)
-Model	34	5	=E28-D28	numberformat=#,##0.0;(#,##0.0)
-Model	35	5	=E23+E18+E33+E34	numberformat=#,##0.0;(#,##0.0)
-Model	39	5	=E35+E36+E37+E38	numberformat=#,##0.0;(#,##0.0)
-Model	24	5	=D24+E39	numberformat=#,##0.0;(#,##0.0)
-Model	27	5	=E24+E25+E26	numberformat=#,##0.0;(#,##0.0)
-Model	30	5	=D30+E23+E38	numberformat=#,##0.0;(#,##0.0)
-Model	31	5	=E28+E29+E30	numberformat=#,##0.0;(#,##0.0)
-Model	32	5	=E27-E31	
-Model	14	6	=E14*(1+F3)	numberformat=#,##0.0;(#,##0.0)
-Model	15	6	=F14*$B$4	numberformat=#,##0.0;(#,##0.0)
-Model	16	6	=F14-F15	numberformat=#,##0.0;(#,##0.0)
-Model	17	6	=F14*$B$5	numberformat=#,##0.0;(#,##0.0)
-Model	36	6	=-(F14*$B$11)	numberformat=#,##0.0;(#,##0.0)
-Model	18	6	=E26*$B$6	numberformat=#,##0.0;(#,##0.0)
-Model	26	6	=E26-F36-F18	numberformat=#,##0.0;(#,##0.0)
-Model	19	6	=F16-F17-F18	numberformat=#,##0.0;(#,##0.0)
-Model	37	6	=-MIN(F13,E29)	numberformat=#,##0.0;(#,##0.0)
-Model	29	6	=E29+F37	numberformat=#,##0.0;(#,##0.0)
-Model	20	6	=E29*$B$7	numberformat=#,##0.0;(#,##0.0)
-Model	21	6	=F19-F20	numberformat=#,##0.0;(#,##0.0)
-Model	22	6	=F21*$B$8	numberformat=#,##0.0;(#,##0.0)
-Model	23	6	=F21-F22	numberformat=#,##0.0;(#,##0.0)
-Model	38	6	=-(F23*$B$12)	numberformat=#,##0.0;(#,##0.0)
-Model	25	6	=F14*$B$9	numberformat=#,##0.0;(#,##0.0)
-Model	33	6	=E25-F25	numberformat=#,##0.0;(#,##0.0)
-Model	28	6	=F15*$B$10	numberformat=#,##0.0;(#,##0.0)
-Model	34	6	=F28-E28	numberformat=#,##0.0;(#,##0.0)
-Model	35	6	=F23+F18+F33+F34	numberformat=#,##0.0;(#,##0.0)
-Model	39	6	=F35+F36+F37+F38	numberformat=#,##0.0;(#,##0.0)
-Model	24	6	=E24+F39	numberformat=#,##0.0;(#,##0.0)
-Model	27	6	=F24+F25+F26	numberformat=#,##0.0;(#,##0.0)
-Model	30	6	=E30+F23+F38	numberformat=#,##0.0;(#,##0.0)
-Model	31	6	=F28+F29+F30	numberformat=#,##0.0;(#,##0.0)
-Model	32	6	=F27-F31	
-Model	14	7	=F14*(1+G3)	numberformat=#,##0.0;(#,##0.0)
-Model	15	7	=G14*$B$4	numberformat=#,##0.0;(#,##0.0)
-Model	16	7	=G14-G15	numberformat=#,##0.0;(#,##0.0)
-Model	17	7	=G14*$B$5	numberformat=#,##0.0;(#,##0.0)
-Model	36	7	=-(G14*$B$11)	numberformat=#,##0.0;(#,##0.0)
-Model	18	7	=F26*$B$6	numberformat=#,##0.0;(#,##0.0)
-Model	26	7	=F26-G36-G18	numberformat=#,##0.0;(#,##0.0)
-Model	19	7	=G16-G17-G18	numberformat=#,##0.0;(#,##0.0)
-Model	37	7	=-MIN(G13,F29)	numberformat=#,##0.0;(#,##0.0)
-Model	29	7	=F29+G37	numberformat=#,##0.0;(#,##0.0)
-Model	20	7	=F29*$B$7	numberformat=#,##0.0;(#,##0.0)
-Model	21	7	=G19-G20	numberformat=#,##0.0;(#,##0.0)
-Model	22	7	=G21*$B$8	numberformat=#,##0.0;(#,##0.0)
-Model	23	7	=G21-G22	numberformat=#,##0.0;(#,##0.0)
-Model	38	7	=-(G23*$B$12)	numberformat=#,##0.0;(#,##0.0)
-Model	25	7	=G14*$B$9	numberformat=#,##0.0;(#,##0.0)
-Model	33	7	=F25-G25	numberformat=#,##0.0;(#,##0.0)
-Model	28	7	=G15*$B$10	numberformat=#,##0.0;(#,##0.0)
-Model	34	7	=G28-F28	numberformat=#,##0.0;(#,##0.0)
-Model	35	7	=G23+G18+G33+G34	numberformat=#,##0.0;(#,##0.0)
-Model	39	7	=G35+G36+G37+G38	numberformat=#,##0.0;(#,##0.0)
-Model	24	7	=F24+G39	numberformat=#,##0.0;(#,##0.0)
-Model	27	7	=G24+G25+G26	numberformat=#,##0.0;(#,##0.0)
-Model	30	7	=F30+G23+G38	numberformat=#,##0.0;(#,##0.0)
-Model	31	7	=G28+G29+G30	numberformat=#,##0.0;(#,##0.0)
-Model	32	7	=G27-G31	
+yup 0.0.2 Yupana Straight Line Spreadsheet Format
+sheet	row	col	type	cell	format
+Model	*	*	|		columnwidth=10
+Model	*	1	|		columnwidth=34
+Model	1	2	$	P1	
+Model	1	3	$	P2	
+Model	1	4	$	P3	
+Model	1	5	$	P4	
+Model	1	6	$	P5	
+Model	1	7	$	P6	
+Model	2	1	$	Year	
+Model	3	1	$	Revenue growth	indent=1
+Model	4	1	$	Cost of sales, % of revenue	indent=1
+Model	5	1	$	Operating expenses, % of revenue	indent=1
+Model	6	1	$	Depreciation, % of opening PP&E	indent=1
+Model	7	1	$	Interest, % of opening debt	indent=1
+Model	8	1	$	Tax, % of profit before tax	indent=1
+Model	9	1	$	Receivables, % of revenue	indent=1
+Model	10	1	$	Payables, % of cost of sales	indent=1
+Model	11	1	$	Capital expenditure, % of revenue	indent=1
+Model	12	1	$	Dividends, % of net income	indent=1
+Model	13	1	$	Scheduled debt repayment	indent=1
+Model	14	1	$	Revenue	
+Model	15	1	$	Cost of sales	indent=1
+Model	16	1	$	Gross profit	
+Model	17	1	$	Operating expenses	indent=1
+Model	18	1	$	Depreciation	indent=1
+Model	19	1	$	Operating profit	
+Model	20	1	$	Interest	indent=1
+Model	21	1	$	Profit before tax	
+Model	22	1	$	Tax	indent=1
+Model	23	1	$	Net income	
+Model	24	1	$	Cash	
+Model	25	1	$	Receivables	
+Model	26	1	$	PP&E	
+Model	27	1	$	Total assets	
+Model	28	1	$	Payables	
+Model	29	1	$	Debt	
+Model	30	1	$	Equity	
+Model	31	1	$	Liabilities and equity	
+Model	32	1	$	Balance check	
+Model	33	1	$	Change in receivables	indent=1
+Model	34	1	$	Change in payables	indent=1
+Model	35	1	$	Cash from operations	
+Model	36	1	$	Capital expenditure	indent=1
+Model	37	1	$	Debt repayment	indent=1
+Model	38	1	$	Dividends	indent=1
+Model	39	1	$	Net change in cash	
+Model	2	2	#	2025.0	numberformat=0
+Model	2	3	#	2026.0	numberformat=0
+Model	2	4	#	2027.0	numberformat=0
+Model	2	5	#	2028.0	numberformat=0
+Model	2	6	#	2029.0	numberformat=0
+Model	2	7	#	2030.0	numberformat=0
+Model	3	3	#	0.08	numberformat=0.0%
+Model	3	4	#	0.07	numberformat=0.0%
+Model	3	5	#	0.06	numberformat=0.0%
+Model	3	6	#	0.05	numberformat=0.0%
+Model	3	7	#	0.04	numberformat=0.0%
+Model	13	3	#	50.0	numberformat=#,##0.0;(#,##0.0)
+Model	13	4	#	50.0	numberformat=#,##0.0;(#,##0.0)
+Model	13	5	#	50.0	numberformat=#,##0.0;(#,##0.0)
+Model	13	6	#	50.0	numberformat=#,##0.0;(#,##0.0)
+Model	13	7	#	50.0	numberformat=#,##0.0;(#,##0.0)
+Model	4	2	#	0.6	numberformat=0.0%
+Model	5	2	#	0.2	numberformat=0.0%
+Model	6	2	#	0.1	numberformat=0.0%
+Model	7	2	#	0.05	numberformat=0.0%
+Model	8	2	#	0.25	numberformat=0.0%
+Model	9	2	#	0.15	numberformat=0.0%
+Model	10	2	#	0.15	numberformat=0.0%
+Model	11	2	#	0.08	numberformat=0.0%
+Model	12	2	#	0.4	numberformat=0.0%
+Model	14	2	#	1000.0	numberformat=#,##0.0;(#,##0.0)
+Model	24	2	#	120.0	numberformat=#,##0.0;(#,##0.0)
+Model	25	2	#	150.0	numberformat=#,##0.0;(#,##0.0)
+Model	26	2	#	600.0	numberformat=#,##0.0;(#,##0.0)
+Model	28	2	#	90.0	numberformat=#,##0.0;(#,##0.0)
+Model	29	2	#	300.0	numberformat=#,##0.0;(#,##0.0)
+Model	30	2	#	480.0	numberformat=#,##0.0;(#,##0.0)
+Model	27	2	=	B24+B25+B26	numberformat=#,##0.0;(#,##0.0)
+Model	31	2	=	B28+B29+B30	numberformat=#,##0.0;(#,##0.0)
+Model	32	2	=	B27-B31	
+Model	14	3	=	B14*(1+C3)	numberformat=#,##0.0;(#,##0.0)
+Model	15	3	=	C14*$B$4	numberformat=#,##0.0;(#,##0.0)
+Model	16	3	=	C14-C15	numberformat=#,##0.0;(#,##0.0)
+Model	17	3	=	C14*$B$5	numberformat=#,##0.0;(#,##0.0)
+Model	36	3	=	-(C14*$B$11)	numberformat=#,##0.0;(#,##0.0)
+Model	18	3	=	B26*$B$6	numberformat=#,##0.0;(#,##0.0)
+Model	26	3	=	B26-C36-C18	numberformat=#,##0.0;(#,##0.0)
+Model	19	3	=	C16-C17-C18	numberformat=#,##0.0;(#,##0.0)
+Model	37	3	=	-MIN(C13,B29)	numberformat=#,##0.0;(#,##0.0)
+Model	29	3	=	B29+C37	numberformat=#,##0.0;(#,##0.0)
+Model	20	3	=	B29*$B$7	numberformat=#,##0.0;(#,##0.0)
+Model	21	3	=	C19-C20	numberformat=#,##0.0;(#,##0.0)
+Model	22	3	=	C21*$B$8	numberformat=#,##0.0;(#,##0.0)
+Model	23	3	=	C21-C22	numberformat=#,##0.0;(#,##0.0)
+Model	38	3	=	-(C23*$B$12)	numberformat=#,##0.0;(#,##0.0)
+Model	25	3	=	C14*$B$9	numberformat=#,##0.0;(#,##0.0)
+Model	33	3	=	B25-C25	numberformat=#,##0.0;(#,##0.0)
+Model	28	3	=	C15*$B$10	numberformat=#,##0.0;(#,##0.0)
+Model	34	3	=	C28-B28	numberformat=#,##0.0;(#,##0.0)
+Model	35	3	=	C23+C18+C33+C34	numberformat=#,##0.0;(#,##0.0)
+Model	39	3	=	C35+C36+C37+C38	numberformat=#,##0.0;(#,##0.0)
+Model	24	3	=	B24+C39	numberformat=#,##0.0;(#,##0.0)
+Model	27	3	=	C24+C25+C26	numberformat=#,##0.0;(#,##0.0)
+Model	30	3	=	B30+C23+C38	numberformat=#,##0.0;(#,##0.0)
+Model	31	3	=	C28+C29+C30	numberformat=#,##0.0;(#,##0.0)
+Model	32	3	=	C27-C31	
+Model	14	4	=	C14*(1+D3)	numberformat=#,##0.0;(#,##0.0)
+Model	15	4	=	D14*$B$4	numberformat=#,##0.0;(#,##0.0)
+Model	16	4	=	D14-D15	numberformat=#,##0.0;(#,##0.0)
+Model	17	4	=	D14*$B$5	numberformat=#,##0.0;(#,##0.0)
+Model	36	4	=	-(D14*$B$11)	numberformat=#,##0.0;(#,##0.0)
+Model	18	4	=	C26*$B$6	numberformat=#,##0.0;(#,##0.0)
+Model	26	4	=	C26-D36-D18	numberformat=#,##0.0;(#,##0.0)
+Model	19	4	=	D16-D17-D18	numberformat=#,##0.0;(#,##0.0)
+Model	37	4	=	-MIN(D13,C29)	numberformat=#,##0.0;(#,##0.0)
+Model	29	4	=	C29+D37	numberformat=#,##0.0;(#,##0.0)
+Model	20	4	=	C29*$B$7	numberformat=#,##0.0;(#,##0.0)
+Model	21	4	=	D19-D20	numberformat=#,##0.0;(#,##0.0)
+Model	22	4	=	D21*$B$8	numberformat=#,##0.0;(#,##0.0)
+Model	23	4	=	D21-D22	numberformat=#,##0.0;(#,##0.0)
+Model	38	4	=	-(D23*$B$12)	numberformat=#,##0.0;(#,##0.0)
+Model	25	4	=	D14*$B$9	numberformat=#,##0.0;(#,##0.0)
+Model	33	4	=	C25-D25	numberformat=#,##0.0;(#,##0.0)
+Model	28	4	=	D15*$B$10	numberformat=#,##0.0;(#,##0.0)
+Model	34	4	=	D28-C28	numberformat=#,##0.0;(#,##0.0)
+Model	35	4	=	D23+D18+D33+D34	numberformat=#,##0.0;(#,##0.0)
+Model	39	4	=	D35+D36+D37+D38	numberformat=#,##0.0;(#,##0.0)
+Model	24	4	=	C24+D39	numberformat=#,##0.0;(#,##0.0)
+Model	27	4	=	D24+D25+D26	numberformat=#,##0.0;(#,##0.0)
+Model	30	4	=	C30+D23+D38	numberformat=#,##0.0;(#,##0.0)
+Model	31	4	=	D28+D29+D30	numberformat=#,##0.0;(#,##0.0)
+Model	32	4	=	D27-D31	
+Model	14	5	=	D14*(1+E3)	numberformat=#,##0.0;(#,##0.0)
+Model	15	5	=	E14*$B$4	numberformat=#,##0.0;(#,##0.0)
+Model	16	5	=	E14-E15	numberformat=#,##0.0;(#,##0.0)
+Model	17	5	=	E14*$B$5	numberformat=#,##0.0;(#,##0.0)
+Model	36	5	=	-(E14*$B$11)	numberformat=#,##0.0;(#,##0.0)
+Model	18	5	=	D26*$B$6	numberformat=#,##0.0;(#,##0.0)
+Model	26	5	=	D26-E36-E18	numberformat=#,##0.0;(#,##0.0)
+Model	19	5	=	E16-E17-E18	numberformat=#,##0.0;(#,##0.0)
+Model	37	5	=	-MIN(E13,D29)	numberformat=#,##0.0;(#,##0.0)
+Model	29	5	=	D29+E37	numberformat=#,##0.0;(#,##0.0)
+Model	20	5	=	D29*$B$7	numberformat=#,##0.0;(#,##0.0)
+Model	21	5	=	E19-E20	numberformat=#,##0.0;(#,##0.0)
+Model	22	5	=	E21*$B$8	numberformat=#,##0.0;(#,##0.0)
+Model	23	5	=	E21-E22	numberformat=#,##0.0;(#,##0.0)
+Model	38	5	=	-(E23*$B$12)	numberformat=#,##0.0;(#,##0.0)
+Model	25	5	=	E14*$B$9	numberformat=#,##0.0;(#,##0.0)
+Model	33	5	=	D25-E25	numberformat=#,##0.0;(#,##0.0)
+Model	28	5	=	E15*$B$10	numberformat=#,##0.0;(#,##0.0)
+Model	34	5	=	E28-D28	numberformat=#,##0.0;(#,##0.0)
+Model	35	5	=	E23+E18+E33+E34	numberformat=#,##0.0;(#,##0.0)
+Model	39	5	=	E35+E36+E37+E38	numberformat=#,##0.0;(#,##0.0)
+Model	24	5	=	D24+E39	numberformat=#,##0.0;(#,##0.0)
+Model	27	5	=	E24+E25+E26	numberformat=#,##0.0;(#,##0.0)
+Model	30	5	=	D30+E23+E38	numberformat=#,##0.0;(#,##0.0)
+Model	31	5	=	E28+E29+E30	numberformat=#,##0.0;(#,##0.0)
+Model	32	5	=	E27-E31	
+Model	14	6	=	E14*(1+F3)	numberformat=#,##0.0;(#,##0.0)
+Model	15	6	=	F14*$B$4	numberformat=#,##0.0;(#,##0.0)
+Model	16	6	=	F14-F15	numberformat=#,##0.0;(#,##0.0)
+Model	17	6	=	F14*$B$5	numberformat=#,##0.0;(#,##0.0)
+Model	36	6	=	-(F14*$B$11)	numberformat=#,##0.0;(#,##0.0)
+Model	18	6	=	E26*$B$6	numberformat=#,##0.0;(#,##0.0)
+Model	26	6	=	E26-F36-F18	numberformat=#,##0.0;(#,##0.0)
+Model	19	6	=	F16-F17-F18	numberformat=#,##0.0;(#,##0.0)
+Model	37	6	=	-MIN(F13,E29)	numberformat=#,##0.0;(#,##0.0)
+Model	29	6	=	E29+F37	numberformat=#,##0.0;(#,##0.0)
+Model	20	6	=	E29*$B$7	numberformat=#,##0.0;(#,##0.0)
+Model	21	6	=	F19-F20	numberformat=#,##0.0;(#,##0.0)
+Model	22	6	=	F21*$B$8	numberformat=#,##0.0;(#,##0.0)
+Model	23	6	=	F21-F22	numberformat=#,##0.0;(#,##0.0)
+Model	38	6	=	-(F23*$B$12)	numberformat=#,##0.0;(#,##0.0)
+Model	25	6	=	F14*$B$9	numberformat=#,##0.0;(#,##0.0)
+Model	33	6	=	E25-F25	numberformat=#,##0.0;(#,##0.0)
+Model	28	6	=	F15*$B$10	numberformat=#,##0.0;(#,##0.0)
+Model	34	6	=	F28-E28	numberformat=#,##0.0;(#,##0.0)
+Model	35	6	=	F23+F18+F33+F34	numberformat=#,##0.0;(#,##0.0)
+Model	39	6	=	F35+F36+F37+F38	numberformat=#,##0.0;(#,##0.0)
+Model	24	6	=	E24+F39	numberformat=#,##0.0;(#,##0.0)
+Model	27	6	=	F24+F25+F26	numberformat=#,##0.0;(#,##0.0)
+Model	30	6	=	E30+F23+F38	numberformat=#,##0.0;(#,##0.0)
+Model	31	6	=	F28+F29+F30	numberformat=#,##0.0;(#,##0.0)
+Model	32	6	=	F27-F31	
+Model	14	7	=	F14*(1+G3)	numberformat=#,##0.0;(#,##0.0)
+Model	15	7	=	G14*$B$4	numberformat=#,##0.0;(#,##0.0)
+Model	16	7	=	G14-G15	numberformat=#,##0.0;(#,##0.0)
+Model	17	7	=	G14*$B$5	numberformat=#,##0.0;(#,##0.0)
+Model	36	7	=	-(G14*$B$11)	numberformat=#,##0.0;(#,##0.0)
+Model	18	7	=	F26*$B$6	numberformat=#,##0.0;(#,##0.0)
+Model	26	7	=	F26-G36-G18	numberformat=#,##0.0;(#,##0.0)
+Model	19	7	=	G16-G17-G18	numberformat=#,##0.0;(#,##0.0)
+Model	37	7	=	-MIN(G13,F29)	numberformat=#,##0.0;(#,##0.0)
+Model	29	7	=	F29+G37	numberformat=#,##0.0;(#,##0.0)
+Model	20	7	=	F29*$B$7	numberformat=#,##0.0;(#,##0.0)
+Model	21	7	=	G19-G20	numberformat=#,##0.0;(#,##0.0)
+Model	22	7	=	G21*$B$8	numberformat=#,##0.0;(#,##0.0)
+Model	23	7	=	G21-G22	numberformat=#,##0.0;(#,##0.0)
+Model	38	7	=	-(G23*$B$12)	numberformat=#,##0.0;(#,##0.0)
+Model	25	7	=	G14*$B$9	numberformat=#,##0.0;(#,##0.0)
+Model	33	7	=	F25-G25	numberformat=#,##0.0;(#,##0.0)
+Model	28	7	=	G15*$B$10	numberformat=#,##0.0;(#,##0.0)
+Model	34	7	=	G28-F28	numberformat=#,##0.0;(#,##0.0)
+Model	35	7	=	G23+G18+G33+G34	numberformat=#,##0.0;(#,##0.0)
+Model	39	7	=	G35+G36+G37+G38	numberformat=#,##0.0;(#,##0.0)
+Model	24	7	=	F24+G39	numberformat=#,##0.0;(#,##0.0)
+Model	27	7	=	G24+G25+G26	numberformat=#,##0.0;(#,##0.0)
+Model	30	7	=	F30+G23+G38	numberformat=#,##0.0;(#,##0.0)
+Model	31	7	=	G28+G29+G30	numberformat=#,##0.0;(#,##0.0)
+Model	32	7	=	G27-G31	

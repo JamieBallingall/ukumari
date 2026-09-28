@@ -21,10 +21,12 @@
   an assumption, so a row that uses it reads the same in every column.
 - A cell whose node is a lone literal (a seed) holds the number. Input cells hold their data
   as numbers; the error value is written ``=NA()``, since ``.yup`` has no error constants.
-- **Order**, so every formula refers only to earlier lines: text cells sheet by sheet and row
-  by row, then every node-holding cell in ascending node id, each node's origin before its
-  other holders. Sheets appear in the workbook in the order of their first line, so the
-  text cells put them in the layout's order.
+- **Widths**: a sheet's period width is the width of every column, on a ``|`` line for col
+  ``*``, and its label width is column A's.
+- **Order**, so every formula refers only to earlier lines: sheet by sheet, its widths and
+  then its text cells row by row; then every node-holding cell in ascending node id, each
+  node's origin before its other holders. Sheets appear in the workbook in the order of
+  their first line, so the text cells put them in the layout's order.
 """
 
 import math
@@ -76,9 +78,7 @@ def sheet_prefix(sheet: str) -> str:
     return f"'{quoted}'!"
 
 
-def _width(value: float | None) -> str:
-    if value is None:
-        return "default"
+def _width(value: float) -> str:
     return str(int(value)) if value == int(value) else repr(value)
 
 
@@ -164,49 +164,52 @@ def write_yup(
             case Operation():
                 raise AssertionError(f"a malformed node: {s.nodes[node]}")
 
-    def content(cell: Cell) -> str:
+    def content(cell: Cell) -> tuple[str, str]:
+        """A cell's type and contents, as its ``.yup`` line writes them."""
         if cell in s.sources:
-            return f"={link(s.sources[cell], address[cell])}"
+            return "=", link(s.sources[cell], address[cell])
         node = s.cells[cell]
         match s.nodes[node]:
             case Const(value):
-                return "=NA()" if math.isnan(value) else f"#{number(value)}"
+                return ("=", "NA()") if math.isnan(value) else ("#", number(value))
             case Element(name, index):
                 value = bound.inputs[name][index]
-                return "=NA()" if math.isnan(value) else f"#{number(value)}"
+                return ("=", "NA()") if math.isnan(value) else ("#", number(value))
             case Operation():
                 text, _ = render(node, cell, True)
-                return f"={text}"
+                return "=", text
 
     lines: list[str] = []
     value_rows: list[Value] = []
-    widths_written: set[tuple[str, int]] = set()
 
     def emit(
-        at: Address, cell_text: str, formats: list[str], value: tuple[int, str]
+        at: Address,
+        written: tuple[str, str],
+        formats: list[str],
+        value: tuple[int, str],
     ) -> None:
-        pairs = []
-        if (at.sheet, at.column) not in widths_written:
-            widths_written.add((at.sheet, at.column))
-            page = grid.page_of[at.sheet]
-            width = page.label_width if at.column == 1 else page.period_width
-            pairs.append(f"columnwidth={_width(width)}")
-        pairs += formats
+        kind, text = written
         lines.append(
-            f"{at.sheet}\t{at.row}\t{at.column}\t{cell_text}\t{'|'.join(pairs)}"
+            f"{at.sheet}\t{at.row}\t{at.column}\t{kind}\t{text}\t{'|'.join(formats)}"
         )
         value_rows.append(Value(at.sheet, at.row, at.column, Type(value[0]), value[1]))
 
+    def width(sheet: str, col: str, value: float | None) -> None:
+        if value is not None:
+            lines.append(f"{sheet}\t*\t{col}\t|\t\tcolumnwidth={_width(value)}")
+
     for page in grid.pages:
+        width(page.name, "*", page.period_width)
+        width(page.name, "1", page.label_width)
         for period in range(page.spine):
             text = f"P{period + 1}"
             spine = Address(page.name, 1, page.first_period_column + period)
-            emit(spine, f"${text}", [], (2, text))
+            emit(spine, ("$", text), [], (2, text))
         for row in page.rows:
             indent = [] if row.indent is None else [f"indent={row.indent}"]
             emit(
                 Address(page.name, row.number, 1),
-                f"${row.label}",
+                ("$", row.label),
                 indent,
                 (2, row.label),
             )

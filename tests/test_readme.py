@@ -15,4 +15,4 @@ def test_the_readme_sample_runs() -> None:
     with contextlib.redirect_stdout(printed):
         exec(compile(sample, "README.md", "exec"), {})  # noqa: S102
     assert "[[70. 40. 10.  0.  0.]]" in printed.getvalue()
-    assert "=MIN(C3,C4)" in printed.getvalue()
+    assert "=\tMIN(C3,C4)" in printed.getvalue()

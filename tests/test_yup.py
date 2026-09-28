@@ -27,13 +27,18 @@ from ukumari.pipeline import export
 from ukumari.shape import Span
 
 
+def cell_lines(yup: str) -> list[list[str]]:
+    """The fields of each line of ``.yup`` text that is a cell."""
+    fields = [line.split("\t") for line in yup.splitlines()[2:]]
+    return [f for f in fields if f[3] in ("=", "#", "$", "?", ".")]
+
+
 def cells_of(yup: str) -> dict[tuple[int, int], tuple[str, str]]:
-    """(row, col) → (cell, format), from ``.yup`` text."""
-    found = {}
-    for line in yup.splitlines()[2:]:
-        _, row, col, cell, fmt = line.split("\t")
-        found[(int(row), int(col))] = (cell, fmt)
-    return found
+    """(row, col) → (type and cell, format), for the cells in ``.yup`` text."""
+    return {
+        (int(row), int(col)): (kind + cell, fmt)
+        for _, row, col, kind, cell, fmt in cell_lines(yup)
+    }
 
 
 def formula(m: Model, data: dict[str, list[float]], name: str) -> str:
@@ -188,11 +193,10 @@ def test_every_formula_refers_only_to_earlier_lines() -> None:
 
     from ukumari.yup import column_letters
 
-    for line in result.yup.splitlines()[2:]:
-        _, row, col, cell, _ = line.split("\t")
-        if cell.startswith("="):
+    for _, row, col, kind, cell, _ in cell_lines(result.yup):
+        if kind == "=":
             for ref in re.findall(r"[A-Z]+[0-9]+", cell):
-                assert ref in written, (line, ref)
+                assert ref in written, (row, col, ref)
         written.add(f"{column_letters(int(col))}{row}")
 
 
@@ -204,16 +208,12 @@ def test_formats_indents_and_widths() -> None:
     ).unwrap()
     lines = result.yup.splitlines()
     assert "\n".join(lines[:2]) + "\n" == PREAMBLE
-    first_of_column: dict[str, str] = {}
-    for line in lines[2:]:
-        _, _, col, _, fmt = line.split("\t")
-        first_of_column.setdefault(col, fmt)
-    assert first_of_column["1"] == "columnwidth=34"
-    assert all(
-        fmt.startswith("columnwidth=10")
-        for c, fmt in first_of_column.items()
-        if c != "1"
-    )
+    # The period width is every column's, and the label width column A's.
+    assert lines[2:4] == [
+        "Model\t*\t*\t|\t\tcolumnwidth=10",
+        "Model\t*\t1\t|\t\tcolumnwidth=34",
+    ]
+    assert not any("columnwidth" in fmt for *_, fmt in cell_lines(result.yup))
     cells = cells_of(result.yup)
     row_of = {r.label: r.number for r in result.grid.rows}
     assert cells[(row_of["Revenue growth"], 1)] == ("$Revenue growth", "indent=1")
@@ -241,7 +241,7 @@ def test_the_values_csv_lists_every_cell_in_the_same_order() -> None:
         three_statement.data(),
         layout=three_statement.layout(),
     ).unwrap()
-    yup_cells = [line.split("\t")[:3] for line in result.yup.splitlines()[2:]]
+    yup_cells = [fields[:3] for fields in cell_lines(result.yup)]
     values = [line.split(",")[:3] for line in result.values_csv.splitlines()[1:]]
     assert yup_cells == values
 

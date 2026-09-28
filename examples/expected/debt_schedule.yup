@@ -1,33 +1,35 @@
-yup 0.0.1 Yupana Straight Line Spreadsheet Format
-sheet	row	col	cell	format
-Model	1	2	$P1	columnwidth=10
-Model	1	3	$P2	columnwidth=10
-Model	1	4	$P3	columnwidth=10
-Model	1	5	$P4	columnwidth=10
-Model	1	6	$P5	columnwidth=10
-Model	2	1	$Principal	columnwidth=20
-Model	3	1	$Scheduled payment	
-Model	4	1	$Opening balance	
-Model	5	1	$Payment	indent=1
-Model	6	1	$Closing balance	
-Model	2	2	#100.0	numberformat=#,##0.00
-Model	4	2	=$B$2	numberformat=#,##0.00
-Model	3	2	#30.0	numberformat=#,##0.00
-Model	3	3	#30.0	numberformat=#,##0.00
-Model	3	4	#30.0	numberformat=#,##0.00
-Model	3	5	#30.0	numberformat=#,##0.00
-Model	3	6	#30.0	numberformat=#,##0.00
-Model	5	2	=MIN(B3,B4)	numberformat=#,##0.00
-Model	6	2	=B4-B5	numberformat=#,##0.00
-Model	4	3	=B6	numberformat=#,##0.00
-Model	5	3	=MIN(C3,C4)	numberformat=#,##0.00
-Model	6	3	=C4-C5	numberformat=#,##0.00
-Model	4	4	=C6	numberformat=#,##0.00
-Model	5	4	=MIN(D3,D4)	numberformat=#,##0.00
-Model	6	4	=D4-D5	numberformat=#,##0.00
-Model	4	5	=D6	numberformat=#,##0.00
-Model	5	5	=MIN(E3,E4)	numberformat=#,##0.00
-Model	6	5	=E4-E5	numberformat=#,##0.00
-Model	4	6	=E6	numberformat=#,##0.00
-Model	5	6	=MIN(F3,F4)	numberformat=#,##0.00
-Model	6	6	=F4-F5	numberformat=#,##0.00
+yup 0.0.2 Yupana Straight Line Spreadsheet Format
+sheet	row	col	type	cell	format
+Model	*	*	|		columnwidth=10
+Model	*	1	|		columnwidth=20
+Model	1	2	$	P1	
+Model	1	3	$	P2	
+Model	1	4	$	P3	
+Model	1	5	$	P4	
+Model	1	6	$	P5	
+Model	2	1	$	Principal	
+Model	3	1	$	Scheduled payment	
+Model	4	1	$	Opening balance	
+Model	5	1	$	Payment	indent=1
+Model	6	1	$	Closing balance	
+Model	2	2	#	100.0	numberformat=#,##0.00
+Model	4	2	=	$B$2	numberformat=#,##0.00
+Model	3	2	#	30.0	numberformat=#,##0.00
+Model	3	3	#	30.0	numberformat=#,##0.00
+Model	3	4	#	30.0	numberformat=#,##0.00
+Model	3	5	#	30.0	numberformat=#,##0.00
+Model	3	6	#	30.0	numberformat=#,##0.00
+Model	5	2	=	MIN(B3,B4)	numberformat=#,##0.00
+Model	6	2	=	B4-B5	numberformat=#,##0.00
+Model	4	3	=	B6	numberformat=#,##0.00
+Model	5	3	=	MIN(C3,C4)	numberformat=#,##0.00
+Model	6	3	=	C4-C5	numberformat=#,##0.00
+Model	4	4	=	C6	numberformat=#,##0.00
+Model	5	4	=	MIN(D3,D4)	numberformat=#,##0.00
+Model	6	4	=	D4-D5	numberformat=#,##0.00
+Model	4	5	=	D6	numberformat=#,##0.00
+Model	5	5	=	MIN(E3,E4)	numberformat=#,##0.00
+Model	6	5	=	E4-E5	numberformat=#,##0.00
+Model	4	6	=	E6	numberformat=#,##0.00
+Model	5	6	=	MIN(F3,F4)	numberformat=#,##0.00
+Model	6	6	=	F4-F5	numberformat=#,##0.00
