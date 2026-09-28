@@ -39,7 +39,7 @@ print(result.yup)
 
 Every vector is declared first and defined afterwards, which is what lets a recurrence refer to itself. The model says where each vector lives, never how long it is: lengths arrive with the data.
 
-A layout places the rows, and can dress them too. A row can take a style, such as `HEADING`, `TOTAL` or `GRAND_TOTAL`, or one of its own made with `Style`, and a total's line runs the width of the table. `INPUT` marks every number typed in rather than computed, blue as modellers mark them, and a sheet's `View` sets its gridlines, zoom, tab colour and frozen rows and columns. Each becomes explicit formatting in the `.yup` file; none of it touches the arithmetic.
+A layout places the rows, and can dress them too. A row can take a style, such as `HEADING`, `TOTAL` or `GRAND_TOTAL`, or one of its own made with `Style`, and a total's line runs the width of the table. An `input_style`, such as `INPUT`, marks every number typed in rather than computed, blue as modellers mark them, and a sheet's `View` sets its gridlines, zoom, tab colour and frozen rows and columns. Each becomes explicit formatting in the `.yup` file; none of it touches the arithmetic.
 
 ## Install from source
 
@@ -60,7 +60,7 @@ The tests that have the spreadsheet app check a workbook need Windows with the a
 - `examples/debt_schedule.py`: the loan above.
 - `examples/three_statement.py`: a three-statement model of a fictional company (every figure is made up). It balances by construction, in every year, at any horizon.
 - `examples/three_statement_sweep.py`: the same model over 1,000 growth scenarios in one call.
-- `examples/quarterly.py`: a quarterly three-statement model of a fictional maker of garden equipment, over four sheets: the reported history, the assumptions, an analysis of the history, and the forecast. Revenue keeps its seasons, growing on the same quarter a year earlier, with a seasonal autoregression and the economy on top of the history's compound growth; cash runs through a waterfall with a revolver; two bonds mature and two loans float. Everything that looks back further than a quarter is carried as state.
+- `examples/quarterly.py`: a quarterly three-statement model of a fictional maker of garden equipment, over four sheets: the reported history, the assumptions, an analysis of the history, and the forecast. Revenue keeps its seasons, growing on the same quarter a year earlier, with a seasonal autoregression and the economy on top of the history's compound growth; cash runs through a waterfall with a revolver; two bonds mature and two loans float. Everything that looks back further than a quarter is carried as state. Its workbook is dressed as a modeller would dress it: blue inputs, banded sections, lined totals, and the dates and labels held in view.
 
 Each example writes its model (`.uku`), its workbook cells (`.yup`), their values and a workbook to `target/`: `uv run python examples/three_statement.py`.
 
