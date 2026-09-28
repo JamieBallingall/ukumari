@@ -1,2 +1,6 @@
 * text=auto eol=lf
 *.yup linguist-language=TSV
+
+# Committed, but generated: regenerate these, never edit them by hand.
+#   examples/expected/*   uv run python examples/regenerate.py
+#   uv.lock               uv lock
