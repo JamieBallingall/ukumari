@@ -11,7 +11,7 @@ from ukumari.emit import emit, load
 from ukumari.pipeline import balanced, export
 from ukumari.uku import load_uku, write_uku
 
-EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
+EXPECTED = Path(__file__).resolve().parent.parent / "examples" / "expected"
 
 
 def test_it_balances_in_every_quarter() -> None:
@@ -134,7 +134,7 @@ def test_the_committed_files_are_what_the_code_writes() -> None:
     circuit = quarterly.build().unwrap()
     assert load_uku(write_uku(circuit)) == Ok(circuit)
     for name, text in quarterly.outputs().items():
-        committed = (EXAMPLES / name).read_bytes().decode("utf-8")
+        committed = (EXPECTED / name).read_bytes().decode("utf-8")
         assert committed == text, f"{name} differs: run examples/regenerate.py"
 
 
@@ -143,8 +143,8 @@ def test_the_committed_files_are_what_the_code_writes() -> None:
 def test_the_app_computes_the_committed_file_the_same() -> None:
     finished = oracle(
         "compare",
-        str(EXAMPLES / "quarterly.yup"),
-        str(EXAMPLES / "quarterly.values.csv"),
+        str(EXPECTED / "quarterly.yup"),
+        str(EXPECTED / "quarterly.values.csv"),
         "--tolerance",
         "1e-9",
     )
@@ -163,8 +163,8 @@ def test_the_app_opens_the_workbook_and_computes_the_same() -> None:
     workbook.write_bytes(result.xlsx().unwrap())
     finished = oracle(
         "compare",
-        str(EXAMPLES / "quarterly.yup"),
-        str(EXAMPLES / "quarterly.values.csv"),
+        str(EXPECTED / "quarterly.yup"),
+        str(EXPECTED / "quarterly.values.csv"),
         "--xlsx",
         str(workbook),
         "--tolerance",

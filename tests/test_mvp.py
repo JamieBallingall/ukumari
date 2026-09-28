@@ -24,7 +24,7 @@ from ukumari.pipeline import balanced, export
 from ukumari.uku import load_uku, write_uku
 from ukumari.unroll import unroll
 
-EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
+EXPECTED = Path(__file__).resolve().parent.parent / "examples" / "expected"
 
 
 def test_1_is_text() -> None:
@@ -100,8 +100,8 @@ def test_3_the_app_opens_the_workbook_and_computes_the_same() -> None:
     workbook.write_bytes(result.xlsx().unwrap())
     finished = oracle(
         "compare",
-        str(EXAMPLES / "three_statement.yup"),
-        str(EXAMPLES / "three_statement.values.csv"),
+        str(EXPECTED / "three_statement.yup"),
+        str(EXPECTED / "three_statement.values.csv"),
         "--xlsx",
         str(workbook),
         "--tolerance",
@@ -116,8 +116,8 @@ def test_4_agrees_with_the_app() -> None:
     """The oracle has the app compute the committed .yup, and every cell must agree."""
     finished = oracle(
         "compare",
-        str(EXAMPLES / "three_statement.yup"),
-        str(EXAMPLES / "three_statement.values.csv"),
+        str(EXPECTED / "three_statement.yup"),
+        str(EXPECTED / "three_statement.values.csv"),
         "--tolerance",
         "1e-9",
     )
@@ -163,15 +163,15 @@ def test_8_is_data() -> None:
         circuit = example.build().unwrap()
         assert load_uku(write_uku(circuit)) == Ok(circuit)
         for name, text in example.outputs().items():
-            committed = (EXAMPLES / name).read_bytes().decode("utf-8")
+            committed = (EXPECTED / name).read_bytes().decode("utf-8")
             assert committed == text, f"{name} differs: run examples/regenerate.py"
 
 
 def test_the_committed_model_file_builds_the_same_workbook() -> None:
     """The committed .uku, read back, gives the same .yup as the script does."""
-    text = (EXAMPLES / "three_statement.uku").read_bytes().decode("utf-8")
+    text = (EXPECTED / "three_statement.uku").read_bytes().decode("utf-8")
     circuit = load_uku(text).unwrap()
     from_file = export(circuit, three_statement.data(), layout=three_statement.layout())
-    committed = (EXAMPLES / "three_statement.yup").read_bytes().decode("utf-8")
+    committed = (EXPECTED / "three_statement.yup").read_bytes().decode("utf-8")
     assert from_file.unwrap().yup == committed
     assert circuit == three_statement.build().unwrap()

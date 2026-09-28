@@ -74,6 +74,10 @@ and run only when `UKUMARI_APP_TESTS=1` is set.
 Each example writes its model (`.uku`), its workbook cells (`.yup`), their values and a workbook
 to `target/`: `uv run python examples/three_statement.py`.
 
+`examples/expected/` holds the model, cells and values each example writes, committed so that a
+change to them shows up as a diff. They are generated, never edited: the tests check them against
+what the code writes now, and `uv run python examples/regenerate.py` rewrites them.
+
 ## The name
 
 Ukumari is the [Quechua](https://en.wikipedia.org/wiki/Quechuan_languages) name for the
