@@ -45,11 +45,12 @@ the data.
 
 ## Install from source
 
-ukumari depends on yupana, which is not yet on PyPI, so clone the two side by side:
+ukumari depends on [yupana](https://github.com/JamieBallingall/yupana), which is not yet on
+PyPI, so clone the two side by side:
 
 ```bash
-git clone <yupana's repository> yupana
-git clone <this repository> ukumari
+git clone https://github.com/JamieBallingall/yupana.git
+git clone https://github.com/JamieBallingall/ukumari.git
 cd ukumari
 uv sync
 uv run pytest
